@@ -14,6 +14,7 @@ const MainLayout = (props) => {
                     <Content>
                             <Switch>
                                 <Route path="/invoice-form" component={InvoiceForm}/>
+                                <Route component={InvoiceForm}/>
                             </Switch>
                     </Content>
                 <Footer>Facebook</Footer>

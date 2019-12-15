@@ -18,15 +18,17 @@ const AutoCompleter = (props) => {
     const onChange = value => {
       setValue(value);
     };
+
+    const width = props.width
     return (
         <AutoComplete
-          value={value}
+          value={props.value}
           dataSource={dataSource}
-          style={{ width: 200 }}
+          style={{ width: width }}
           onSelect={onSelect}
           onSearch={onSearch}
           onChange={onChange}
-          placeholder="NIP"
+          placeholder={props.placeholder}
         />
     )
 }
