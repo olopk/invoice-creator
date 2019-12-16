@@ -4,6 +4,7 @@ import moment from 'moment';
 import today from '../../../functions/today';
 
 import { Form, Icon, Input, AutoComplete, InputNumber, Button, DatePicker, Row, Col } from 'antd';
+import { all } from 'q';
 
 function hasErrors(fieldsError) {
   return Object.keys(fieldsError).some(field => fieldsError[field]);
@@ -26,7 +27,7 @@ const InvoiceForm = (props) => {
 
     const [products, setProducts] = useState([
       {
-        product_name: '',
+        product_name: 'okulary',
         product_unit: 'szt.',
         product_quantity: '',
         product_unit_price: '',
@@ -44,14 +45,27 @@ const InvoiceForm = (props) => {
     //     });
     //   };
 
-    const onChange = (name, value) => {
-        console.log(value)
-        props.form.setFieldsValue({
-          [name]: value,
-        }, setState({
-          ...state,
-          [name]: value
-        }));
+    const onChange = (name, value, index) => {
+        if(index > -1){
+          const allProducts = [...products];
+          const product = {...allProducts[index]};
+          product[name] = value;
+          allProducts[index]= product;
+
+          props.form.setFieldsValue({
+            [name]: value,
+          }, setProducts({
+            ...allProducts
+          }));
+
+        }else{
+          props.form.setFieldsValue({
+            [name]: value,
+          }, setState({
+            ...state,
+            [name]: value
+          }));
+        }
     }
 
 
@@ -62,86 +76,92 @@ const InvoiceForm = (props) => {
     const customer_streetError = isFieldTouched('customer_city') && getFieldError('customer_city');
     const customer_cityError = isFieldTouched('customer_street') && getFieldError('customer_street');
     const customer_nameError = isFieldTouched('customer_name') && getFieldError('customer_name');
+    
+
+    let products_list = [...products];
+
+    if(products_list){
+      products_list.map((position, index) => {
+        
+        return (
+          <Row key={index}>
+            <Col span={13}>
+              <Form.Item
+                // validateStatus={customer_nameError ? 'error' : ''}
+                // help={customer_nameError || ''}
+                >
+                {getFieldDecorator(
+                  'product_name',
+                  {initialValue: products[index].product_name, rules: [{ required: true, message: 'Wpisz poprawna nazwe' }],})
+                  (<AutoComplete
+                    placeholder="Nazwa kontrahenta"
+                    onChange={(el) => onChange('customer_name', el, index)}
+                    />)} 
+              </Form.Item>
+            </Col>
+            {/* <Col span={2}>
+              <Form.Item
+                validateStatus={customer_nameError ? 'error' : ''}
+                help={customer_nameError || ''}
+                >
+                {getFieldDecorator(
+                  'customer_name',
+                  {initialValue: state.customer_name, rules: [{ required: true, message: 'Wpisz poprawne miasto' }],})
+                  (<AutoComplete
+                    placeholder="Nazwa kontrahenta"
+                    onChange={(el) => onChange('customer_name', el)}
+                    />)} 
+              </Form.Item>
+            </Col>
+            <Col span={2}>
+              <Form.Item
+                validateStatus={customer_nameError ? 'error' : ''}
+                help={customer_nameError || ''}
+                >
+                {getFieldDecorator(
+                  'customer_name',
+                  {initialValue: state.customer_name, rules: [{ required: true, message: 'Wpisz poprawne miasto' }],})
+                  (<AutoComplete
+                    placeholder="Nazwa kontrahenta"
+                    onChange={(el) => onChange('customer_name', el)}
+                    />)} 
+              </Form.Item>
+            </Col>
+            <Col span={3}>
+              <Form.Item
+                validateStatus={customer_nameError ? 'error' : ''}
+                help={customer_nameError || ''}
+                >
+                {getFieldDecorator(
+                  'customer_name',
+                  {initialValue: state.customer_name, rules: [{ required: true, message: 'Wpisz poprawne miasto' }],})
+                  (<AutoComplete
+                    placeholder="Nazwa kontrahenta"
+                    onChange={(el) => onChange('customer_name', el)}
+                    />)} 
+              </Form.Item>
+            </Col>
+            <Col span={4}>
+              <Form.Item
+                validateStatus={customer_nameError ? 'error' : ''}
+                help={customer_nameError || ''}
+                >
+                {getFieldDecorator(
+                  'customer_name',
+                  {initialValue: state.customer_name, rules: [{ required: true, message: 'Wpisz poprawne miasto' }],})
+                  (<AutoComplete
+                    placeholder="Nazwa kontrahenta"
   
+                    onChange={(el) => onChange('customer_name', el)}
+                    />)} 
+              </Form.Item>
+            </Col> */}
+        </Row>
+        )
+      })
+    }
 
-    let products_list = products.map((position, index) => {
-      
-      return (
-        <Row>
-          <Col span={13}>
-            <Form.Item
-              validateStatus={customer_nameError ? 'error' : ''}
-              help={customer_nameError || ''}
-              >
-              {getFieldDecorator(
-                'product_name',
-                {initialValue: products.product_name, rules: [{ required: true, message: 'Wpisz poprawna nazwe' }],})
-                (<AutoComplete
-                  placeholder="Nazwa kontrahenta"
-                  onChange={(el) => onChange('customer_name', el)}
-                  />)} 
-            </Form.Item>
-          </Col>
-          <Col span={2}>
-            <Form.Item
-              validateStatus={customer_nameError ? 'error' : ''}
-              help={customer_nameError || ''}
-              >
-              {getFieldDecorator(
-                'customer_name',
-                {initialValue: state.customer_name, rules: [{ required: true, message: 'Wpisz poprawne miasto' }],})
-                (<AutoComplete
-                  placeholder="Nazwa kontrahenta"
-                  onChange={(el) => onChange('customer_name', el)}
-                  />)} 
-            </Form.Item>
-          </Col>
-          <Col span={2}>
-            <Form.Item
-              validateStatus={customer_nameError ? 'error' : ''}
-              help={customer_nameError || ''}
-              >
-              {getFieldDecorator(
-                'customer_name',
-                {initialValue: state.customer_name, rules: [{ required: true, message: 'Wpisz poprawne miasto' }],})
-                (<AutoComplete
-                  placeholder="Nazwa kontrahenta"
-                  onChange={(el) => onChange('customer_name', el)}
-                  />)} 
-            </Form.Item>
-          </Col>
-          <Col span={3}>
-            <Form.Item
-              validateStatus={customer_nameError ? 'error' : ''}
-              help={customer_nameError || ''}
-              >
-              {getFieldDecorator(
-                'customer_name',
-                {initialValue: state.customer_name, rules: [{ required: true, message: 'Wpisz poprawne miasto' }],})
-                (<AutoComplete
-                  placeholder="Nazwa kontrahenta"
-                  onChange={(el) => onChange('customer_name', el)}
-                  />)} 
-            </Form.Item>
-          </Col>
-          <Col span={4}>
-            <Form.Item
-              validateStatus={customer_nameError ? 'error' : ''}
-              help={customer_nameError || ''}
-              >
-              {getFieldDecorator(
-                'customer_name',
-                {initialValue: state.customer_name, rules: [{ required: true, message: 'Wpisz poprawne miasto' }],})
-                (<AutoComplete
-                  placeholder="Nazwa kontrahenta"
 
-                  onChange={(el) => onChange('customer_name', el)}
-                  />)} 
-            </Form.Item>
-          </Col>
-      </Row>
-      )
-    })
 
     return(
         <div className={classes.main}>
