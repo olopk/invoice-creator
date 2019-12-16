@@ -4,7 +4,6 @@ import moment from 'moment';
 import today from '../../../functions/today';
 
 import { Form, Icon, Input, AutoComplete, InputNumber, Button, DatePicker, Row, Col } from 'antd';
-import { all } from 'q';
 
 function hasErrors(fieldsError) {
   return Object.keys(fieldsError).some(field => fieldsError[field]);
@@ -27,7 +26,14 @@ const InvoiceForm = (props) => {
 
     const [products, setProducts] = useState([
       {
-        product_name: 'okulary',
+        product_name: 'oprawki',
+        product_unit: 'szt.',
+        product_quantity: '',
+        product_unit_price: '',
+        product_total_price: ''
+      },
+      {
+        product_name: 'szkła',
         product_unit: 'szt.',
         product_quantity: '',
         product_unit_price: '',
@@ -47,16 +53,26 @@ const InvoiceForm = (props) => {
 
     const onChange = (name, value, index) => {
         if(index > -1){
-          const allProducts = [...products];
-          const product = {...allProducts[index]};
-          product[name] = value;
-          allProducts[index]= product;
+          console.log('its here')
+          // props.form.setFieldsValue({
+          //   [name]: value,
+          // },
+          //  () =>
+            // {   
+            const allProducts = [...products];
+            const product = {...allProducts[index]};
+            product[name] = value;
 
-          props.form.setFieldsValue({
-            [name]: value,
-          }, setProducts({
+            if((name === 'product_quantity' || name === 'product_unit_price')&&(!isNaN(product.product_quantity) && !isNaN(product.product_unit_price))){
+                product.product_total_price = product.product_quantity * product.product_unit_price;
+            }
+            allProducts[index]= product;
+            
+            setProducts([
             ...allProducts
-          }));
+            ])
+          // }
+          // );
 
         }else{
           props.form.setFieldsValue({
@@ -68,101 +84,104 @@ const InvoiceForm = (props) => {
         }
     }
 
+    const add = () =>{
+      const allProducts = [...products];
+      allProducts.push({product_name: '',product_unit: 'szt.',product_quantity: '',product_unit_price: '',product_total_price: ''})
+      setProducts([...allProducts])
+    }
+    const del = (id) => {
+      const allProducts = [...products];
+      allProducts.splice(id,1);
+      setProducts([...allProducts])
+    }
 
     const invoicenrError = isFieldTouched('invoice_nr') && getFieldError('invoice_nr');
     const cityError = isFieldTouched('city') && getFieldError('city');
     const dateError = isFieldTouched('date') && getFieldError('date');
     const customer_nipError = isFieldTouched('customer_nip') && getFieldError('customer_nip');
-    const customer_streetError = isFieldTouched('customer_city') && getFieldError('customer_city');
-    const customer_cityError = isFieldTouched('customer_street') && getFieldError('customer_street');
+    const customer_cityError = isFieldTouched('customer_city') && getFieldError('customer_city');
+    const customer_streetError = isFieldTouched('customer_street') && getFieldError('customer_street');
     const customer_nameError = isFieldTouched('customer_name') && getFieldError('customer_name');
     
 
-    let products_list = [...products];
+    let products_list = null;
 
-    if(products_list){
-      products_list.map((position, index) => {
+    console.log(products)
+
+    if(products !== null){
+      products_list = products.map((position, index) => {        
+        // const product_nameError = isFieldTouched('product_name') && getFieldError('product_name'); 
         
+        let rem = <Icon type="minus-circle" onClick={()=>del(index)}/>;
+
+        if(index === 0){
+          rem = null;
+        }
+
         return (
           <Row key={index}>
-            <Col span={13}>
+            <Col span={11}>
               <Form.Item
-                // validateStatus={customer_nameError ? 'error' : ''}
-                // help={customer_nameError || ''}
+                // validateStatus={product_nameError ? 'error' : ''}
+                // help={product_nameError || ''}
                 >
-                {getFieldDecorator(
-                  'product_name',
-                  {initialValue: products[index].product_name, rules: [{ required: true, message: 'Wpisz poprawna nazwe' }],})
-                  (<AutoComplete
-                    placeholder="Nazwa kontrahenta"
-                    onChange={(el) => onChange('customer_name', el, index)}
-                    />)} 
-              </Form.Item>
-            </Col>
-            {/* <Col span={2}>
-              <Form.Item
-                validateStatus={customer_nameError ? 'error' : ''}
-                help={customer_nameError || ''}
-                >
-                {getFieldDecorator(
-                  'customer_name',
-                  {initialValue: state.customer_name, rules: [{ required: true, message: 'Wpisz poprawne miasto' }],})
-                  (<AutoComplete
-                    placeholder="Nazwa kontrahenta"
-                    onChange={(el) => onChange('customer_name', el)}
-                    />)} 
+                {/* {getFieldDecorator(
+                  nam2,
+                  {initialValue: products[index].product_name.value, rules: [{ required: true, message: 'Wpisz poprawna nazwe' }],}) */}
+                  {/* ( */}
+                    <AutoComplete
+                    value={products[index].product_name}
+                    placeholder="Nazwa produktu/usługi"
+                    onChange={(el) => onChange('product_name', el, index)}
+                    />
+                    {/* )}  */}
               </Form.Item>
             </Col>
             <Col span={2}>
-              <Form.Item
-                validateStatus={customer_nameError ? 'error' : ''}
-                help={customer_nameError || ''}
-                >
-                {getFieldDecorator(
-                  'customer_name',
-                  {initialValue: state.customer_name, rules: [{ required: true, message: 'Wpisz poprawne miasto' }],})
-                  (<AutoComplete
-                    placeholder="Nazwa kontrahenta"
-                    onChange={(el) => onChange('customer_name', el)}
-                    />)} 
+              <Form.Item>
+                  <AutoComplete
+                    placeholder="Jednostka"
+                    value={products[index].product_unit}
+                    onChange={(el) => onChange('product_unit', el, index)}
+                    /> 
+              </Form.Item>
+            </Col>
+            <Col span={2}>
+              <Form.Item>
+                <InputNumber
+                  placeholder="Ilość"
+                  min={1}
+                  value={products[index].product_quantity}
+                  onChange={(el) => onChange('product_quantity', el, index)}
+                  /> 
               </Form.Item>
             </Col>
             <Col span={3}>
-              <Form.Item
-                validateStatus={customer_nameError ? 'error' : ''}
-                help={customer_nameError || ''}
-                >
-                {getFieldDecorator(
-                  'customer_name',
-                  {initialValue: state.customer_name, rules: [{ required: true, message: 'Wpisz poprawne miasto' }],})
-                  (<AutoComplete
-                    placeholder="Nazwa kontrahenta"
-                    onChange={(el) => onChange('customer_name', el)}
-                    />)} 
+              <Form.Item>
+                <InputNumber
+                  placeholder="Cena jednostkowa"
+                  value={products[index].product_unit_price}
+                  onChange={(el) => onChange('product_unit_price', el, index)}
+                  /> 
               </Form.Item>
             </Col>
             <Col span={4}>
-              <Form.Item
-                validateStatus={customer_nameError ? 'error' : ''}
-                help={customer_nameError || ''}
-                >
-                {getFieldDecorator(
-                  'customer_name',
-                  {initialValue: state.customer_name, rules: [{ required: true, message: 'Wpisz poprawne miasto' }],})
-                  (<AutoComplete
-                    placeholder="Nazwa kontrahenta"
-  
-                    onChange={(el) => onChange('customer_name', el)}
-                    />)} 
+              <Form.Item>
+                <InputNumber
+                  disabled
+                  placeholder="Cena ostateczna"
+                  value={products[index].product_total_price}
+                  // onChange={(el) => onChange('product_total_price', el, index)}
+                  /> 
               </Form.Item>
-            </Col> */}
+            </Col>
+            <Col span={1}>
+              {rem}
+            </Col>
         </Row>
         )
       })
     }
-
-
-
     return(
         <div className={classes.main}>
           <section>
@@ -288,6 +307,7 @@ const InvoiceForm = (props) => {
             <Form>
               {products_list}
             </Form>
+            <Icon type="plus-circle" onClick={add}/>
           </section>
         </div>
         
