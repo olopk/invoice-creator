@@ -2,17 +2,25 @@ import React, {useState} from 'react';
 import classes from './InvoiceForm.module.css';
 import moment from 'moment';
 import today from '../../../functions/today';
+import {save_invoice} from '../../../api_calls/api'
 
-import { Form, Icon, Input, AutoComplete, InputNumber, Button, DatePicker, Row, Col } from 'antd';
+import { Form, Icon, Input, AutoComplete, InputNumber, Button, DatePicker, Row, Col, notification } from 'antd';
 
+// eslint-disable-next-line
 function hasErrors(fieldsError) {
   return Object.keys(fieldsError).some(field => fieldsError[field]);
 }
 
 const InvoiceForm = (props) => {
+    // eslint-disable-next-line
     const { getFieldDecorator, getFieldsError, setFieldsValue, getFieldError, isFieldTouched } = props.form;
 
-    const [state, setState] = useState(
+    const [state, setState] = useState({
+      error: '',
+      loading: false
+    });
+
+    const [customer, setCustomer] = useState(
       {
         invoice_nr: '12/2019',
         city: 'Człuchów',
@@ -31,13 +39,6 @@ const InvoiceForm = (props) => {
         product_quantity: '',
         product_unit_price: '',
         product_total_price: ''
-      },
-      {
-        product_name: 'szkła',
-        product_unit: 'szt.',
-        product_quantity: '',
-        product_unit_price: '',
-        product_total_price: ''
       }
     ])
     // props.form.validateFields();
@@ -51,9 +52,23 @@ const InvoiceForm = (props) => {
     //     });
     //   };
 
+    const openNotification = (message) => {
+      notification.info({
+        message: message,
+        placement: 'bottomLeft',
+        icon: <Icon type="smile" style={{ color: '#108ee9' }} />
+      });
+    };
+
+    const send = async () => {
+      setState({...state, loading: true});
+      const response = await save_invoice(customer, products);
+      setState({...state, loading: false});
+      openNotification(response.message);
+    }
+
     const onChange = (name, value, index) => {
         if(index > -1){
-          console.log('its here')
           // props.form.setFieldsValue({
           //   [name]: value,
           // },
@@ -77,8 +92,8 @@ const InvoiceForm = (props) => {
         }else{
           props.form.setFieldsValue({
             [name]: value,
-          }, setState({
-            ...state,
+          }, setCustomer({
+            ...customer,
             [name]: value
           }));
         }
@@ -104,11 +119,9 @@ const InvoiceForm = (props) => {
     const customer_nameError = isFieldTouched('customer_name') && getFieldError('customer_name');
     
 
-    let products_list = null;
+    let products_list = <Icon type="loading" />;
 
-    console.log(products)
-
-    if(products !== null){
+    if(!state.loading){
       products_list = products.map((position, index) => {        
         // const product_nameError = isFieldTouched('product_name') && getFieldError('product_name'); 
         
@@ -195,7 +208,7 @@ const InvoiceForm = (props) => {
                   >
                     {getFieldDecorator(
                       'invoice_nr'
-                      ,{initialValue: state.invoice_nr ,rules: [{ required: true, message: 'Pole nie zostało wypełnione poprawnine' }],})
+                      ,{initialValue: customer.invoice_nr ,rules: [{ required: true, message: 'Pole nie zostało wypełnione poprawnine' }],})
                       (<Input
                           placeholder="Numer faktury"  
                           onChange={(el) => onChange('invoice_nr', el.target.value)}
@@ -210,7 +223,7 @@ const InvoiceForm = (props) => {
                     >
                     {getFieldDecorator(
                       'city',
-                      {initialValue: state.city, rules: [{ required: true, message: 'Wpisz poprawne miasto' }],})
+                      {initialValue: customer.city, rules: [{ required: true, message: 'Wpisz poprawne miasto' }],})
                       (<Input
                         prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
                         placeholder="Miasto"
@@ -225,7 +238,7 @@ const InvoiceForm = (props) => {
                     >
                     {getFieldDecorator(
                       'date',
-                      {initialValue: moment(state.date, 'DD/MM/YYYY'), rules: [{ required: true, message: 'Wpisz poprawne miasto' }],})
+                      {initialValue: moment(customer.date, 'DD/MM/YYYY'), rules: [{ required: true, message: 'Wpisz poprawne miasto' }],})
                       (<DatePicker
                         onChange={(el) => onChange('date', el._i)}
                         format={'DD/MM/YYYY'} />)} 
@@ -240,7 +253,7 @@ const InvoiceForm = (props) => {
                   >
                   {getFieldDecorator(
                     'customer_nip',
-                    {initialValue: state.customer_nip, rules: [{ required: true, message: 'Wpisz poprawny NIP' }],})
+                    {initialValue: customer.customer_nip, rules: [{ required: true, message: 'Wpisz poprawny NIP' }],})
                     (<InputNumber
                       prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
                       placeholder="NIP"
@@ -256,7 +269,7 @@ const InvoiceForm = (props) => {
                     >
                     {getFieldDecorator(
                       'customer_city',
-                      {initialValue: state.customer_city, rules: [{ required: true, message: 'Wpisz poprawne miasto' }],})
+                      {initialValue: customer.customer_city, rules: [{ required: true, message: 'Wpisz poprawne miasto' }],})
                       (<AutoComplete
                       placeholder="Miejscowość"
                       onChange={(el) => onChange('customer_city', el)}
@@ -270,7 +283,7 @@ const InvoiceForm = (props) => {
                     >
                     {getFieldDecorator(
                       'customer_street',
-                      {initialValue: state.customer_street, rules: [{ required: true, message: 'Wpisz poprawną ulicę' }],})
+                      {initialValue: customer.customer_street, rules: [{ required: true, message: 'Wpisz poprawną ulicę' }],})
                       (<AutoComplete
                         placeholder="Ulica"
                         onChange={(el) => onChange('customer_street', el)}
@@ -286,7 +299,7 @@ const InvoiceForm = (props) => {
                   >
                   {getFieldDecorator(
                     'customer_name',
-                    {initialValue: state.customer_name, rules: [{ required: true, message: 'Wpisz poprawne miasto' }],})
+                    {initialValue: customer.customer_name, rules: [{ required: true, message: 'Wpisz poprawne miasto' }],})
                     (<AutoComplete
                       placeholder="Nazwa kontrahenta"
                       style={{width:"400px"}}
@@ -309,6 +322,9 @@ const InvoiceForm = (props) => {
             </Form>
             <Icon type="plus-circle" onClick={add}/>
           </section>
+          <Button type="primary" onClick={() => send()}>
+            Zapisz i generuj fakturę.
+          </Button>
         </div>
         
       );
