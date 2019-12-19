@@ -119,10 +119,9 @@ const InvoiceForm = (props) => {
     const customer_nameError = isFieldTouched('customer_name') && getFieldError('customer_name');
     
 
-    let products_list = <Icon type="loading" />;
+    // let products_list = <Icon type="loading" />;
 
-    if(!state.loading){
-      products_list = products.map((position, index) => {        
+    let products_list = products.map((position, index) => {        
         // const product_nameError = isFieldTouched('product_name') && getFieldError('product_name'); 
         
         let rem = <Icon type="minus-circle" onClick={()=>del(index)}/>;
@@ -194,134 +193,144 @@ const InvoiceForm = (props) => {
         </Row>
         )
       })
-    }
-    return(
-        <div className={classes.main}>
-          <section>
-            <h1>Dane</h1>
-            <Form layout="inline" onSubmit={()=>null}>
-              <Row>
-                <Col span={8}>
-                  <Form.Item
-                    validateStatus={invoicenrError ? 'error' : ''}
-                    help={invoicenrError || ''}
-                  >
-                    {getFieldDecorator(
-                      'invoice_nr'
-                      ,{initialValue: customer.invoice_nr ,rules: [{ required: true, message: 'Pole nie zostało wypełnione poprawnine' }],})
-                      (<Input
-                          placeholder="Numer faktury"  
-                          onChange={(el) => onChange('invoice_nr', el.target.value)}
-                          prefix={<Icon type="file-add" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                      />,)}
-                  </Form.Item>
-                </Col>
-                <Col span={8}>
-                  <Form.Item
-                    validateStatus={cityError ? 'error' : ''}
-                    help={cityError || ''}
-                    >
-                    {getFieldDecorator(
-                      'city',
-                      {initialValue: customer.city, rules: [{ required: true, message: 'Wpisz poprawne miasto' }],})
-                      (<Input
-                        prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                        placeholder="Miasto"
-                        onChange={(el) => onChange('city', el.target.value)}
-                      />,)} 
-                  </Form.Item>
-                </Col>
-                <Col span={8}>
-                <Form.Item
-                    validateStatus={dateError ? 'error' : ''}
-                    help={dateError || ''}
-                    >
-                    {getFieldDecorator(
-                      'date',
-                      {initialValue: moment(customer.date, 'DD/MM/YYYY'), rules: [{ required: true, message: 'Wpisz poprawne miasto' }],})
-                      (<DatePicker
-                        onChange={(el) => onChange('date', el._i)}
-                        format={'DD/MM/YYYY'} />)} 
-                  </Form.Item>
-                </Col>
-              </Row>
-              <Row>
+    
+    let content = (
+      <React.Fragment>
+        <section>
+          <h1>Dane</h1>
+          <Form layout="inline" onSubmit={()=>null}>
+            <Row>
               <Col span={8}>
                 <Form.Item
-                  validateStatus={customer_nipError ? 'error' : ''}
-                  help={customer_nipError || ''}
+                  validateStatus={invoicenrError ? 'error' : ''}
+                  help={invoicenrError || ''}
+                >
+                  {getFieldDecorator(
+                    'invoice_nr'
+                    ,{initialValue: customer.invoice_nr ,rules: [{ required: true, message: 'Pole nie zostało wypełnione poprawnine' }],})
+                    (<Input
+                        placeholder="Numer faktury"  
+                        onChange={(el) => onChange('invoice_nr', el.target.value)}
+                        prefix={<Icon type="file-add" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                    />,)}
+                </Form.Item>
+              </Col>
+              <Col span={8}>
+                <Form.Item
+                  validateStatus={cityError ? 'error' : ''}
+                  help={cityError || ''}
                   >
                   {getFieldDecorator(
-                    'customer_nip',
-                    {initialValue: customer.customer_nip, rules: [{ required: true, message: 'Wpisz poprawny NIP' }],})
-                    (<InputNumber
+                    'city',
+                    {initialValue: customer.city, rules: [{ required: true, message: 'Wpisz poprawne miasto' }],})
+                    (<Input
                       prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                      placeholder="NIP"
-                      style={{width: "100%"}}
-                      onChange={(el) => onChange('customer_nip', el)}
+                      placeholder="Miasto"
+                      onChange={(el) => onChange('city', el.target.value)}
                     />,)} 
                 </Form.Item>
-                </Col>
-                <Col span={8}>
-                  <Form.Item
-                    validateStatus={customer_cityError ? 'error' : ''}
-                    help={customer_cityError || ''}
-                    >
-                    {getFieldDecorator(
-                      'customer_city',
-                      {initialValue: customer.customer_city, rules: [{ required: true, message: 'Wpisz poprawne miasto' }],})
-                      (<AutoComplete
-                      placeholder="Miejscowość"
-                      onChange={(el) => onChange('customer_city', el)}
-                      />)} 
-                  </Form.Item>
-                </Col>
-                <Col span={8}>
-                  <Form.Item
-                    validateStatus={customer_streetError ? 'error' : ''}
-                    help={customer_streetError || ''}
-                    >
-                    {getFieldDecorator(
-                      'customer_street',
-                      {initialValue: customer.customer_street, rules: [{ required: true, message: 'Wpisz poprawną ulicę' }],})
-                      (<AutoComplete
-                        placeholder="Ulica"
-                        onChange={(el) => onChange('customer_street', el)}
-                      />)} 
-                  </Form.Item>                
-                </Col>
-              </Row>
-              <Row>
-                <Col span={24}>
-                <Form.Item
-                  validateStatus={customer_nameError ? 'error' : ''}
-                  help={customer_nameError || ''}
+              </Col>
+              <Col span={8}>
+              <Form.Item
+                  validateStatus={dateError ? 'error' : ''}
+                  help={dateError || ''}
                   >
                   {getFieldDecorator(
-                    'customer_name',
-                    {initialValue: customer.customer_name, rules: [{ required: true, message: 'Wpisz poprawne miasto' }],})
+                    'date',
+                    {initialValue: moment(customer.date, 'DD/MM/YYYY'), rules: [{ required: true, message: 'Wpisz poprawne miasto' }],})
+                    (<DatePicker
+                      onChange={(el) => onChange('date', el._i)}
+                      format={'DD/MM/YYYY'} />)} 
+                </Form.Item>
+              </Col>
+            </Row>
+            <Row>
+            <Col span={8}>
+              <Form.Item
+                validateStatus={customer_nipError ? 'error' : ''}
+                help={customer_nipError || ''}
+                >
+                {getFieldDecorator(
+                  'customer_nip',
+                  {initialValue: customer.customer_nip, rules: [{ required: true, message: 'Wpisz poprawny NIP' }],})
+                  (<InputNumber
+                    prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                    placeholder="NIP"
+                    style={{width: "100%"}}
+                    onChange={(el) => onChange('customer_nip', el)}
+                  />,)} 
+              </Form.Item>
+              </Col>
+              <Col span={8}>
+                <Form.Item
+                  validateStatus={customer_cityError ? 'error' : ''}
+                  help={customer_cityError || ''}
+                  >
+                  {getFieldDecorator(
+                    'customer_city',
+                    {initialValue: customer.customer_city, rules: [{ required: true, message: 'Wpisz poprawne miasto' }],})
                     (<AutoComplete
-                      placeholder="Nazwa kontrahenta"
-                      style={{width:"400px"}}
-                      onChange={(el) => onChange('customer_name', el)}
-                      />)} 
-                </Form.Item>               
-                </Col>
-              </Row>
-              {/* <Form.Item>
-                <Button type="primary" htmlType="submit" disabled={hasErrors(getFieldsError())}>
-                Log in
-                </Button>
-              </Form.Item> */}
-            </Form>
-          </section>
-          <section>
-            <h1>Towary i usługi</h1>
-            <Form>
-              {products_list}
-            </Form>
-            <Icon type="plus-circle" onClick={add}/>
-          </section>
+                    placeholder="Miejscowość"
+                    onChange={(el) => onChange('customer_city', el)}
+                    />)} 
+                </Form.Item>
+              </Col>
+              <Col span={8}>
+                <Form.Item
+                  validateStatus={customer_streetError ? 'error' : ''}
+                  help={customer_streetError || ''}
+                  >
+                  {getFieldDecorator(
+                    'customer_street',
+                    {initialValue: customer.customer_street, rules: [{ required: true, message: 'Wpisz poprawną ulicę' }],})
+                    (<AutoComplete
+                      placeholder="Ulica"
+                      onChange={(el) => onChange('customer_street', el)}
+                    />)} 
+                </Form.Item>                
+              </Col>
+            </Row>
+            <Row>
+              <Col span={24}>
+              <Form.Item
+                validateStatus={customer_nameError ? 'error' : ''}
+                help={customer_nameError || ''}
+                >
+                {getFieldDecorator(
+                  'customer_name',
+                  {initialValue: customer.customer_name, rules: [{ required: true, message: 'Wpisz poprawne miasto' }],})
+                  (<AutoComplete
+                    placeholder="Nazwa kontrahenta"
+                    style={{width:"400px"}}
+                    onChange={(el) => onChange('customer_name', el)}
+                    />)} 
+              </Form.Item>               
+              </Col>
+            </Row>
+            {/* <Form.Item>
+              <Button type="primary" htmlType="submit" disabled={hasErrors(getFieldsError())}>
+              Log in
+              </Button>
+            </Form.Item> */}
+          </Form>
+        </section>
+        <section>
+          <h1>Towary i usługi</h1>
+          <Form>
+            {products_list}
+          </Form>
+          <Icon type="plus-circle" onClick={add}/>
+        </section>
+      </React.Fragment>
+    )
+
+    if(state.loading){
+      content = <Icon type="loading" className={classes.loadingIcon}/>;
+    }
+    
+    return(
+        <div className={classes.main}>
+          {content}
           <Button type="primary" onClick={() => send()}>
             Zapisz i generuj fakturę.
           </Button>

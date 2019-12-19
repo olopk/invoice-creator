@@ -1,39 +1,26 @@
-import React, {useState} from 'react';
-import { Table, Input, Button, Icon } from 'antd';
+import React, {Component} from 'react';
+import { Table, Input, Button, Icon, Divider } from 'antd';
 import Highlighter from 'react-highlight-words';
+import classes from './InvoicesTable.module.css';
 
-const data = [
-  {
-    key: '1',
-    name: 'John Brown',
-    age: 32,
-    address: 'New York No. 1 Lake Park',
-  },
-  {
-    key: '2',
-    name: 'Joe Black',
-    age: 42,
-    address: 'London No. 1 Lake Park',
-  },
-  {
-    key: '3',
-    name: 'Jim Green',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park',
-  },
-  {
-    key: '4',
-    name: 'Jim Red',
-    age: 32,
-    address: 'London No. 2 Lake Park',
-  },
-];
+class InvoicesTable extends Component {
+  state = {
+    searchText: '',
+    searchedColumn: '',
+    loading: false
+  };
 
-const InvoicesTable = (props) => {
+  // fetchData = async () =>{
+  //   this.setState({loading: true});
+  //   const response = await fetch_invoices();
+  //   if(response.status === 200){
+  //     console.log(response);
+  //     this.setState({data: response.data, loading: false})
+  //   }else{
+  //     return
+  //   }
+  // }
 
-   const [SearchText, SetSearchText] = useState('')
-   const [SearchedColumn, SetSearchedColumn] = useState('')
-  
   getColumnSearchProps = dataIndex => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
       <div style={{ padding: 8 }}>
@@ -75,10 +62,10 @@ const InvoicesTable = (props) => {
       }
     },
     render: text =>
-      this.state.SearchedColumn === dataIndex ? (
+      this.state.searchedColumn === dataIndex ? (
         <Highlighter
           highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-          searchWords={[this.state.SearchText]}
+          searchWords={[this.state.searchText]}
           autoEscape
           textToHighlight={text.toString()}
         />
@@ -90,52 +77,75 @@ const InvoicesTable = (props) => {
   handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
     this.setState({
-      SearchText: selectedKeys[0],
-      SearchedColumn: dataIndex,
+      searchText: selectedKeys[0],
+      searchedColumn: dataIndex,
     });
   };
 
   handleReset = clearFilters => {
     clearFilters();
-    this.setState({ SearchText: '' });
+    this.setState({ searchText: '' });
   };
 
-  render() {
+  actions = (rowData) =>{
+    // console.log(rowData)
+    return(
+      <span>
+        <a>EDYTUJ</a>
+        <Divider type="vertical" />
+        <Icon className={classes.tableIcon} type="delete" onClick={()=>this.props.delete_invoice(rowData.key)}/>
+      </span>
+    )
+  }
+
+  render() {   
+    console.log(this.props)
     const columns = [
       {
-        title: 'Name',
-        dataIndex: 'name',
-        key: 'name',
-        width: '30%',
-        ...this.getColumnSearchProps('name'),
-      },
-      {
-        title: 'Age',
-        dataIndex: 'age',
-        key: 'age',
+        title: 'Nr Faktury',
+        dataIndex: 'invoice_nr',
+        key: 'invoice_nr',
         width: '20%',
-        ...this.getColumnSearchProps('age'),
+        ...this.getColumnSearchProps('invoice_nr'),
       },
       {
-        title: 'Address',
-        dataIndex: 'address',
-        key: 'address',
-        ...this.getColumnSearchProps('address'),
+        title: 'Data',
+        dataIndex: 'date',
+        key: 'date',
+        width: '20%',
+        ...this.getColumnSearchProps('date'),
+      },
+      {
+        title: 'Nazwa Kontrahenta',
+        dataIndex: 'customer_name',
+        key: 'customer_name',
+        width: '30%',
+        ...this.getColumnSearchProps('customer_name'),
+      },
+      {
+        title: 'Wartość Faktury',
+        dataIndex: 'product_total_price',
+        key: 'product_total_price',
+        width: '20%',
+        ...this.getColumnSearchProps('product_total_price'),
       },
       {
         title: 'Action',
         key: 'action',
-        render: (text, record) => (
-          <span>
-            <a>Invite {record.name}</a>
-            <Divider type="vertical" />
-            <a>Delete</a>
-          </span>
-        ),
-      },
+        render: (data) => this.actions(data)
+      }
     ];
-    return <Table columns={columns} dataSource={data} />;
+
+    let table = null;
+    
+    if(!this.props.data){
+      table = <Icon type="loading" className={classes.loadingIcon}/>;
+    }else{
+      table = <Table columns={columns} dataSource={this.props.data} />;
+    }
+
+    return <div className={classes.main}>{table}</div>;
   }
 }
 
-ReactDOM.render(<App />, mountNode);
+export default InvoicesTable; 

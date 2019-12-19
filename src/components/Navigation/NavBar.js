@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Menu, Icon } from 'antd';
+import {Link} from 'react-router-dom';
 
 import classes from './NavBar.module.css';
 
@@ -7,7 +8,7 @@ import classes from './NavBar.module.css';
 
 const NavBar = () => {
     
-    const [current, setCurrent] = useState('mail');
+    const [current, setCurrent] = useState('add-invoice');
     
     const handleClick = e => {
         console.log('click', e);
@@ -17,12 +18,16 @@ const NavBar = () => {
     return( 
         <Menu onClick={handleClick} selectedKeys={current} mode="horizontal" className={classes.menu}>
             <Menu.Item key="add-invoice">
-                <Icon type="file-add" />
-                Dodaj Fakturę
+                <Link to="/invoice-form">
+                    <Icon type="file-add" />
+                    Dodaj Fakturę
+                </Link>
             </Menu.Item>
             <Menu.Item key="invoices">
-                <Icon type="folder-open" />
-                Faktury
+                <Link to="/invoices-list">                
+                    <Icon type="folder-open" />
+                    Faktury
+                </Link>
             </Menu.Item>
             <Menu.Item key="idcard">
                 <Icon type="idcard" />
