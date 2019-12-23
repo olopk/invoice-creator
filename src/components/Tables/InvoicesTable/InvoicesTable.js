@@ -80,7 +80,7 @@ class InvoicesTable extends Component {
     // console.log(rowData)
     return(
       <span>
-      <Icon className={classes.tableIcon} type="edit" onClick={()=>this.props.openModal(<p>{rowData.key}</p>)}/>
+        <Icon className={classes.tableIcon} type="edit" onClick={()=>this.props.openModal(<p>{rowData.key}</p>)}/>
         <Icon className={classes.tableIcon} type="delete" onClick={()=>this.props.delete_invoice(rowData.key)}/>
       </span>
     )

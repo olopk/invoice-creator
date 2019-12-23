@@ -18,6 +18,7 @@ const MainLayout = (props) => {
         modalVisible: false,
         modalContent: null
     })
+    //MODAL OPERATIONS
     const modalHandleOpen = (modalContent) => {
         setState({
             ...state,
@@ -37,7 +38,8 @@ const MainLayout = (props) => {
             modalVisible: false
         })
     }
-
+    // ------------------------------------------------------------
+    // INVOICES OPERATIONS 
     const save_invoices = async () => {
         const response = await fetch_invoices();
         setState({invoices: response.data});
@@ -50,7 +52,7 @@ const MainLayout = (props) => {
         const updatedInvoices = state.invoices.filter(el => el.key !== id);
         setState({invoices: updatedInvoices})
     }
-
+    // ------------------------------------------------------------
 
     if(!state.invoices){
         save_invoices()
