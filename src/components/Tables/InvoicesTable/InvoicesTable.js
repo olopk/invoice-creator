@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Table, Input, Button, Icon, Divider } from 'antd';
+import { Table, Input, Button, Icon } from 'antd';
 import Highlighter from 'react-highlight-words';
 import classes from './InvoicesTable.module.css';
 
@@ -7,19 +7,8 @@ class InvoicesTable extends Component {
   state = {
     searchText: '',
     searchedColumn: '',
-    loading: false
+    loading: false,
   };
-
-  // fetchData = async () =>{
-  //   this.setState({loading: true});
-  //   const response = await fetch_invoices();
-  //   if(response.status === 200){
-  //     console.log(response);
-  //     this.setState({data: response.data, loading: false})
-  //   }else{
-  //     return
-  //   }
-  // }
 
   getColumnSearchProps = dataIndex => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
@@ -91,8 +80,7 @@ class InvoicesTable extends Component {
     // console.log(rowData)
     return(
       <span>
-        <a>EDYTUJ</a>
-        <Divider type="vertical" />
+      <Icon className={classes.tableIcon} type="edit" onClick={()=>this.props.openModal(<p>{rowData.key}</p>)}/>
         <Icon className={classes.tableIcon} type="delete" onClick={()=>this.props.delete_invoice(rowData.key)}/>
       </span>
     )
