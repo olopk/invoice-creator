@@ -79,26 +79,3 @@ export const delete_customer = (id) => {
     // even more magic with the DELETE call send to the server
 }
 
-// PRODUCTS
-
-export const delete_product = (id) => {
-    // even more magic with the DELETE call send to the server
-}
-
-export const update_product = (id) => {
-    // even more magic with the DELETE call send to the server
-}
-// SETTINGS
-
-export const update_settings = () => {
-
-}
-// AUTHROIZATION
-
-export const login = (login, password) => {
-
-}
-
-export const logout = (login, password) => {
-    
-}

@@ -4,7 +4,7 @@ import { Layout } from 'antd';
 import NavBar from '../components/Navigation/NavBar';
 import InvoiceForm from './forms/invoiceForm/InvoiceForm';
 import InvoicesTable from './Tables/InvoicesTable/InvoicesTable';
-import {fetch_invoices} from '../api_calls/api';
+import {fetch_invoices} from '../api_calls/invoices';
 
 import { Modal, Button } from 'antd';
 // import classes from './MainLayout.module.css';
