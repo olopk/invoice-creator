@@ -56,7 +56,11 @@ const MainLayout = (props) => {
 
     if(!state.invoices){
         save_invoices()
-    }  
+    }
+    
+    // All tables will get some equal props, so there is a new draft.
+    const Table = (props) => <InvoicesTable openModal={modalHandleOpen} {...props}/>
+
     return(
         <BrowserRouter>
             <Layout>
@@ -82,10 +86,15 @@ const MainLayout = (props) => {
                                 <Route path="/invoice-form" component={InvoiceForm} />
                                 <Route path="/invoices-list"
                                     render={()=> (
-                                        <InvoicesTable 
+                                        <Table 
                                             data={state.invoices}
-                                            delete_invoice={delete_invoice}
-                                            openModal={modalHandleOpen}
+                                            columns={[
+                                                {title: 'Nr Faktury', dataIndex: 'invoice_nr'},
+                                                {title: 'Data', dataIndex: 'date'},
+                                                {title: 'Nazwa Kontrahenta',dataIndex: 'customer_name',},
+                                                {title: 'Wartość Faktury',dataIndex: 'total_price',}
+                                            ]}
+                                            delete={delete_invoice}
                                         />
                                     )}/>
                                 <Route component={InvoiceForm}/>

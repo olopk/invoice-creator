@@ -1,44 +1,60 @@
+import axios from 'axios';
 //INVOICES OPERATIONS
 
 export const fetch_invoices = () => {
+
+    return axios.get('127.0.0.1:8080/invoices')
+            .then(response => {
+               let data = response.data.map((invoice, index) => {
+                    const date = invoice.date;
+                    const newDate = date.
+                
+                    return {
+                       ...invoice,
+                       date: 
+                       key: index
+                   }
+               })  
+            })
+
         // some magic with the GET sending to the server.
-        return new Promise(resolve => {
-            setTimeout(()=>{
-                resolve({
-                    status: 200,
-                    data: [
-                        {
-                          key: '1',
-                          invoice_nr: '1/2019',
-                          date: '12/12/2019',
-                          customer_name: 'Andrzej Kowalski',
-                          product_total_price: '129'
-                        },
-                        {
-                          key: '2',
-                          invoice_nr: '2/2019',
-                          date: '12/12/2019',
-                          customer_name: 'Andrzej Kowalski',
-                          product_total_price: '489'
-                        },
-                        {
-                          key: '3',
-                          invoice_nr: '3/2019',
-                          date: '12/12/2019',
-                          customer_name: 'Andrzej Kowalski',
-                          product_total_price: '329'
-                        },
-                        {
-                          key: '4',
-                          invoice_nr: '4/2019',
-                          date: '12/12/2019',
-                          customer_name: 'Andrzej Kowalski',
-                          product_total_price: '99'
-                        },
-                      ]
-                })
-            },2000)
-        })
+        // return new Promise(resolve => {
+        //     setTimeout(()=>{
+        //         resolve({
+        //             status: 200,
+        //             data: [
+        //                 {
+        //                   key: '1',
+        //                   invoice_nr: '1/2019',
+        //                   date: '12/12/2019',
+        //                   customer_name: 'Andrzej Kowalski',
+        //                   total_price: '129'
+        //                 },
+        //                 {
+        //                   key: '2',
+        //                   invoice_nr: '2/2019',
+        //                   date: '12/12/2019',
+        //                   customer_name: 'Andrzej Kowalski',
+        //                   total_price: '489'
+        //                 },
+        //                 {
+        //                   key: '3',
+        //                   invoice_nr: '3/2019',
+        //                   date: '12/12/2019',
+        //                   customer_name: 'Andrzej Kowalski',
+        //                   total_price: '329'
+        //                 },
+        //                 {
+        //                   key: '4',
+        //                   invoice_nr: '4/2019',
+        //                   date: '12/12/2019',
+        //                   customer_name: 'Andrzej Kowalski',
+        //                   total_price: '99'
+        //                 },
+        //               ]
+        //         })
+        //     },2000)
+        // })
 }
 export const save_invoice = (customer, products, editing) => {
     // eslint-disable-next-line

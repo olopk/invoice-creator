@@ -42,7 +42,7 @@ const InvoiceForm = (props) => {
         product_unit: 'szt.',
         product_quantity: '',
         product_unit_price: '',
-        product_total_price: ''
+        total_price: ''
       }
     ])
     // props.form.validateFields();
@@ -83,7 +83,7 @@ const InvoiceForm = (props) => {
             product[name] = value;
 
             if((name === 'product_quantity' || name === 'product_unit_price')&&(!isNaN(product.product_quantity) && !isNaN(product.product_unit_price))){
-                product.product_total_price = product.product_quantity * product.product_unit_price;
+                product.total_price = product.product_quantity * product.product_unit_price;
             }
             allProducts[index]= product;
             
@@ -105,7 +105,7 @@ const InvoiceForm = (props) => {
 
     const add = () =>{
       const allProducts = [...products];
-      allProducts.push({product_name: '',product_unit: 'szt.',product_quantity: '',product_unit_price: '',product_total_price: ''})
+      allProducts.push({product_name: '',product_unit: 'szt.',product_quantity: '',product_unit_price: '',total_price: ''})
       setProducts([...allProducts])
     }
     const del = (id) => {
@@ -205,8 +205,8 @@ const InvoiceForm = (props) => {
                   disabled
                   style={{ width: '100%' }}
                   placeholder="Cena ostateczna"
-                  value={products[index].product_total_price}
-                  // onChange={(el) => onChange('product_total_price', el, index)}
+                  value={products[index].total_price}
+                  // onChange={(el) => onChange('total_price', el, index)}
                   /> 
               </Form.Item>
             </Col>

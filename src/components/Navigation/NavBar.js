@@ -30,13 +30,21 @@ const NavBar = () => {
                 </Link>
             </Menu.Item>
             <Menu.Item key="idcard">
-                <Icon type="idcard" />
-                Kontrahenci
+                <Link to="/customers-list">                
+                    <Icon type="idcard" />
+                    Kontrahenci
+                </Link>
             </Menu.Item>
             <Menu.Item key="read">
-                <Icon type="read" />
-                Produkty i Usługi
+                <Link to="/products-list">                
+                    <Icon type="read" />
+                    Produkty i Usługi
+                </Link>
             </Menu.Item>
+            {/* <Menu.Item key="shop">
+                <Icon type="shop" />
+                Magazyn produktów
+            </Menu.Item> */}
             <Menu.Item key="setting">
                 <Icon type="setting" />
                 Ustawienia

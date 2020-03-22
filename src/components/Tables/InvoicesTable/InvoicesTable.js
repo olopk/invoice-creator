@@ -81,54 +81,31 @@ class InvoicesTable extends Component {
     return(
       <span>
         <Icon className={classes.tableIcon} type="edit" onClick={()=>this.props.openModal(<p>{rowData.key}</p>)}/>
-        <Icon className={classes.tableIcon} type="delete" onClick={()=>this.props.delete_invoice(rowData.key)}/>
+        <Icon className={classes.tableIcon} type="delete" onClick={()=>this.props.delete(rowData.key)}/>
       </span>
     )
   }
-
   render() {   
-    console.log(this.props)
-    const columns = [
-      {
-        title: 'Nr Faktury',
-        dataIndex: 'invoice_nr',
-        key: 'invoice_nr',
-        width: '20%',
-        ...this.getColumnSearchProps('invoice_nr'),
-      },
-      {
-        title: 'Data',
-        dataIndex: 'date',
-        key: 'date',
-        width: '20%',
-        ...this.getColumnSearchProps('date'),
-      },
-      {
-        title: 'Nazwa Kontrahenta',
-        dataIndex: 'customer_name',
-        key: 'customer_name',
-        width: '30%',
-        ...this.getColumnSearchProps('customer_name'),
-      },
-      {
-        title: 'Wartość Faktury',
-        dataIndex: 'product_total_price',
-        key: 'product_total_price',
-        width: '20%',
-        ...this.getColumnSearchProps('product_total_price'),
-      },
-      {
-        title: 'Action',
-        key: 'action',
-        render: (data) => this.actions(data)
-      }
-    ];
 
-    let table = null;
+    let table, columns;
     
     if(!this.props.data){
       table = <Icon type="loading" className={classes.loadingIcon}/>;
     }else{
+        columns = this.props.columns.map(el => {
+        return {
+              title: el.title,
+              dataIndex: el.dataIndex,
+              key: el.dataIndex,
+              width: '20%',
+              ...this.getColumnSearchProps(el.dataIndex),
+            }
+      })
+      columns.push({
+            title: 'Action',
+            key: 'action',
+            render: (data) => this.actions(data)
+          })
       table = <Table columns={columns} dataSource={this.props.data} />;
     }
 
