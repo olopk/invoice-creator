@@ -12,3 +12,9 @@ section{
     font-size: 40px;
     padding: 30px;
 }
+.minusIcon{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8px;
+}
