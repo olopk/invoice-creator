@@ -1,9 +1,9 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { BrowserRouter, Route, Switch} from 'react-router-dom';
 import { Layout } from 'antd';
 import NavBar from '../components/Navigation/NavBar';
 import InvoiceForm from './forms/invoiceForm/InvoiceForm';
-import InvoicesTable from './Tables/InvoicesTable/InvoicesTable';
+import InvoicesTable from './Tables/mainTable/mainTable';
 import {fetch_invoices} from '../api_calls/invoices';
 
 import { Modal, Button } from 'antd';
@@ -41,8 +41,8 @@ const MainLayout = (props) => {
     // ------------------------------------------------------------
     // INVOICES OPERATIONS 
     const save_invoices = async () => {
-        const response = await fetch_invoices();
-        setState({invoices: response.data});
+        const data = await fetch_invoices();
+        setState({invoices: data});
     }
     
     const update_invoice = () => {
@@ -54,9 +54,9 @@ const MainLayout = (props) => {
     }
     // ------------------------------------------------------------
 
-    if(!state.invoices){
+    useEffect(() => {
         save_invoices()
-    }
+    }, [])
     
     // All tables will get some equal props, so there is a new draft.
     const Table = (props) => <InvoicesTable openModal={modalHandleOpen} {...props}/>
@@ -89,10 +89,10 @@ const MainLayout = (props) => {
                                         <Table 
                                             data={state.invoices}
                                             columns={[
-                                                {title: 'Nr Faktury', dataIndex: 'invoice_nr'},
-                                                {title: 'Data', dataIndex: 'date'},
-                                                {title: 'Nazwa Kontrahenta',dataIndex: 'customer_name',},
-                                                {title: 'Wartość Faktury',dataIndex: 'total_price',}
+                                                {title: 'Nr Faktury', dataIndex: 'invoice_nr', width: '20%'},
+                                                {title: 'Data', dataIndex: 'date', width: '15%'},
+                                                {title: 'Nazwa Kontrahenta',dataIndex: 'customer.name', width: '35%'},
+                                                {title: 'Wartość Faktury',dataIndex: 'total_price', width: '20%'}
                                             ]}
                                             delete={delete_invoice}
                                         />
