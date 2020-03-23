@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import { Table, Input, Button, Icon } from 'antd';
 import Highlighter from 'react-highlight-words';
-import classes from './InvoicesTable.module.css';
+import classes from './mainTable.module.css';
 
 class InvoicesTable extends Component {
   state = {
@@ -97,7 +97,7 @@ class InvoicesTable extends Component {
               title: el.title,
               dataIndex: el.dataIndex,
               key: el.dataIndex,
-              width: '20%',
+              width: el.width,
               ...this.getColumnSearchProps(el.dataIndex),
             }
       })
