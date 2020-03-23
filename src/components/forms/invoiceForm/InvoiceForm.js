@@ -24,27 +24,46 @@ const InvoiceForm = (props) => {
       loading: false
     });
 
-    const [customer, setCustomer] = useState(
+    // LOCAL STATE AND FUNCTIONS FOR INVOICE
+    const [invoice, setInvoice] = useState(
       {
         invoice_nr: '12/2019',
-        city: 'Człuchów',
         date: today(),
-        customer_nip: '333',
-        customer_city: 'xxx',
-        customer_street: 'yyy',
-        customer_name: 'ppp'
+        total_price: ''
       }
     )
 
+    // LOCAL STATE AND FUNCTIONS FOR CUSTOMER
+    const [customer, setCustomer] = useState(
+      {
+        nip: '333',
+        city: 'xxx',
+        street: 'yyy',
+        name: 'ppp'
+      }
+    )
+    // LOCAL STATE AND FUNCTIONS FOR PRODUCTS
     const [products, setProducts] = useState([
       {
-        product_name: 'oprawki',
-        product_unit: 'szt.',
-        product_quantity: '',
-        product_unit_price: '',
+        name: 'oprawki',
+        unit: 'szt.',
+        quantity: '',
+        unit_price: '',
         total_price: ''
       }
     ])
+
+    const addProduct = () =>{
+      const allProducts = [...products];
+      allProducts.push({name: '',unit: 'szt.',quantity: '',unit_price: '',total_price: ''})
+      setProducts([...allProducts])
+    }
+    const delProduct = (id) => {
+      const allProducts = [...products];
+      allProducts.splice(id,1);
+      setProducts([...allProducts])
+    }
+
     // props.form.validateFields();
 
     // const handleSubmit = e => {
@@ -66,12 +85,15 @@ const InvoiceForm = (props) => {
 
     const send = async () => {
       setState({...state, loading: true});
-      const response = await save_invoice(customer, products);
+      const response = await save_invoice(invoice, customer, products);
       setState({...state, loading: false});
       openNotification(response.message);
     }
+    // TODO
+    // I really dont like this onchange function, need to think about it.
 
     const onChange = (name, value, index) => {
+        // if there is an index, we know it is about Products change.
         if(index > -1){
           // props.form.setFieldsValue({
           //   [name]: value,
@@ -80,20 +102,40 @@ const InvoiceForm = (props) => {
             // {   
             const allProducts = [...products];
             const product = {...allProducts[index]};
-            product[name] = value;
+            product[name] = value;          
 
-            if((name === 'product_quantity' || name === 'product_unit_price')&&(!isNaN(product.product_quantity) && !isNaN(product.product_unit_price))){
-                product.total_price = product.product_quantity * product.product_unit_price;
-            }
-            allProducts[index]= product;
-            
-            setProducts([
-            ...allProducts
-            ])
+            if((name === 'quantity' || name === 'unit_price')&&(!isNaN(product.quantity) && !isNaN(product.unit_price))){
+                product.total_price = product.quantity * product.unit_price;
+                
+                
+              }
+              allProducts[index]= product;
+              
+              setProducts([
+                ...allProducts
+              ])
+              
+            //We need to calculate total sum when any quantity or unit_price is changing.
+            let sum = 0;
+            allProducts.forEach(el => {
+              sum += el.total_price
+            })
+            setInvoice({
+              ...invoice,
+              total_price: sum
+            })
           // }
           // );
 
-        }else{
+        }else if(name === 'invoice_nr' || name === 'total_price' || name === 'date'){
+          props.form.setFieldsValue({
+            [name]: value,
+          }, setInvoice({
+            ...invoice,
+            [name]: value
+          }));         
+        }
+        else{
           props.form.setFieldsValue({
             [name]: value,
           }, setCustomer({
@@ -103,32 +145,25 @@ const InvoiceForm = (props) => {
         }
     }
 
-    const add = () =>{
-      const allProducts = [...products];
-      allProducts.push({product_name: '',product_unit: 'szt.',product_quantity: '',product_unit_price: '',total_price: ''})
-      setProducts([...allProducts])
-    }
-    const del = (id) => {
-      const allProducts = [...products];
-      allProducts.splice(id,1);
-      setProducts([...allProducts])
-    }
 
     const invoicenrError = isFieldTouched('invoice_nr') && getFieldError('invoice_nr');
-    const cityError = isFieldTouched('city') && getFieldError('city');
     const dateError = isFieldTouched('date') && getFieldError('date');
-    const customer_nipError = isFieldTouched('customer_nip') && getFieldError('customer_nip');
-    const customer_cityError = isFieldTouched('customer_city') && getFieldError('customer_city');
-    const customer_streetError = isFieldTouched('customer_street') && getFieldError('customer_street');
-    const customer_nameError = isFieldTouched('customer_name') && getFieldError('customer_name');
+    const nipError = isFieldTouched('nip') && getFieldError('nip');
+    const cityError = isFieldTouched('city') && getFieldError('city');
+    const streetError = isFieldTouched('street') && getFieldError('street');
+    const nameError = isFieldTouched('name') && getFieldError('name');
     
 
     // let products_list = <Icon type="loading" />;
 
     let products_list = products.map((position, index) => {        
-        // const product_nameError = isFieldTouched('product_name') && getFieldError('product_name'); 
+        // const nameError = isFieldTouched('name') && getFieldError('name'); 
         
-        let rem = <Icon type="minus-circle" style={{ fontSize: "18px" }} onClick={()=>del(index)}/>;
+        let rem = (
+          <div className={classes.minusIcon}>
+            <Icon type="minus-circle" style={{ fontSize: "24px" }} onClick={()=>delProduct(index)}/>
+          </div>
+        )
 
         if(index === 0){
           rem = null;
@@ -136,26 +171,26 @@ const InvoiceForm = (props) => {
 
         return (
           <Row key={index} 
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center'
-            }}
+            // style={{
+            //   display: 'flex',
+            //   justifyContent: 'flex-end',
+            //   alignItems: 'center'
+            // }}
           >
-            <Col span={9}>
+            <Col span={11} offset={1}>
               <Form.Item
                 style={{ marginBottom: "0px" }}
-                // validateStatus={product_nameError ? 'error' : ''}
-                // help={product_nameError || ''}
+                // validateStatus={nameError ? 'error' : ''}
+                // help={nameError || ''}
                 >
                 {/* {getFieldDecorator(
                   nam2,
-                  {initialValue: products[index].product_name.value, rules: [{ required: true, message: 'Wpisz poprawna nazwe' }],}) */}
+                  {initialValue: products[index].name.value, rules: [{ required: true, message: 'Wpisz poprawna nazwe' }],}) */}
                   {/* ( */}
                     <AutoComplete
-                    value={products[index].product_name}
+                    value={products[index].name}
                     placeholder="Nazwa produktu/usługi"
-                    onChange={(el) => onChange('product_name', el, index)}
+                    onChange={(el) => onChange('name', el, index)}
                     />
                     {/* )}  */}
               </Form.Item>
@@ -167,8 +202,8 @@ const InvoiceForm = (props) => {
 
                   <AutoComplete
                     placeholder="Jednostka"
-                    value={products[index].product_unit}
-                    onChange={(el) => onChange('product_unit', el, index)}
+                    value={products[index].unit}
+                    onChange={(el) => onChange('unit', el, index)}
                     /> 
               </Form.Item>
             </Col>
@@ -180,8 +215,8 @@ const InvoiceForm = (props) => {
                   style={{ width: '100%' }}
                   placeholder="Ilość"
                   min={1}
-                  value={products[index].product_quantity}
-                  onChange={(el) => onChange('product_quantity', el, index)}
+                  value={products[index].quantity}
+                  onChange={(el) => onChange('quantity', el, index)}
                   /> 
               </Form.Item>
             </Col>
@@ -192,8 +227,8 @@ const InvoiceForm = (props) => {
                 <InputNumber
                   style={{ width: '100%' }}
                   placeholder="Cena jednostkowa"
-                  value={products[index].product_unit_price}
-                  onChange={(el) => onChange('product_unit_price', el, index)}
+                  value={products[index].unit_price}
+                  onChange={(el) => onChange('unit_price', el, index)}
                   /> 
               </Form.Item>
             </Col>
@@ -210,7 +245,7 @@ const InvoiceForm = (props) => {
                   /> 
               </Form.Item>
             </Col>
-            <Col span={2}>
+            <Col span={1}>
               {rem}
             </Col>
         </Row>
@@ -220,7 +255,7 @@ const InvoiceForm = (props) => {
     let content = (
       <React.Fragment>
         <section>
-          <h1>Dane</h1>
+          <h1>Dane faktury</h1>
           <Form layout="inline" onSubmit={()=>null}>
             <Row>
               <Col align="center" span={8}>
@@ -240,7 +275,7 @@ const InvoiceForm = (props) => {
                     />,)}
                 </Form.Item>
               </Col>
-              <Col span={8}>
+              {/* <Col span={8}>
                 <Form.Item
                   validateStatus={cityError ? 'error' : ''}
                   help={cityError || ''}
@@ -256,7 +291,7 @@ const InvoiceForm = (props) => {
                       onChange={(el) => onChange('city', el.target.value)}
                     />,)} 
                 </Form.Item>
-              </Col>
+              </Col> */}
               <Col span={8}>
               <Form.Item
                   validateStatus={dateError ? 'error' : ''}
@@ -266,7 +301,7 @@ const InvoiceForm = (props) => {
                   >
                   {getFieldDecorator(
                     'date',
-                    {initialValue: moment(customer.date, 'DD/MM/YYYY'), rules: [{ required: true, message: 'Wpisz poprawne miasto' }],})
+                    {initialValue: moment(invoice.date, 'DD/MM/YYYY'), rules: [{ required: true, message: 'Wpisz poprawne miasto' }],})
                     (<DatePicker
                       onChange={(el) => onChange('date', el._i)}
                       format={'DD/MM/YYYY'}
@@ -274,54 +309,59 @@ const InvoiceForm = (props) => {
                 </Form.Item>
               </Col>
             </Row>
+          </Form>
+        </section>
+        <section>
+          <h1>Dane kontrahenta</h1>
+          <Form>
             <Row>
             <Col span={8}>
               <Form.Item
-                validateStatus={customer_nipError ? 'error' : ''}
-                help={customer_nipError || ''}
+                validateStatus={nipError ? 'error' : ''}
+                help={nipError || ''}
                 style={{ width: '80%' }}
                 wrapperCol={{ sm: 24 }}
                 >
                 {getFieldDecorator(
-                  'customer_nip',
-                  {initialValue: customer.customer_nip, rules: [{ required: true, message: 'Wpisz poprawny NIP' }],})
+                  'nip',
+                  {initialValue: customer.nip, rules: [{ required: true, message: 'Wpisz poprawny NIP' }],})
                   (<InputNumber
                     prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
                     placeholder="NIP"
                     style={{width: "100%"}}
-                    onChange={(el) => onChange('customer_nip', el)}
+                    onChange={(el) => onChange('nip', el)}
                   />,)} 
               </Form.Item>
               </Col>
               <Col span={8}>
                 <Form.Item
-                  validateStatus={customer_cityError ? 'error' : ''}
-                  help={customer_cityError || ''}
+                  validateStatus={cityError ? 'error' : ''}
+                  help={cityError || ''}
                   style={{ width: '80%' }}
                   wrapperCol={{ sm: 24 }}
                   >
                   {getFieldDecorator(
-                    'customer_city',
-                    {initialValue: customer.customer_city, rules: [{ required: true, message: 'Wpisz poprawne miasto' }],})
+                    'city',
+                    {initialValue: customer.city, rules: [{ required: true, message: 'Wpisz poprawne miasto' }],})
                     (<AutoComplete
                     placeholder="Miejscowość"
-                    onChange={(el) => onChange('customer_city', el)}
+                    onChange={(el) => onChange('city', el)}
                     />)} 
                 </Form.Item>
               </Col>
               <Col span={8}>
                 <Form.Item
-                  validateStatus={customer_streetError ? 'error' : ''}
-                  help={customer_streetError || ''}
+                  validateStatus={streetError ? 'error' : ''}
+                  help={streetError || ''}
                   style={{ width: '80%' }}
                   wrapperCol={{ sm: 24 }}
                   >
                   {getFieldDecorator(
-                    'customer_street',
-                    {initialValue: customer.customer_street, rules: [{ required: true, message: 'Wpisz poprawną ulicę' }],})
+                    'street',
+                    {initialValue: customer.street, rules: [{ required: true, message: 'Wpisz poprawną ulicę' }],})
                     (<AutoComplete
                       placeholder="Ulica"
-                      onChange={(el) => onChange('customer_street', el)}
+                      onChange={(el) => onChange('street', el)}
                     />)} 
                 </Form.Item>                
               </Col>
@@ -329,18 +369,18 @@ const InvoiceForm = (props) => {
             <Row>
               <Col span={16} align="center">
               <Form.Item
-                validateStatus={customer_nameError ? 'error' : ''}
-                help={customer_nameError || ''}
+                validateStatus={nameError ? 'error' : ''}
+                help={nameError || ''}
                 style={{ width: '90%' }}
                 wrapperCol={{ sm: 24 }}
                 >
                 {getFieldDecorator(
-                  'customer_name',
-                  {initialValue: customer.customer_name, rules: [{ required: true, message: 'Wpisz poprawne miasto' }],})
+                  'name',
+                  {initialValue: customer.name, rules: [{ required: true, message: 'Wpisz poprawne miasto' }],})
                   (<AutoComplete
                     placeholder="Nazwa kontrahenta"
                     style={{width: '100%'}}
-                    onChange={(el) => onChange('customer_name', el)}
+                    onChange={(el) => onChange('name', el)}
                     />)} 
               </Form.Item>               
               </Col>
@@ -356,9 +396,40 @@ const InvoiceForm = (props) => {
           <h1>Towary i usługi</h1>
           <Form>
             {products_list}
+            <Row key={'asfasfa'} 
+              // style={{display: 'flex',justifyContent: 'flex-end',alignItems: 'center'}}
+            >
+              <div style={{
+                display: 'flex',
+                // justifyContent: 'center',
+                alignItems: 'center'
+              }}>
+                <Col span={2}  offset = {19}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center'
+                }}>
+                  <p style={{height: '100%', margin: 0}}><b>Suma</b></p>
+                </Col>
+                <Col span={2}>
+                  <Form.Item
+                    style={{ marginBottom: "0px" }}
+                  >
+                    <InputNumber
+                      style={{ width: '100%', textAlign: 'center' }}
+                      // placeholder="Suma końcowa"
+                      // min={0}
+                      disabled
+                      value={invoice.total_price}
+                    /> 
+                  </Form.Item>
+                </Col>
+              </div>
+            </Row>         
           </Form>
           <div style={{display: 'flex', justifyContent: 'center'}}>
-            <Icon type="plus-circle" style={{ fontSize: "22px", marginTop: '15px' }} onClick={add}/>
+            <Icon type="plus-circle" style={{ fontSize: "22px", marginTop: '15px' }} onClick={addProduct}/>
           </div>
         </section>
       </React.Fragment>

@@ -23,16 +23,23 @@ export const fetch_invoices = () => {
 // export const fetch_invoice = (id) => {}
 
 // SAVE INVOICE (NEW & EXISTING)
-export const save_invoice = (customer, products, editing) => {
+export const save_invoice = (invoice, customer, products, editing) => {
     // eslint-disable-next-line
     const sentData = {
+        invoice_nr: invoice.invoice_nr,
+        date: invoice.date,
+        total_price: invoice.total_price,
         customer: {
             ...customer
         },
-        products: {
+        order: {
             ...products
         }
     }
+
+    console.log(sentData)
+
+
     // we change a bit the method when editing the record in the DB. so we check if we editing.
     if(editing){
         //do smth
