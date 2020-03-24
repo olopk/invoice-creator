@@ -23,7 +23,7 @@ export const fetch_invoices = () => {
 // export const fetch_invoice = (id) => {}
 
 // SAVE INVOICE (NEW & EXISTING)
-export const save_invoice = (invoice, customer, products, editing) => {
+export const save_invoice = async (invoice, customer, products, editing) => {
     // eslint-disable-next-line
     const sentData = {
         invoice_nr: invoice.invoice_nr,
@@ -32,30 +32,37 @@ export const save_invoice = (invoice, customer, products, editing) => {
         customer: {
             ...customer
         },
-        order: {
-            ...products
-        }
+        order: [...products]
     }
 
     console.log(sentData)
 
+    const result = await axios.post('http://127.0.0.1:8080/invoice', sentData)
+                        .then(res => {
+                            return {status: 'success', message: res.data.message}
+                        }).catch(err => {
+                            return {status: 'error', message: err.response.data.message}
+                        })
+
+    return result
+
 
     // we change a bit the method when editing the record in the DB. so we check if we editing.
-    if(editing){
+    // if(editing){
         //do smth
-    }else{
+    // }else{
         //do smth
-    }
+    // }
     
     // some magic with the POST sending to the server.
-    return new Promise(resolve =>{
-        setTimeout(()=>{
-            resolve({
-                message: 'Invoice saved successfully',
-                status: 201
-            })
-        },2000)
-    })
+    // return new Promise(resolve =>{
+    //     setTimeout(()=>{
+    //         resolve({
+    //             message: 'Invoice saved successfully',
+    //             status: 201
+    //         })
+    //     },2000)
+    // })
 }
 
 // DELETE INVOICE

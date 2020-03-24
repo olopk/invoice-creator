@@ -5,6 +5,7 @@ import today from '../../../functions/today';
 import {save_invoice} from '../../../api_calls/invoices'
 
 import { Form, Icon, Input, AutoComplete, InputNumber, Button, DatePicker, Row, Col as Column, notification } from 'antd';
+import { SmileOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 
 // eslint-disable-next-line
 function hasErrors(fieldsError) {
@@ -75,25 +76,34 @@ const InvoiceForm = (props) => {
     //     });
     //   };
 
-    const openNotification = (message) => {
+    const openNotification = (status, message) => {
+      let icon = <SmileOutlined style={{ color: '#108ee9' }} />;
+      if(status === 'error'){
+        icon = <ExclamationCircleOutlined style={{ color: '#108ee9' }} />
+      }
+      // status === 'error' ? icon = <ExclamationCircleOutlined style={{ color: '#108ee9' }} /> : null;
+
       notification.info({
         message: message,
         placement: 'bottomLeft',
-        icon: <Icon type="smile" style={{ color: '#108ee9' }} />
+        icon: icon
       });
     };
 
     const send = async () => {
       setState({...state, loading: true});
       const response = await save_invoice(invoice, customer, products);
+      console.log(response)
+      openNotification(response.status, response.message);
       setState({...state, loading: false});
-      openNotification(response.message);
     }
     // TODO
     // I really dont like this onchange function, need to think about it.
 
     const onChange = (name, value, index) => {
         // if there is an index, we know it is about Products change.
+        console.log('its me')
+        console.log(value)
         if(index > -1){
           // props.form.setFieldsValue({
           //   [name]: value,
@@ -267,7 +277,7 @@ const InvoiceForm = (props) => {
                 >
                   {getFieldDecorator(
                     'invoice_nr'
-                    ,{initialValue: customer.invoice_nr ,rules: [{ required: true, message: 'Pole nie zostało wypełnione poprawnine' }],})
+                    ,{initialValue: invoice.invoice_nr ,rules: [{ required: true, message: 'Pole nie zostało wypełnione poprawnine' }],})
                     (<Input
                         placeholder="Numer faktury"  
                         onChange={(el) => onChange('invoice_nr', el.target.value)}
@@ -301,10 +311,10 @@ const InvoiceForm = (props) => {
                   >
                   {getFieldDecorator(
                     'date',
-                    {initialValue: moment(invoice.date, 'DD/MM/YYYY'), rules: [{ required: true, message: 'Wpisz poprawne miasto' }],})
+                    {initialValue: moment(invoice.date, 'YYYY.MM.DD'), rules: [{ required: true, message: 'Wpisz poprawne miasto' }],})
                     (<DatePicker
-                      onChange={(el) => onChange('date', el._i)}
-                      format={'DD/MM/YYYY'}
+                      onChange={(moment, el) => onChange('date', el)}
+                      format={'YYYY.MM.DD'}
                       style={{ width: '100%' }} />)} 
                 </Form.Item>
               </Col>
