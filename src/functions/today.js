@@ -4,7 +4,7 @@ const today = () =>{
     var MM = ("0" + (dt.getMonth() + 1)).slice(-2);
     const YYYY = dt.getFullYear();
 
-    const date_string = DD + "/" + MM + "/" + YYYY;
+    const date_string = YYYY + "." + MM + "." + DD;
     return date_string;  
     }
 export default today;
