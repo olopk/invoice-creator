@@ -5,8 +5,9 @@ import NavBar from '../components/Navigation/NavBar';
 import InvoiceForm from './forms/invoiceForm/InvoiceForm';
 import InvoicesTable from './Tables/mainTable/mainTable';
 import {fetch_invoices} from '../api_calls/invoices';
-
 import { Modal, Button } from 'antd';
+
+import ShowNotification from '../components/NotificationSnackbar/Notification';
 // import classes from './MainLayout.module.css';
 
 const { Header, Content, Footer} = Layout;
@@ -40,9 +41,13 @@ const MainLayout = (props) => {
     }
     // ------------------------------------------------------------
     // INVOICES OPERATIONS 
-    const save_invoices = async () => {
+    const get_invoices = async () => {
         const data = await fetch_invoices();
-        setState({invoices: data});
+        if(data.error){
+            ShowNotification('error', data.error.message)
+        }else{
+            setState({invoices: data.data});
+        }
     }
     
     const update_invoice = () => {
@@ -55,11 +60,19 @@ const MainLayout = (props) => {
     // ------------------------------------------------------------
 
     useEffect(() => {
-        save_invoices()
+        // get_invoices()
     }, [])
     
     // All tables will get some equal props, so there is a new draft.
-    const Table = (props) => <InvoicesTable openModal={modalHandleOpen} {...props}/>
+    const Table = (props) => {
+        return(
+            <InvoicesTable
+             openModal={modalHandleOpen}
+             showNotification={ShowNotification}
+             onCancel={modalHandleCancel}
+             {...props}/>
+        )
+    }
 
     return(
         <BrowserRouter>
@@ -83,7 +96,11 @@ const MainLayout = (props) => {
                                 {state.modalContent}
                             </Modal>
                             <Switch>
-                                <Route path="/invoice-form" component={InvoiceForm} />
+                                <Route path="/invoice-form" render={()=>(
+                                    <InvoiceForm
+                                        showNotification={ShowNotification}
+                                    />
+                                )} />
                                 <Route path="/invoices-list"
                                     render={()=> (
                                         <Table 

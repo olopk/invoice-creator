@@ -4,8 +4,7 @@ import moment from 'moment';
 import today from '../../../functions/today';
 import {save_invoice} from '../../../api_calls/invoices'
 
-import { Form, Icon, Input, AutoComplete, InputNumber, Button, DatePicker, Row, Col as Column, notification } from 'antd';
-import { SmileOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { Form, Icon, Input, AutoComplete, InputNumber, Button, DatePicker, Row, Col as Column } from 'antd';
 
 // eslint-disable-next-line
 function hasErrors(fieldsError) {
@@ -76,25 +75,25 @@ const InvoiceForm = (props) => {
     //     });
     //   };
 
-    const openNotification = (status, message) => {
-      let icon = <SmileOutlined style={{ color: '#108ee9' }} />;
-      if(status === 'error'){
-        icon = <ExclamationCircleOutlined style={{ color: '#108ee9' }} />
-      }
-      // status === 'error' ? icon = <ExclamationCircleOutlined style={{ color: '#108ee9' }} /> : null;
+    // const openNotification = (status, message) => {
+    //   let icon = <SmileOutlined style={{ color: '#108ee9' }} />;
+    //   if(status === 'error'){
+    //     icon = <ExclamationCircleOutlined style={{ color: '#108ee9' }} />
+    //   }
+    //   // status === 'error' ? icon = <ExclamationCircleOutlined style={{ color: '#108ee9' }} /> : null;
 
-      notification.info({
-        message: message,
-        placement: 'bottomLeft',
-        icon: icon
-      });
-    };
+    //   notification.info({
+    //     message: message,
+    //     placement: 'bottomLeft',
+    //     icon: icon
+    //   });
+    // };
 
     const send = async () => {
       setState({...state, loading: true});
       const response = await save_invoice(invoice, customer, products);
       console.log(response)
-      openNotification(response.status, response.message);
+      props.showNotification(response.status, response.message);
       setState({...state, loading: false});
     }
     // TODO
@@ -311,10 +310,10 @@ const InvoiceForm = (props) => {
                   >
                   {getFieldDecorator(
                     'date',
-                    {initialValue: moment(invoice.date, 'YYYY.MM.DD'), rules: [{ required: true, message: 'Wpisz poprawne miasto' }],})
+                    {initialValue: moment(invoice.date, 'YYYY-MM-DD'), rules: [{ required: true, message: 'Wpisz poprawne miasto' }],})
                     (<DatePicker
                       onChange={(moment, el) => onChange('date', el)}
-                      format={'YYYY.MM.DD'}
+                      format={'YYYY-MM-DD'}
                       style={{ width: '100%' }} />)} 
                 </Form.Item>
               </Col>

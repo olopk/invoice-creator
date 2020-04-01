@@ -1,22 +1,24 @@
-import axios from 'axios';
-//INVOICES OPERATIONS
+import axios from '../axiosInstance';
+// import axios from 'axios';
 
+//INVOICES OPERATIONS
 // GET ALL INVOICES
 export const fetch_invoices = () => {
-    return axios.get('http://127.0.0.1:8080/invoices')
+    const graphqlQuery = {
+        query: `{ getInvoices{ _id invoice_nr date total_price customer{ name } } }`
+    };
+    return axios.post('/graphql', JSON.stringify(graphqlQuery))
             .then(response => {
-               let data = response.data.map((invoice, index) => {
-                    const date = invoice.date;
-                    const newDate = date.slice(0, date.length - 14);
-                
-                    return {
-                       ...invoice,
-                       date: newDate,
-                       key: index
-                   }
-               })
-               return data  
-            })
+                   let data = response.data.data.getInvoices.map((invoice, index) => {
+                    const date = invoice.date.slice(0, 10)
+                        return {
+                        ...invoice,
+                        date: date,
+                        key: index
+                        }
+                    })
+               return {data: data}
+            }).catch(err => {return {error: err}})
 }
 
 // GET SINGLE INVOICE
@@ -35,34 +37,49 @@ export const save_invoice = async (invoice, customer, products, editing) => {
         order: [...products]
     }
 
-    console.log(sentData)
+    // console.log(sentData)
 
-    const result = await axios.post('http://127.0.0.1:8080/invoice', sentData)
+    // const graphqlQuery = {
+    //     query: `
+    //         {
+    //             mutation addInvoice(invoiceInput:{
+    //                 invoice_nr: ${invoice.invoice_nr}
+    //                 date: ${invoice.date}
+    //                 total_price: ${invoice.total_price}
+    //                 order: ${[...products]}
+    //                 customer: ${{...customer}}
+    //               }){message}
+    //         }
+    //     `
+    // }
+    const graphqlQuery = {
+        query: `
+            {
+                mutation CreateNewInvoice($invoiceInput: ){
+                    addInvoice($invoiceInput:{
+                        invoice_nr: "4221",
+                        date: "2024-08-01",
+                        total_price: 0,
+                        order: [{ name: "kubek" price: 12 total_price: 24 quantity: 2}]
+                        customer: {name: "Olek Wojas" nip: 84400 city: "Czw" street:"Piastowskie"}
+                      })
+                  }
+            }
+        `,
+        variables: {
+            
+        }
+    }
+    console.log(graphqlQuery)
+    const result = await axios.post('/graphql', JSON.stringify(graphqlQuery))
                         .then(res => {
                             return {status: 'success', message: res.data.message}
                         }).catch(err => {
+                            console.log(err)
                             return {status: 'error', message: err.response.data.message}
                         })
 
     return result
-
-
-    // we change a bit the method when editing the record in the DB. so we check if we editing.
-    // if(editing){
-        //do smth
-    // }else{
-        //do smth
-    // }
-    
-    // some magic with the POST sending to the server.
-    // return new Promise(resolve =>{
-    //     setTimeout(()=>{
-    //         resolve({
-    //             message: 'Invoice saved successfully',
-    //             status: 201
-    //         })
-    //     },2000)
-    // })
 }
 
 // DELETE INVOICE
