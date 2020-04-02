@@ -4,7 +4,7 @@ import { Layout } from 'antd';
 import NavBar from '../components/Navigation/NavBar';
 import InvoiceForm from './forms/invoiceForm/InvoiceForm';
 import InvoicesTable from './Tables/mainTable/mainTable';
-import {fetch_invoices} from '../api_calls/invoices';
+import {fetch_invoices, fetch_single_invoice} from '../api_calls/invoices';
 import { Modal, Button } from 'antd';
 
 import ShowNotification from '../components/NotificationSnackbar/Notification';
@@ -61,6 +61,7 @@ const MainLayout = (props) => {
 
     useEffect(() => {
         // get_invoices()
+        // fetch_single_invoice('5e85d0fa8cbf9b707db9fbe4')
     }, [])
     
     // All tables will get some equal props, so there is a new draft.

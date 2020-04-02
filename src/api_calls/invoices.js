@@ -22,7 +22,31 @@ export const fetch_invoices = () => {
 }
 
 // GET SINGLE INVOICE
-// export const fetch_invoice = (id) => {}
+export const fetch_single_invoice = (id) => {
+    const graphqlQuery = {
+        query: `
+            query fetchInvoice($id: String!){
+                getInvoice(id: $id){ _id invoice_nr total_price date customer{ nip name street city } order{ _id product{ _id name } price quantity total_price } }
+            }
+        `,
+        variables: {
+            id: id
+        }
+    }
+    return axios.post('/graphql', JSON.stringify(graphqlQuery))
+            .then(response => {
+                console.log(response)
+                //    let data = response.data.data.getInvoice.map((invoice, index) => {
+                //     const date = invoice.date.slice(0, 10)
+                //         return {
+                //         ...invoice,
+                //         date: date,
+                //         key: index
+                //         }
+                //     })
+            //    return {data: data}
+            }).catch(err => {return {error: err}})
+}
 
 // SAVE INVOICE (NEW & EXISTING)
 export const save_invoice = async (invoice, customer, products, editing) => {   
