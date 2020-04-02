@@ -36,28 +36,29 @@ const InvoiceForm = (props) => {
     // LOCAL STATE AND FUNCTIONS FOR CUSTOMER
     const [customer, setCustomer] = useState(
       {
-        nip: '333',
-        city: 'xxx',
-        street: 'yyy',
-        name: 'ppp'
+        nip: '',
+        city: '',
+        street: '',
+        name: ''
       }
     )
     // LOCAL STATE AND FUNCTIONS FOR PRODUCTS
     const [products, setProducts] = useState([
       {
-        name: 'oprawki',
+        name: '',
         unit: 'szt.',
         quantity: '',
-        unit_price: '',
+        price: '',
         total_price: ''
       }
     ])
 
     const addProduct = () =>{
       const allProducts = [...products];
-      allProducts.push({name: '',unit: 'szt.',quantity: '',unit_price: '',total_price: ''})
+      allProducts.push({name: '',unit: 'szt.',quantity: '',price: '',total_price: ''})
       setProducts([...allProducts])
     }
+    
     const delProduct = (id) => {
       const allProducts = [...products];
       allProducts.splice(id,1);
@@ -113,8 +114,8 @@ const InvoiceForm = (props) => {
             const product = {...allProducts[index]};
             product[name] = value;          
 
-            if((name === 'quantity' || name === 'unit_price')&&(!isNaN(product.quantity) && !isNaN(product.unit_price))){
-                product.total_price = product.quantity * product.unit_price;
+            if((name === 'quantity' || name === 'price')&&(!isNaN(product.quantity) && !isNaN(product.price))){
+                product.total_price = product.quantity * product.price;
                 
                 
               }
@@ -124,7 +125,7 @@ const InvoiceForm = (props) => {
                 ...allProducts
               ])
               
-            //We need to calculate total sum when any quantity or unit_price is changing.
+            //We need to calculate total sum when any quantity or price is changing.
             let sum = 0;
             allProducts.forEach(el => {
               sum += el.total_price
@@ -236,8 +237,8 @@ const InvoiceForm = (props) => {
                 <InputNumber
                   style={{ width: '100%' }}
                   placeholder="Cena jednostkowa"
-                  value={products[index].unit_price}
-                  onChange={(el) => onChange('unit_price', el, index)}
+                  value={products[index].price}
+                  onChange={(el) => onChange('price', el, index)}
                   /> 
               </Form.Item>
             </Col>

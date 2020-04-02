@@ -25,58 +25,35 @@ export const fetch_invoices = () => {
 // export const fetch_invoice = (id) => {}
 
 // SAVE INVOICE (NEW & EXISTING)
-export const save_invoice = async (invoice, customer, products, editing) => {
-    // eslint-disable-next-line
-    const sentData = {
-        invoice_nr: invoice.invoice_nr,
-        date: invoice.date,
-        total_price: invoice.total_price,
-        customer: {
-            ...customer
-        },
-        order: [...products]
-    }
-
-    // console.log(sentData)
-
-    // const graphqlQuery = {
-    //     query: `
-    //         {
-    //             mutation addInvoice(invoiceInput:{
-    //                 invoice_nr: ${invoice.invoice_nr}
-    //                 date: ${invoice.date}
-    //                 total_price: ${invoice.total_price}
-    //                 order: ${[...products]}
-    //                 customer: ${{...customer}}
-    //               }){message}
-    //         }
-    //     `
-    // }
+export const save_invoice = async (invoice, customer, products, editing) => {   
+    const {invoice_nr, date, total_price} = invoice;
     const graphqlQuery = {
         query: `
-            {
-                mutation CreateNewInvoice($invoiceInput: ){
-                    addInvoice($invoiceInput:{
-                        invoice_nr: "4221",
-                        date: "2024-08-01",
-                        total_price: 0,
-                        order: [{ name: "kubek" price: 12 total_price: 24 quantity: 2}]
-                        customer: {name: "Olek Wojas" nip: 84400 city: "Czw" street:"Piastowskie"}
-                      })
-                  }
-            }
+                mutation CreateNewInvoice($invoice_nr: String!, $date: String!, $total_price: Float!, $order: [ProductInputData!]!, $customer: CustomerInputData!){
+                    addInvoice(invoiceInput: {
+                        invoice_nr: $invoice_nr,
+                        date: $date,
+                        total_price: $total_price,
+                        order: $order
+                        customer: $customer
+                    }){message}
+                }
         `,
         variables: {
-            
+            invoice_nr: invoice_nr,
+            date: date,
+            total_price: total_price,
+            customer: {...customer},
+            order: [...products]
         }
     }
-    console.log(graphqlQuery)
     const result = await axios.post('/graphql', JSON.stringify(graphqlQuery))
                         .then(res => {
-                            return {status: 'success', message: res.data.message}
+                            const response = res.data.data.addInvoice;
+                            return {status: 'success', message: response.message}
                         }).catch(err => {
-                            console.log(err)
-                            return {status: 'error', message: err.response.data.message}
+                            const error = err.response.data.errors[0];
+                            return {status: 'error', message: error.message}
                         })
 
     return result
