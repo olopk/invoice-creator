@@ -3,7 +3,7 @@ import { Table, Input, Button, Icon } from 'antd';
 import Highlighter from 'react-highlight-words';
 import classes from './mainTable.module.css';
 
-class InvoicesTable extends Component {
+class MainTable extends Component {
   state = {
     searchText: '',
     searchedColumn: '',
@@ -80,13 +80,12 @@ class InvoicesTable extends Component {
     // console.log(rowData)
     return(
       <span>
-        <Icon className={classes.tableIcon} type="edit" onClick={()=>this.props.openModal(<p>{rowData.key}</p>)}/>
+        <Icon className={classes.tableIcon} type="edit" onClick={()=>this.props.openModal(this.props.dataType, rowData)}/>
         <Icon className={classes.tableIcon} type="delete" onClick={()=>this.props.delete(rowData.key)}/>
       </span>
     )
   }
-  render() {   
-
+  render() {
     let table, columns;
     
     if(!this.props.data){
@@ -113,4 +112,4 @@ class InvoicesTable extends Component {
   }
 }
 
-export default InvoicesTable; 
+export default MainTable; 

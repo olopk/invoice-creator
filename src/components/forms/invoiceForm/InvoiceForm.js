@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import classes from './InvoiceForm.module.css';
 import moment from 'moment';
 import today from '../../../functions/today';
@@ -64,6 +64,30 @@ const InvoiceForm = (props) => {
       allProducts.splice(id,1);
       setProducts([...allProducts])
     }
+
+    useEffect(()=>{
+      if(props.modalData){
+        const {modalData} = props;
+        setCustomer({...customer, ...modalData.customer})
+        setInvoice({
+          ...invoice,
+          invoice_nr: modalData.invoice_nr,
+          total_price: modalData.total_price,
+          date: modalData.date
+        })
+
+        const products = modalData.order.map(el => {
+          return{
+            name: el.product.name,
+            unit: 'szt.',
+            quantity: el.quantity,
+            price: el.price,
+            total_price: el.total_price
+          }
+        })
+        setProducts(products)
+      }
+    }, [props.modalData])
 
     // props.form.validateFields();
 
