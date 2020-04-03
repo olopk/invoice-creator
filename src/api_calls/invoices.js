@@ -3,9 +3,10 @@ import axios from '../axiosInstance';
 
 //INVOICES OPERATIONS
 // GET ALL INVOICES
+
 export const fetch_invoices = () => {
     const graphqlQuery = {
-        query: `{ getInvoices{ _id invoice_nr date total_price customer{ name } } }`
+        query: `{ getInvoices{ _id invoice_nr date total_price customer{ name nip city street } order{ product{ name } quantity price total_price }} }`
     };
     return axios.post('/graphql', JSON.stringify(graphqlQuery))
             .then(response => {
@@ -20,8 +21,8 @@ export const fetch_invoices = () => {
                return {data: data}
             }).catch(err => {return {error: err}})
 }
-
 // GET SINGLE INVOICE
+
 export const fetch_single_invoice = (id) => {
     const graphqlQuery = {
         query: `
@@ -35,15 +36,9 @@ export const fetch_single_invoice = (id) => {
     }
     return axios.post('/graphql', JSON.stringify(graphqlQuery))
             .then(response => {
-                console.log(response)
-                //    let data = response.data.data.getInvoice.map((invoice, index) => {
-                //     const date = invoice.date.slice(0, 10)
-                //         return {
-                //         ...invoice,
-                //         date: date,
-                //         key: index
-                //         }
-                //     })
+               let invoice = response.data.data.getInvoice;
+               invoice.date = invoice.date.slice(0, 10)
+                console.log(invoice)
             //    return {data: data}
             }).catch(err => {return {error: err}})
 }
