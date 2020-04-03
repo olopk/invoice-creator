@@ -2,7 +2,6 @@ import React from 'react';
 import { InputNumber } from 'antd';
 
 const Number = (props) =>{
-  console.log(props)
   return (
     <InputNumber  
        style={{ width: '100%' }}

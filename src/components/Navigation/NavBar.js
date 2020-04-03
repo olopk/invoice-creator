@@ -11,7 +11,6 @@ const NavBar = () => {
     const [current, setCurrent] = useState('add-invoice');
     
     const handleClick = e => {
-        console.log('click', e);
         setCurrent(e.key);
     };
 
