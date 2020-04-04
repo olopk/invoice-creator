@@ -114,10 +114,14 @@ const InvoiceForm = (props) => {
     //   });
     // };
 
-    const send = async () => {
+    const save = async () => {
       setState({...state, loading: true});
-      const response = await save_invoice(invoice, customer, products);
-      console.log(response)
+      let response;
+      if(props.modalData){
+        response = await save_invoice(invoice, customer, products, props.modalData._id);
+      }else{
+        response = await save_invoice(invoice, customer, products);
+      }
       props.showNotification(response.status, response.message);
       setState({...state, loading: false});
     }
@@ -476,7 +480,7 @@ const InvoiceForm = (props) => {
     return(
         <div className={classes.main}>
           {content}
-          <Button type="primary" onClick={() => send()}>
+          <Button type="primary" onClick={() => save()}>
             Zapisz i generuj fakturę.
           </Button>
         </div>

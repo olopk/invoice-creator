@@ -18,6 +18,8 @@ const MainModal = (props) => {
 
   return(
   <Modal
+      width={1080}
+      centered={true}
       // title="Basic Modal"
       // onOk={props.onOk}
       onCancel={props.onCancel}
