@@ -1,5 +1,4 @@
 import axios from '../axiosInstance';
-//CUSTOMERS OPERATIONS
 
 // GET ALL CUSTOMERS
 export const fetch_customers = () => {
@@ -24,21 +23,39 @@ export const fetch_single_customer = (id) => {
         variables: { id: id }
     }
     return axios.post('/graphql', JSON.stringify(graphqlQuery))
-    .then(result => {return {data: result}})
+    .then(response => {return {data: response.data.data.getCustomer}})
     .catch(err => {return {error: err}})
 }
 // SAVE CUSTOMER (NEW & EXISTING)
-export const save_customer = (customer, editing) => {
+export const save_customer = (customer, id) => {
+    let query;
+
+    if(id){
+        query = `
+        mutation UpdateCustomer($id: String!, $customer: CustomerInputData!){
+            editCustomer(id: $id, customerInput: $customer}){message}
+        }`;
+    }else{
+        query = `
+        mutation CreateNewCustomer($customer: CustomerInputData!){
+            addCustomer(customerInput: $customer}){message}
+        }`;
+    }
     const graphqlQuery = {
-        query: `
-                mutation CreateNewCustomer($customer: CustomerInputData!){
-                    addCustomer(customerInput: $customer}){message}
-                }
-        `,
+        query: query,
         variables: {
+            id: id,
             customer: {...customer},
         }
     }
+    return axios.post('/graphql', JSON.stringify(graphqlQuery))
+            .then(res => {
+                const response = id ? res.data.data.editCustomer : res.data.data.addCustomer;
+                return {status: 'success', message: response.message}
+            }).catch(err => {
+                const error = err.response.data.errors[0];
+                return {status: 'error', message: error.message}
+            })
 }
 
 // DELETE CUSTOMER
