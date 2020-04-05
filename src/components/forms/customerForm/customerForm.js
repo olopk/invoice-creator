@@ -34,7 +34,6 @@ const CustomerForm = (props) => {
     useEffect(()=>{
       if(props.modalData){
         const {modalData} = props;
-        console.log(modalData)
         setCustomer({...customer, ...modalData})
       }
     }, [props.modalData])

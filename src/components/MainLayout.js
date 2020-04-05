@@ -3,7 +3,6 @@ import { BrowserRouter, Route, Switch} from 'react-router-dom';
 import { Layout } from 'antd';
 import NavBar from '../components/Navigation/NavBar';
 import InvoiceForm from './forms/invoiceForm/InvoiceForm';
-import CustomerForm from './forms/customerForm/customerForm';
 import MainTable from './Tables/mainTable/mainTable';
 import {fetch_invoices} from '../api_calls/invoices';
 import {fetch_customers} from '../api_calls/customers';
@@ -220,10 +219,11 @@ const MainLayout = (props) => {
                                             dataType='product' 
                                             data={state.products}
                                             columns={[
-                                                {title: 'Nazwa', dataIndex: 'name', width: '30%'},
-                                                {title: 'Marka', dataIndex: 'brand', width: '20%'},
-                                                {title: 'Model',dataIndex: 'model', width: '20%'},
-                                                {title: 'Cena',dataIndex: 'price', width: '10%'}
+                                                {title: 'Nazwa', dataIndex: 'name', width: '25%'},
+                                                {title: 'Marka', dataIndex: 'brand', width: '15%'},
+                                                {title: 'Model',dataIndex: 'model', width: '15%'},
+                                                {title: 'Stan magazynowy',dataIndex: 'quantity', width: '20%'},
+                                                {title: 'Cena',dataIndex: 'price', width: '15%'}
                                             ]}
                                             delete={delete_product}
                                     />

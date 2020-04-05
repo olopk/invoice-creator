@@ -1,0 +1,31 @@
+section{
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 20px;
+}
+.main{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+.loadingIcon{
+    font-size: 40px;
+    padding: 30px;
+}
+.minusIcon{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8px;
+}
+
+.productSection{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+.productForm{
+    display: inline-block;
+    width: 600px;
+}

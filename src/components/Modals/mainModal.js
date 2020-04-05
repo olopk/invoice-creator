@@ -4,6 +4,7 @@ import { Modal, Button } from 'antd';
 import ShowNotification from '../NotificationSnackbar/Notification';
 import InvoiceForm from '../forms/invoiceForm/InvoiceForm';
 import CustomerForm from '../forms/customerForm/customerForm';
+import ProductForm from '../forms/productForm/productForm';
 
 const MainModal = (props) => {
   const {modalDataType, modalData} = props;
@@ -19,6 +20,14 @@ const MainModal = (props) => {
   else if(modalDataType === 'customer'){
     modalContent = (
       <CustomerForm
+          modalData={modalData}
+          showNotification={ShowNotification}
+      />
+    )
+  }
+  else if(modalDataType === 'product'){
+    modalContent = (
+      <ProductForm
           modalData={modalData}
           showNotification={ShowNotification}
       />
