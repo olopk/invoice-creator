@@ -7,7 +7,7 @@ class MainTable extends Component {
   state = {
     searchText: '',
     searchedColumn: '',
-    loading: false,
+    // loading: false,
   };
 
   getColumnSearchProps = dataIndex => ({
@@ -85,6 +85,8 @@ class MainTable extends Component {
       </span>
     )
   }
+
+  
   render() {
     let table, columns;
     

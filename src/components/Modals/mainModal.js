@@ -3,6 +3,7 @@ import { Modal, Button } from 'antd';
 
 import ShowNotification from '../NotificationSnackbar/Notification';
 import InvoiceForm from '../forms/invoiceForm/InvoiceForm';
+import CustomerForm from '../forms/customerForm/customerForm';
 
 const MainModal = (props) => {
   const {modalDataType, modalData} = props;
@@ -15,10 +16,18 @@ const MainModal = (props) => {
       />
     )
   }
+  else if(modalDataType === 'customer'){
+    modalContent = (
+      <CustomerForm
+          modalData={modalData}
+          showNotification={ShowNotification}
+      />
+    )
+  }
 
   return(
   <Modal
-      width={1080}
+      width={props.modalWidth}
       centered={true}
       // title="Basic Modal"
       // onOk={props.onOk}
