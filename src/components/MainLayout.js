@@ -5,8 +5,9 @@ import NavBar from '../components/Navigation/NavBar';
 import InvoiceForm from './forms/invoiceForm/InvoiceForm';
 import CustomerForm from './forms/customerForm/customerForm';
 import MainTable from './Tables/mainTable/mainTable';
-import {fetch_invoices, fetch_single_invoice} from '../api_calls/invoices';
-import {fetch_customers, fetch_single_customer} from '../api_calls/customers';
+import {fetch_invoices} from '../api_calls/invoices';
+import {fetch_customers} from '../api_calls/customers';
+import {fetch_products} from '../api_calls/products';
 
 import MainModal from './Modals/mainModal';
 
@@ -66,14 +67,14 @@ const MainLayout = (props) => {
     }
     // ------------------------------------------------------------
     // INVOICES OPERATIONS 
-    const get_single_invoice = async (id) => {
-        const data = await fetch_single_invoice(id);
-        if(data.error){
-            ShowNotification('error', data.error.message)
-        }else{
-            setState({...state, singleInvoice: data.data});
-        }
-    }
+    // const get_single_invoice = async (id) => {
+    //     const data = await fetch_single_invoice(id);
+    //     if(data.error){
+    //         ShowNotification('error', data.error.message)
+    //     }else{
+    //         setState({...state, singleInvoice: data.data});
+    //     }
+    // }
     const update_invoice = () => {
         //some magic   
     }
@@ -83,14 +84,14 @@ const MainLayout = (props) => {
     }
     // ------------------------------------------------------------
      // CUSTOMERS OPERATIONS 
-    const get_single_customer = async (id) => {
-        const data = await fetch_single_customer(id);
-        if(data.error){
-            ShowNotification('error', data.error.message)
-        }else{
-            setState({...state, singleCustomer: data.data});
-        }
-    }
+    // const get_single_customer = async (id) => {
+    //     const data = await fetch_single_customer(id);
+    //     if(data.error){
+    //         ShowNotification('error', data.error.message)
+    //     }else{
+    //         setState({...state, singleCustomer: data.data});
+    //     }
+    // }
     const update_customer = () => {
         //some magic
     }
@@ -99,6 +100,13 @@ const MainLayout = (props) => {
         setState({...state, customers: updatedCustomers})
     }
     // ------------------------------------------------------------
+    // PRODUCTS OPERATIONS 
+    const delete_product = (id) => {
+        const updatedProducts = state.products.filter(el => el.key !== id);
+        setState({...state, products: updatedProducts})
+    }
+    // ------------------------------------------------------------
+
 
     useEffect(()=>{
         const fetchAllData = async function(){
@@ -106,6 +114,7 @@ const MainLayout = (props) => {
             let newState = {errors: []};
             allFetchedData.invoices = await fetch_invoices();
             allFetchedData.customers = await fetch_customers();
+            allFetchedData.products = await fetch_products();
                         
             for(let el in allFetchedData){
                 if(allFetchedData[el].error){
@@ -204,6 +213,19 @@ const MainLayout = (props) => {
                                                 {title: 'Ulica',dataIndex: 'street', width: '20%'}
                                             ]}
                                             delete={delete_customer}
+                                    />
+                                )}/>
+                                <Route path="/products-list" render={()=> (
+                                        <Table
+                                            dataType='product' 
+                                            data={state.products}
+                                            columns={[
+                                                {title: 'Nazwa', dataIndex: 'name', width: '30%'},
+                                                {title: 'Marka', dataIndex: 'brand', width: '20%'},
+                                                {title: 'Model',dataIndex: 'model', width: '20%'},
+                                                {title: 'Cena',dataIndex: 'price', width: '10%'}
+                                            ]}
+                                            delete={delete_product}
                                     />
                                 )}/>
                                 <Route component={InvoiceForm}/>
