@@ -3,11 +3,11 @@ import { BrowserRouter, Route, Switch} from 'react-router-dom';
 import { Layout } from 'antd';
 import NavBar from '../components/Navigation/NavBar';
 import InvoiceForm from './forms/invoiceForm/InvoiceForm';
+import CustomerForm from './forms/customerForm/customerForm';
 import MainTable from './Tables/mainTable/mainTable';
 import {fetch_invoices, fetch_single_invoice} from '../api_calls/invoices';
 import {fetch_customers, fetch_single_customer} from '../api_calls/customers';
 
-import { Modal, Button } from 'antd';
 import MainModal from './Modals/mainModal';
 
 import ShowNotification from '../components/NotificationSnackbar/Notification';
@@ -21,18 +21,35 @@ const MainLayout = (props) => {
         singleInvoice: null,
         customers: null,
         singleCustomer: null,
+        products: null,
+        singleCustomer: null,
         loading: false,
         modalVisible: false,
         modalData: null,
-        modalDataType: null
+        modalDataType: null,
+        modalWidth: null,
+        errors: []
     })
     //MODAL OPERATIONS
     const modalHandleOpen = (modalDataType, modalData) => {
+        let modalWidth;
+        console.log(modalDataType)
+        switch(modalDataType){
+            case 'invoice':
+                modalWidth = 1280;
+                break;
+            case 'customer':
+                modalWidth = 700;
+                break;
+            default:
+                modalWidth = 800;
+        }
         setState({
             ...state,
             modalVisible: true,
             modalDataType: modalDataType,
-            modalData: modalData
+            modalData: modalData,
+            modalWidth: modalWidth
         })
     }
     const modalHandleCancel = () => {
@@ -54,7 +71,7 @@ const MainLayout = (props) => {
         if(data.error){
             ShowNotification('error', data.error.message)
         }else{
-            setState({singleInvoice: data.data});
+            setState({...state, singleInvoice: data.data});
         }
     }
     const update_invoice = () => {
@@ -71,7 +88,7 @@ const MainLayout = (props) => {
         if(data.error){
             ShowNotification('error', data.error.message)
         }else{
-            setState({singleCustomer: data.data});
+            setState({...state, singleCustomer: data.data});
         }
     }
     const update_customer = () => {
@@ -86,13 +103,20 @@ const MainLayout = (props) => {
     useEffect(()=>{
         const fetchAllData = async function(){
             const allFetchedData = {};
-            let newState = {};
+            let newState = {errors: []};
             allFetchedData.invoices = await fetch_invoices();
-            // allFetchedData.customers = await fetch_customers();
+            allFetchedData.customers = await fetch_customers();
                         
             for(let el in allFetchedData){
-                if(el.error){
-                    ShowNotification('error', el.error.message)
+                if(allFetchedData[el].error){
+                    const errorMessage = el+': '+allFetchedData[el].error.message
+                    ShowNotification('error', errorMessage)
+                    // const newErrors = [...newState.errors];
+                    // newErrors.push({[el]: allFetchedData[el].error.message});
+                    // newState = {
+                    //     ...newState,
+                    //     errors: newErrors
+                    // }
                 }else{
                     newState = {
                         ...newState,
@@ -100,6 +124,7 @@ const MainLayout = (props) => {
                     }
                 }
             }
+            console.log(newState)
             setState({...state, ...newState});
         }
         fetchAllData()
@@ -112,6 +137,7 @@ const MainLayout = (props) => {
              openModal={modalHandleOpen}
              showNotification={ShowNotification}
              onCancel={modalHandleCancel}
+             errors={state.errors}
              {...props}/>
         )
     }
@@ -144,6 +170,7 @@ const MainLayout = (props) => {
                                 onCancel={modalHandleCancel}
                                 modalDataType={state.modalDataType}
                                 modalData={state.modalData}
+                                modalWidth={state.modalWidth}
                             />
                             <Switch>
                                 <Route path="/invoice-form" render={()=>(
@@ -167,7 +194,8 @@ const MainLayout = (props) => {
                                     )}
                                     />
                                 <Route path="/customers-list" render={()=> (
-                                        <Table 
+                                        <Table
+                                            dataType='customer' 
                                             data={state.customers}
                                             columns={[
                                                 {title: 'Nazwa kontrahenta', dataIndex: 'name', width: '30%'},

@@ -1,9 +1,6 @@
 import axios from '../axiosInstance';
-// import axios from 'axios';
 
-//INVOICES OPERATIONS
 // GET ALL INVOICES
-
 export const fetch_invoices = () => {
     const graphqlQuery = {
         query: `{ getInvoices{ _id invoice_nr date total_price customer{ name nip city street } order{ product{ name } quantity price total_price }} }`
@@ -21,8 +18,8 @@ export const fetch_invoices = () => {
                return {data: data}
             }).catch(err => {return {error: err}})
 }
-// GET SINGLE INVOICE
 
+// GET SINGLE INVOICE
 export const fetch_single_invoice = (id) => {
     const graphqlQuery = {
         query: `
@@ -46,8 +43,8 @@ export const fetch_single_invoice = (id) => {
 // SAVE INVOICE (NEW & EXISTING)
 export const save_invoice = async (invoice, customer, products, id) => {   
     const {invoice_nr, date, total_price} = invoice;
-    
     let query;
+
     if(id){
         query = `
             mutation UpdateInvoice($id: String!, $invoice_nr: String!, $date: String!, $total_price: Float!, $order: [ProductInputData!]!, $customer: CustomerInputData!){
@@ -83,16 +80,14 @@ export const save_invoice = async (invoice, customer, products, id) => {
             order: [...products]
         }
     }
-    const result = await axios.post('/graphql', JSON.stringify(graphqlQuery))
-                        .then(res => {
-                            const response = id ? res.data.data.editInvoice : res.data.data.addInvoice;
-                            return {status: 'success', message: response.message}
-                        }).catch(err => {
-                            const error = err.response.data.errors[0];
-                            return {status: 'error', message: error.message}
-                        })
-
-    return result
+    return axios.post('/graphql', JSON.stringify(graphqlQuery))
+            .then(res => {
+                const response = id ? res.data.data.editInvoice : res.data.data.addInvoice;
+                return {status: 'success', message: response.message}
+            }).catch(err => {
+                const error = err.response.data.errors[0];
+                return {status: 'error', message: error.message}
+            })
 }
 
 // DELETE INVOICE
