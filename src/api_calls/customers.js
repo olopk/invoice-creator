@@ -60,6 +60,20 @@ export const save_customer = (customer, id) => {
 
 // DELETE CUSTOMER
 export const delete_customer = (id) => {
-    
+    const graphqlQuery = {
+        query: ` 
+            mutation DeleteCustomer($id: String!){
+                delCustomer(id: $id){ message }}
+        `,
+        variables: { id: id }
+    }
+    return axios.post('/graphql', JSON.stringify(graphqlQuery))
+    .then(res => {
+        const response = res.data.data.delCustomer;
+        return {status: 'success', message: response.message}
+    })
+    .catch(err => {
+        const error = err.response.data.errors[0];
+        return {status: 'error', message: error.message}
+    })
 }
-
