@@ -4,7 +4,7 @@ import { Layout } from 'antd';
 import NavBar from '../components/Navigation/NavBar';
 import InvoiceForm from './forms/invoiceForm/InvoiceForm';
 import MainTable from './Tables/mainTable/mainTable';
-import {fetch_invoices} from '../api_calls/invoices';
+import {fetch_invoices, delete_invoice} from '../api_calls/invoices';
 import {fetch_customers, delete_customer} from '../api_calls/customers';
 import {fetch_products, delete_product} from '../api_calls/products';
 
@@ -68,9 +68,13 @@ const MainLayout = (props) => {
     //         setState({...state, singleInvoice: data.data});
     //     }
     // }
-    const delete_invoice = (id) => {
-        const updatedInvoices = state.invoices.filter(el => el.key !== id);
-        setState({...state, invoices: updatedInvoices})
+    const invoice_remove = async (id) => {
+        const callUpdate = () => {
+            const updatedInvoices = state.invoices.filter(el => el._id !== id);
+            setState({...state, invoices: updatedInvoices})
+        }
+        const request = await delete_invoice(id);
+        ShowNotification(request.status, request.message, callUpdate)
     }
     // ------------------------------------------------------------
      // CUSTOMERS OPERATIONS 
@@ -193,7 +197,7 @@ const MainLayout = (props) => {
                                                 {title: 'Nazwa Kontrahenta',dataIndex: 'customer.name', width: '35%'},
                                                 {title: 'Wartość Faktury',dataIndex: 'total_price', width: '20%'}
                                             ]}
-                                            delete={delete_invoice}
+                                            delete={invoice_remove}
                                         />
                                     )}
                                     />

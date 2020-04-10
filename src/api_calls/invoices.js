@@ -92,7 +92,21 @@ export const save_invoice = async (invoice, customer, products, id) => {
 
 // DELETE INVOICE
 export const delete_invoice = (id) => {
-    // even more magic with the DELETE call send to the server
-    
+    const graphqlQuery = {
+        query: ` 
+            mutation DeleteInvoice($id: String!){
+                delInvoice(id: $id){ message }}
+        `,
+        variables: { id: id }
+    }
+    return axios.post('/graphql', JSON.stringify(graphqlQuery))
+    .then(res => {
+        const response = res.data.data.delInvoice;
+        return {status: 'success', message: response.message}
+    })
+    .catch(err => {
+        const error = err.response.data.errors[0];
+        return {status: 'error', message: error.message}
+    })
 }
 
