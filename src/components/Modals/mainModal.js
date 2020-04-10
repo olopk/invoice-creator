@@ -42,14 +42,15 @@ const MainModal = (props) => {
       // onOk={props.onOk}
       onCancel={props.onCancel}
       visible={props.visible}
-      footer={[
-          <Button key="back" onClick={props.onCancel}>
-          Anuluj
-          </Button>,
-          <Button key="submit" type="primary" loading={props.loading} onClick={()=> {return true} }>
-          Zapisz
-          </Button>,
-      ]}
+      // footer={[
+      //     <Button key="back" onClick={props.onCancel}>
+      //     Anuluj
+      //     </Button>,
+      //     <Button key="submit" type="primary" loading={props.loading} onClick={()=> {return true} }>
+      //     Zapisz
+      //     </Button>,
+      // ]}
+      footer={null}
   >
       {modalContent}
   </Modal>
