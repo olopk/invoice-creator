@@ -81,7 +81,7 @@ class MainTable extends Component {
     return(
       <span>
         <Icon className={classes.tableIcon} type="edit" onClick={()=>this.props.openModal(this.props.dataType, rowData)}/>
-        <Icon className={classes.tableIcon} type="delete" onClick={()=>this.props.delete(rowData.key)}/>
+        <Icon className={classes.tableIcon} type="delete" onClick={()=>this.props.delete(rowData._id)}/>
       </span>
     )
   }

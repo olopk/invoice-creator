@@ -5,8 +5,8 @@ import NavBar from '../components/Navigation/NavBar';
 import InvoiceForm from './forms/invoiceForm/InvoiceForm';
 import MainTable from './Tables/mainTable/mainTable';
 import {fetch_invoices} from '../api_calls/invoices';
-import {fetch_customers} from '../api_calls/customers';
-import {fetch_products} from '../api_calls/products';
+import {fetch_customers, delete_customer} from '../api_calls/customers';
+import {fetch_products, delete_product} from '../api_calls/products';
 
 import MainModal from './Modals/mainModal';
 
@@ -58,12 +58,6 @@ const MainLayout = (props) => {
             modalVisible: false
         })
     }
-    const modalHandleSave = () => {
-        setState({
-            ...state,
-            modalVisible: false
-        })
-    }
     // ------------------------------------------------------------
     // INVOICES OPERATIONS 
     // const get_single_invoice = async (id) => {
@@ -74,9 +68,6 @@ const MainLayout = (props) => {
     //         setState({...state, singleInvoice: data.data});
     //     }
     // }
-    const update_invoice = () => {
-        //some magic   
-    }
     const delete_invoice = (id) => {
         const updatedInvoices = state.invoices.filter(el => el.key !== id);
         setState({...state, invoices: updatedInvoices})
@@ -91,18 +82,23 @@ const MainLayout = (props) => {
     //         setState({...state, singleCustomer: data.data});
     //     }
     // }
-    const update_customer = () => {
-        //some magic
-    }
-    const delete_customer = (id) => {
-        const updatedCustomers = state.customers.filter(el => el.key !== id);
-        setState({...state, customers: updatedCustomers})
+    const customer_remove = async (id) => {
+        const callUpdate = () => {
+            const updatedCustomers = state.customers.filter(el => el._id !== id);
+            setState({...state, customers: updatedCustomers})
+        }
+        const request = await delete_customer(id);
+        ShowNotification(request.status, request.message, callUpdate)
     }
     // ------------------------------------------------------------
     // PRODUCTS OPERATIONS 
-    const delete_product = (id) => {
-        const updatedProducts = state.products.filter(el => el.key !== id);
-        setState({...state, products: updatedProducts})
+    const product_remove = async (id) => {
+        const callUpdate = () =>{
+            const updatedProducts = state.products.filter(el => el._id !== id);
+            setState({...state, products: updatedProducts})
+        }
+        const request = await delete_product(id)
+        ShowNotification(request.status, request.message, callUpdate)
     }
     // ------------------------------------------------------------
 
@@ -211,7 +207,7 @@ const MainLayout = (props) => {
                                                 {title: 'Miasto',dataIndex: 'city', width: '30%'},
                                                 {title: 'Ulica',dataIndex: 'street', width: '20%'}
                                             ]}
-                                            delete={delete_customer}
+                                            delete={customer_remove}
                                     />
                                 )}/>
                                 <Route path="/products-list" render={()=> (
@@ -225,7 +221,7 @@ const MainLayout = (props) => {
                                                 {title: 'Stan magazynowy',dataIndex: 'quantity', width: '20%'},
                                                 {title: 'Cena',dataIndex: 'price', width: '15%'}
                                             ]}
-                                            delete={delete_product}
+                                            delete={product_remove}
                                     />
                                 )}/>
                                 <Route component={InvoiceForm}/>
