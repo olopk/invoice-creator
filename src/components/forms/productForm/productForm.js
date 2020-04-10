@@ -159,9 +159,10 @@ const ProductForm = (props) => {
                     {getFieldDecorator(
                       'price',
                       {initialValue: product.price, rules: [{ required: true, message: 'Wpisz cenę' }],})
-                      (<AutoComplete
+                      (<InputNumber
                       placeholder="Cena"
                       onChange={(el) => onChange('price', el)}
+                      style={{width: "100%"}}
                     />)}
                   </Form.Item>
                 </Col>
@@ -169,15 +170,16 @@ const ProductForm = (props) => {
                   <Form.Item
                     validateStatus={quantityError ? 'error' : ''}
                     help={quantityError || ''}
-                    style={{ width: '80%' }}
+                    style={{ width: '70%' }}
                     wrapperCol={{ sm: 24 }}
                     >
                     {getFieldDecorator(
                       'quantity',
                       {initialValue: product.quantity, rules: [{ required: true, message: 'Wpisz stan magazynowy' }],})
-                      (<AutoComplete
+                      (<InputNumber
                       placeholder="Nazwa"
                       onChange={(el) => onChange('quantity', el)}
+                      style={{width: "100%"}}
                     />)}
                   </Form.Item>               
                 </Col>
