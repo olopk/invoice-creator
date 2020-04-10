@@ -58,8 +58,23 @@ export const save_product = (product, id) => {
             })
 }
 
-// DELETE CUSTOMER
+// DELETE PRODUCT
 export const delete_product = (id) => {
-    
+    const graphqlQuery = {
+        query: ` 
+            mutation DeleteProduct($id: String!){
+                delProduct(id: $id){ message }}
+        `,
+        variables: { id: id }
+    }
+    return axios.post('/graphql', JSON.stringify(graphqlQuery))
+    .then(res => {
+        const response = res.data.data.delProduct;
+        return {status: 'success', message: response.message}
+    })
+    .catch(err => {
+        const error = err.response.data.errors[0];
+        return {status: 'error', message: error.message}
+    })
 }
 
