@@ -234,7 +234,7 @@ const MainLayout = (props) => {
                                     />
                                 )}/>
                                 {/* <Route component={loginForm}/> */}
-                                <Route component={signinForm}/>
+                                <Route component={loginForm}/>
                             </Switch>
                     </Content>
                 <Footer>Facebook</Footer>

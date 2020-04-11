@@ -27,7 +27,7 @@ export const logIn = (email, password) => {
     const graphQl = {
         query: `
             query LogInUser($email: String!, $password: String!){
-                logIn(email: $email, password: $password){userData!}
+                logIn(email: $email, password: $password){_id name token tokenExpiry}
             }
         `,
         variables: {
@@ -37,8 +37,11 @@ export const logIn = (email, password) => {
     }
     return axios.post('/graphql', JSON.stringify(graphQl))
         .then(res => {
-            const response = res.data.data.In;
-            return{status: 'success', message: response.message}
+            const response = res.data.data.logIn;
+
+            localStorage.setItem("token", response.token)
+
+            return{status: 'success', message: `Witaj, ${response.name}`}
         })
         .catch(err => {
             const error = err.response.data.errors[0];
