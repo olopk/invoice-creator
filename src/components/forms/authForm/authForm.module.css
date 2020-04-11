@@ -1,0 +1,13 @@
+.authBox{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 6%;
+}
+
+.authForm{
+    width: 30%;
+}
+.button{
+    float: right;
+}

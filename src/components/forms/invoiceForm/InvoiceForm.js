@@ -143,9 +143,7 @@ const InvoiceForm = (props) => {
             product[name] = value;          
 
             if((name === 'quantity' || name === 'price')&&(!isNaN(product.quantity) && !isNaN(product.price))){
-                product.total_price = product.quantity * product.price;
-                
-                
+                product.total_price = product.quantity * product.price;                 
               }
               allProducts[index]= product;
               
@@ -237,7 +235,6 @@ const InvoiceForm = (props) => {
               <Form.Item
                 style={{ marginBottom: "0px" }}
               >
-
                   <AutoComplete
                     placeholder="Jednostka"
                     value={products[index].unit}

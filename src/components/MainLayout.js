@@ -13,6 +13,11 @@ import MainModal from './Modals/mainModal';
 import ShowNotification from '../components/NotificationSnackbar/Notification';
 // import classes from './MainLayout.module.css';
 
+//TEMP
+import loginForm from './forms/authForm/loginForm';
+import signinForm from './forms/authForm/signInForm';
+//
+
 const { Header, Content, Footer} = Layout;
 
 const MainLayout = (props) => {
@@ -228,7 +233,8 @@ const MainLayout = (props) => {
                                             delete={product_remove}
                                     />
                                 )}/>
-                                <Route component={InvoiceForm}/>
+                                {/* <Route component={loginForm}/> */}
+                                <Route component={signinForm}/>
                             </Switch>
                     </Content>
                 <Footer>Facebook</Footer>
