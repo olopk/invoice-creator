@@ -27,7 +27,7 @@ export const logIn = (email, password) => {
     const graphQl = {
         query: `
             query LogInUser($email: String!, $password: String!){
-                logIn(email: $email, password: $password){_id name token tokenExpiry}
+                logIn(email: $email, password: $password){token tokenExpiry}
             }
         `,
         variables: {
@@ -41,7 +41,14 @@ export const logIn = (email, password) => {
 
             localStorage.setItem("token", response.token)
 
-            return{status: 'success', message: `Witaj, ${response.name}`}
+            const date = new Date();
+            const tokenExpiration = date.getTime() + (response.tokenExpiry*60*1000) 
+            localStorage.setItem("tokenExpiration", tokenExpiration)
+
+            return response.token
+        })
+        .then(token => {
+            return getUser(token)
         })
         .catch(err => {
             const error = err.response.data.errors[0];
@@ -49,7 +56,26 @@ export const logIn = (email, password) => {
         })
        
 }
+export const getUser = (token) => {
+    const graphQl = {
+        query: `{getUser{_id name}}`
+    }
 
-export const logOut = (login, password) => {
-    
+    return axios({
+        url: '/graphql',
+        method: 'POST',
+        data: JSON.stringify(graphQl),
+        headers:{
+            'Authorization': 'Bearer '+token,
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(res => {
+            const response = res.data.data.getUser;
+            return{status: 'success', message: `Witaj, ${response.name}`, userData: response}
+        })
+        .catch(err => {
+            const error = err.response.data.errors[0];
+            return {status: 'error', message: error.message}
+        })
 }

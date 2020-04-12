@@ -7,6 +7,7 @@ import MainTable from './Tables/mainTable/mainTable';
 import {fetch_invoices, delete_invoice} from '../api_calls/invoices';
 import {fetch_customers, delete_customer} from '../api_calls/customers';
 import {fetch_products, delete_product} from '../api_calls/products';
+import {getUser, logIn, signIn} from '../api_calls/auth';
 
 import MainModal from './Modals/mainModal';
 
@@ -14,8 +15,8 @@ import ShowNotification from '../components/NotificationSnackbar/Notification';
 // import classes from './MainLayout.module.css';
 
 //TEMP
-import loginForm from './forms/authForm/loginForm';
-import signinForm from './forms/authForm/signInForm';
+import LoginForm from './forms/authForm/loginForm';
+import SigninForm from './forms/authForm/signInForm';
 //
 
 const { Header, Content, Footer} = Layout;
@@ -23,11 +24,10 @@ const { Header, Content, Footer} = Layout;
 const MainLayout = (props) => {
     const [state, setState] = useState({
         invoices: null,
-        singleInvoice: null,
         customers: null,
-        singleCustomer: null,
         products: null,
-        singleCustomer: null,
+        loggedIn: false,
+        userData: null,
         loading: false,
         modalVisible: false,
         modalData: null,
@@ -35,6 +35,73 @@ const MainLayout = (props) => {
         modalWidth: null,
         errors: []
     })
+    //AUTH OPERATIONS
+    const signInRequest = async (userData) =>{
+        const result = await signIn(userData);
+        if(result.status === 'success'){
+            //TODO redirect to loginpage
+        }
+        ShowNotification(result.status, result.message)
+    }
+    const logInRequest = async (email, password) => {
+        const result = await logIn(email, password)
+
+        if(result.status === 'success'){
+            setState({
+                ...state,
+                loggedIn: true,
+                userData: result.userData,
+                loading: false
+            })
+            setTimeout(()=>{logOut()}, localStorage.getItem("tokenExpiration"))
+        }
+        ShowNotification(result.status, result.message)
+    }
+    const logOut = () => {
+        console.log('clicked logout')
+        localStorage.removeItem("token");
+        localStorage.removeItem("tokenExpiration")
+        setState({
+            invoices: null,
+            customers: null,
+            products: null,
+            loggedIn: false,
+            userData: null,
+            loading: false,
+            modalVisible: false,
+            modalData: null,
+            modalDataType: null,
+            modalWidth: null,
+            errors: []
+        })
+    }
+    
+    const loginCheck = async () =>{
+        const token = localStorage.getItem("token");
+        const tokenExpiration = localStorage.setItem("tokenExpiration");
+        if(!token || !tokenExpiration){
+            logOut()
+        }else{
+            const date = new Date();
+            const currentTime = date.getTime();
+            if(currentTime > tokenExpiration){
+                logOut()
+            }else{
+                const data = await getUser(token);
+                if(data.status === 'success'){
+                    setState({
+                        ...state,
+                        loggedIn: true,
+                        userData: data.userData,
+                        loading: false
+                    })
+                }
+                ShowNotification(data.status, data.message)
+                const validTime = currentTime - tokenExpiration;
+                setTimeout(()=>{logOut()}, validTime)
+            }
+        }
+    }
     //MODAL OPERATIONS
     const modalHandleOpen = (modalDataType, modalData) => {
         let modalWidth;
@@ -155,28 +222,81 @@ const MainLayout = (props) => {
         )
     }
 
+    let switchRoutes = (
+        <Switch>
+            <Route path="/invoices-list"
+            render={()=> (
+                    <Table
+                        dataType='invoice' 
+                        data={state.invoices}
+                        columns={[
+                            {title: 'Nr Faktury', dataIndex: 'invoice_nr', width: '20%'},
+                            {title: 'Data', dataIndex: 'date', width: '15%'},
+                            {title: 'Nazwa Kontrahenta',dataIndex: 'customer.name', width: '35%'},
+                            {title: 'Wartość Faktury',dataIndex: 'total_price', width: '20%'}
+                        ]}
+                        delete={invoice_remove}
+                    />
+                )}
+                />
+            <Route path="/customers-list" render={()=> (
+                    <Table
+                        dataType='customer' 
+                        data={state.customers}
+                        columns={[
+                            {title: 'Nazwa kontrahenta', dataIndex: 'name', width: '30%'},
+                            {title: 'NIP', dataIndex: 'nip', width: '10%'},
+                            {title: 'Miasto',dataIndex: 'city', width: '30%'},
+                            {title: 'Ulica',dataIndex: 'street', width: '20%'}
+                        ]}
+                        delete={customer_remove}
+                />
+            )}/>
+            <Route path="/products-list" render={()=> (
+                    <Table
+                        dataType='product' 
+                        data={state.products}
+                        columns={[
+                            {title: 'Nazwa', dataIndex: 'name', width: '25%'},
+                            {title: 'Marka', dataIndex: 'brand', width: '15%'},
+                            {title: 'Model',dataIndex: 'model', width: '15%'},
+                            {title: 'Stan magazynowy',dataIndex: 'quantity', width: '20%'},
+                            {title: 'Cena',dataIndex: 'price', width: '15%'}
+                        ]}
+                        delete={product_remove}
+                />
+            )}/>
+            {/* <Route component={loginForm}/> */}
+            <Route component={InvoiceForm}/>
+        </Switch>
+    );
+    if(!state.loggedIn){
+        switchRoutes = (
+            <Switch>
+                <Route path="/login" render={()=>(
+                    <LoginForm
+                        logInRequest={logInRequest}
+                    />
+                )} />
+                <Route path="/signin" render={()=>(
+                    <SigninForm
+                        signInRequest={signInRequest}
+                    />
+                )} />
+                <Route path="/" render={()=>(
+                    <SigninForm logInRequest={logInRequest}/>
+                )} />
+            </Switch>
+        )
+    }
+
     return(
         <BrowserRouter>
             <Layout>
-                <Header style={{padding: 0}}> <NavBar/> </Header>
+                <Header style={{padding: 0}}>
+                     <NavBar loggedIn={state.loggedIn} logOut={logOut}/>
+                </Header>
                     <Content>
-
-                            {/* <Modal
-                                title="Basic Modal"
-                                visible={state.modalVisible}
-                                onOk={modalHandleSave}
-                                onCancel={modalHandleCancel}
-                                footer={[
-                                    <Button key="back" onClick={modalHandleCancel}>
-                                    Anuluj
-                                    </Button>,
-                                    <Button key="submit" type="primary" loading={state.loading} onClick={modalHandleSave}>
-                                    Zapisz
-                                    </Button>,
-                                ]}
-                            >
-                                {state.modalContent}
-                            </Modal> */}
                             <MainModal
                                 visible={state.modalVisible}
                                 loading={state.loading}
@@ -185,57 +305,7 @@ const MainLayout = (props) => {
                                 modalData={state.modalData}
                                 modalWidth={state.modalWidth}
                             />
-                            <Switch>
-                                <Route path="/invoice-form" render={()=>(
-                                    <InvoiceForm
-                                        showNotification={ShowNotification}
-                                    />
-                                )} />
-                                <Route path="/invoices-list"
-                                 render={()=> (
-                                        <Table
-                                            dataType='invoice' 
-                                            data={state.invoices}
-                                            columns={[
-                                                {title: 'Nr Faktury', dataIndex: 'invoice_nr', width: '20%'},
-                                                {title: 'Data', dataIndex: 'date', width: '15%'},
-                                                {title: 'Nazwa Kontrahenta',dataIndex: 'customer.name', width: '35%'},
-                                                {title: 'Wartość Faktury',dataIndex: 'total_price', width: '20%'}
-                                            ]}
-                                            delete={invoice_remove}
-                                        />
-                                    )}
-                                    />
-                                <Route path="/customers-list" render={()=> (
-                                        <Table
-                                            dataType='customer' 
-                                            data={state.customers}
-                                            columns={[
-                                                {title: 'Nazwa kontrahenta', dataIndex: 'name', width: '30%'},
-                                                {title: 'NIP', dataIndex: 'nip', width: '10%'},
-                                                {title: 'Miasto',dataIndex: 'city', width: '30%'},
-                                                {title: 'Ulica',dataIndex: 'street', width: '20%'}
-                                            ]}
-                                            delete={customer_remove}
-                                    />
-                                )}/>
-                                <Route path="/products-list" render={()=> (
-                                        <Table
-                                            dataType='product' 
-                                            data={state.products}
-                                            columns={[
-                                                {title: 'Nazwa', dataIndex: 'name', width: '25%'},
-                                                {title: 'Marka', dataIndex: 'brand', width: '15%'},
-                                                {title: 'Model',dataIndex: 'model', width: '15%'},
-                                                {title: 'Stan magazynowy',dataIndex: 'quantity', width: '20%'},
-                                                {title: 'Cena',dataIndex: 'price', width: '15%'}
-                                            ]}
-                                            delete={product_remove}
-                                    />
-                                )}/>
-                                {/* <Route component={loginForm}/> */}
-                                <Route component={loginForm}/>
-                            </Switch>
+                           {switchRoutes}
                     </Content>
                 <Footer>Facebook</Footer>
             </Layout>

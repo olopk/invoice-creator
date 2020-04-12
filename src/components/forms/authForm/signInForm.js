@@ -1,9 +1,6 @@
 import React, {useState} from 'react';
 import { Form, Input, Button } from 'antd';
 import classes from './authForm.module.css';
-import ShowNotification from '../../NotificationSnackbar/Notification';
-
-import {signIn} from'../../../api_calls/auth';
 
 const layout = {
     labelCol: { span: 5 },
@@ -28,10 +25,6 @@ const SignInForm = (props) =>{
         });
     }
 
-    const signInRequest = async (data) =>{
-        const result = await signIn(data);
-        ShowNotification(result.status, result.message)
-    }
       return (
         <div className={classes.authBox}>
             <Form className={classes.authForm}
@@ -82,7 +75,7 @@ const SignInForm = (props) =>{
             </Form.Item>
         
             <Form.Item {...tailLayout} name="remember">
-                <Button type="primary" htmlType="submit" className={classes.button} onClick={() => signInRequest(userData)}>
+                <Button type="primary" htmlType="submit" className={classes.button} onClick={() => props.signInRequest(userData)}>
                 Zarejestruj się
                 </Button>
             </Form.Item>

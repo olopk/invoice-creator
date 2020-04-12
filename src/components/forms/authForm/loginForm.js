@@ -1,9 +1,6 @@
 import React, {useState} from 'react';
 import { Form, Input, Button, Checkbox } from 'antd';
 import classes from './authForm.module.css';
-import ShowNotification from '../../NotificationSnackbar/Notification';
-
-import {logIn} from'../../../api_calls/auth';
 
 const layout = {
     labelCol: { span: 5 },
@@ -27,12 +24,6 @@ const LogInForm = (props) =>{
         });
     }
 
-    const LogInRequest = async (email, password) =>{
-        console.log(email, password)
-        const result = await logIn(email, password);
-    
-        ShowNotification(result.status, result.message)
-    }
       return (
         <div className={classes.authBox}>
             <Form className={classes.authForm}
@@ -61,7 +52,7 @@ const LogInForm = (props) =>{
         
             <Form.Item {...tailLayout} name="remember">
                 <Checkbox>Zapamiętaj mnie</Checkbox>
-                <Button type="primary" htmlType="submit" className={classes.button} onClick={()=> LogInRequest(userData.email, userData.password)}>
+                <Button type="primary" htmlType="submit" className={classes.button} onClick={()=> props.logInRequest(userData.email, userData.password)}>
                 Zaloguj się
                 </Button>
             </Form.Item>
