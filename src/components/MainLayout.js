@@ -46,11 +46,13 @@ const MainLayout = (props) => {
     const logInRequest = async (email, password) => {
         const result = await logIn(email, password)
         if(result.status === 'success'){
+            const fetchEverything = await fetchAll();
             setState({
                 ...state,
                 loggedIn: true,
                 userData: result.userData,
-                loading: false
+                loading: false,
+                ...fetchEverything
             })
         }
         ShowNotification(result.status, result.message)
@@ -149,67 +151,64 @@ const MainLayout = (props) => {
     }
     // ------------------------------------------------------------
 
-
-    useEffect(()=>{
-        const loginCheck = async () =>{
-            const token = localStorage.getItem("token");
-            const tokenExpiration = localStorage.getItem("tokenExpiration");
-            if(!token || !tokenExpiration){
-                console.log(0)
-                logOut()
-            }else{
-                const date = new Date();
-                const currentTime = date.getTime();
-                if(currentTime > tokenExpiration){
-                    console.log(1)
-                    logOut()
-                }else{
-                    const data = await getUser(token);
-                    
-                    console.log('cos tam')
-                    if(data.status === 'success'){
-                        setState({
-                            ...state,
-                            loggedIn: true,
-                            userData: data.userData,
-                            loading: false
-                        })
-                    }
-                    console.log("user data", data)
-                    ShowNotification(data.status, data.message)
-                    // const validTime = tokenExpiration - currentTime;
-                    // setTimeout(()=>{logOut()}, validTime)
-                    // return Promise.resolve(setTimeout(()=>{logOut()}, validTime))
-                }
-            }
-        }
-        const fetchAllData = async function(){
-            const allFetchedData = {};
-            let newState = {errors: []};
+    //ASYNC FUNCTION FOR FETCHING ALL THE DATA.
+    const fetchAll = async() =>{
+        const allFetchedData = {};
             allFetchedData.invoices = await fetch_invoices();
             allFetchedData.customers = await fetch_customers();
             allFetchedData.products = await fetch_products();
-                        
+            
+            let returnObject = {}
             for(let el in allFetchedData){
                 if(allFetchedData[el].error){
                     const errorMessage = el+': '+allFetchedData[el].error.message
                     ShowNotification('error', errorMessage)
-                    // const newErrors = [...newState.errors];
-                    // newErrors.push({[el]: allFetchedData[el].error.message});
-                    // newState = {
-                    //     ...newState,
-                    //     errors: newErrors
-                    // }
                 }else{
-                    newState = {
-                        ...newState,
+                    returnObject = {
+                        ...returnObject,
                         [el]: allFetchedData[el].data
                     }
                 }
             }
-            setState({...state, ...newState});
+            return returnObject
+    }
+
+    useEffect(()=>{
+        let newState = {errors: []};
+
+        const loginCheck = async () =>{
+            const token = localStorage.getItem("token");
+            const tokenExpiration = localStorage.getItem("tokenExpiration");
+            if(!token || !tokenExpiration){
+                 logOut()
+            }else{
+                const date = new Date();
+                const currentTime = date.getTime();
+                if(currentTime > tokenExpiration){
+                 logOut()
+                }else{
+                    const data = await getUser(token);
+                    if(data.status === 'success'){
+                        newState = {
+                            ...newState,
+                            loggedIn: true,
+                            userData: data.userData,
+                            loading: false
+                        }
+                    }
+                    ShowNotification(data.status, data.message)
+
+                    const validTime = tokenExpiration - currentTime;
+                    setTimeout(()=>{logOut()}, validTime)
+                    
+                    const fetchEverything = await fetchAll();
+                    newState = {...newState, ...fetchEverything};
+
+                    setState({...state, ...newState})
+                }
+            }
         }
-        fetchAllData()
+        loginCheck()
     }, [])
 
     useEffect(()=>{
@@ -217,7 +216,6 @@ const MainLayout = (props) => {
             const date = new Date();
             const currentTime = date.getTime();
             const validTime = localStorage.getItem("tokenExpiration") - currentTime;
-            console.log(validTime)
             setTimeout(()=>{
                 ShowNotification('error', "Sesja wygasła, zaloguj sie ponownie")
                 logOut()
