@@ -3,7 +3,7 @@ import classes from './productForm.module.css';
 
 import {save_product} from '../../../api_calls/products'
 
-import { Form, Icon, Input, AutoComplete, InputNumber, Button, DatePicker, Row, Col as Column } from 'antd';
+import { Form, Icon, AutoComplete, InputNumber, Button, Row, Col as Column } from 'antd';
 
 // eslint-disable-next-line
 function hasErrors(fieldsError) {
@@ -35,8 +35,7 @@ const ProductForm = (props) => {
 
     useEffect(()=>{
       if(props.modalData){
-        const {modalData} = props;
-        setProduct({...product, ...modalData})
+        setProduct(product => ({...product, ...props.modalData}))
       }
     }, [props.modalData])
 

@@ -3,7 +3,7 @@ import classes from './customerForm.module.css';
 
 import {save_customer} from '../../../api_calls/customers'
 
-import { Form, Icon, Input, AutoComplete, InputNumber, Button, DatePicker, Row, Col as Column } from 'antd';
+import { Form, Icon, AutoComplete, InputNumber, Button, Row, Col as Column } from 'antd';
 
 // eslint-disable-next-line
 function hasErrors(fieldsError) {
@@ -36,8 +36,7 @@ const CustomerForm = (props) => {
     )
     useEffect(()=>{
       if(props.modalData){
-        const {modalData} = props;
-        setCustomer({...customer, ...modalData})
+        setCustomer(customer => ({...customer, ...props.modalData}))
       }
     }, [props.modalData])
 

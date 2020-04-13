@@ -67,14 +67,14 @@ const InvoiceForm = (props) => {
 
     useEffect(()=>{
       if(props.modalData){
-        const {modalData} = props;
-        setCustomer({...customer, ...modalData.customer})
-        setInvoice({
+        const modalData = props.modalData;
+        setCustomer(customer =>({...customer, ...modalData.customer}))
+        setInvoice(invoice => ({
           ...invoice,
           invoice_nr: modalData.invoice_nr,
           total_price: modalData.total_price,
           date: modalData.date
-        })
+        }))
 
         const products = modalData.order.map(el => {
           return{

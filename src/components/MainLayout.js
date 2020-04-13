@@ -1,23 +1,21 @@
 import React, {useState, useEffect} from 'react';
 import { BrowserRouter, Route, Switch} from 'react-router-dom';
 import { Layout } from 'antd';
+
+import MainModal from './Modals/mainModal';
 import NavBar from '../components/Navigation/NavBar';
-import InvoiceForm from './forms/invoiceForm/InvoiceForm';
 import MainTable from './Tables/mainTable/mainTable';
+import InvoiceForm from './forms/invoiceForm/InvoiceForm';
+import LoginForm from './forms/authForm/loginForm';
+import SigninForm from './forms/authForm/signInForm';
+import ShowNotification from '../components/NotificationSnackbar/Notification';
+
 import {fetch_invoices, delete_invoice} from '../api_calls/invoices';
 import {fetch_customers, delete_customer} from '../api_calls/customers';
 import {fetch_products, delete_product} from '../api_calls/products';
 import {getUser, logIn, signIn} from '../api_calls/auth';
 
-import MainModal from './Modals/mainModal';
-
-import ShowNotification from '../components/NotificationSnackbar/Notification';
 // import classes from './MainLayout.module.css';
-
-//TEMP
-import LoginForm from './forms/authForm/loginForm';
-import SigninForm from './forms/authForm/signInForm';
-//
 
 const { Header, Content, Footer} = Layout;
 
@@ -78,7 +76,6 @@ const MainLayout = (props) => {
     //MODAL OPERATIONS
     const modalHandleOpen = (modalDataType, modalData) => {
         let modalWidth;
-        console.log(modalDataType)
         switch(modalDataType){
             case 'invoice':
                 modalWidth = 1280;
@@ -105,14 +102,6 @@ const MainLayout = (props) => {
     }
     // ------------------------------------------------------------
     // INVOICES OPERATIONS 
-    // const get_single_invoice = async (id) => {
-    //     const data = await fetch_single_invoice(id);
-    //     if(data.error){
-    //         ShowNotification('error', data.error.message)
-    //     }else{
-    //         setState({...state, singleInvoice: data.data});
-    //     }
-    // }
     const invoice_remove = async (id) => {
         const callUpdate = () => {
             const updatedInvoices = state.invoices.filter(el => el._id !== id);
@@ -123,14 +112,6 @@ const MainLayout = (props) => {
     }
     // ------------------------------------------------------------
      // CUSTOMERS OPERATIONS 
-    // const get_single_customer = async (id) => {
-    //     const data = await fetch_single_customer(id);
-    //     if(data.error){
-    //         ShowNotification('error', data.error.message)
-    //     }else{
-    //         setState({...state, singleCustomer: data.data});
-    //     }
-    // }
     const customer_remove = async (id) => {
         const callUpdate = () => {
             const updatedCustomers = state.customers.filter(el => el._id !== id);
@@ -172,10 +153,10 @@ const MainLayout = (props) => {
             }
             return returnObject
     }
+    // ------------------------------------------------------------
 
     useEffect(()=>{
         let newState = {errors: []};
-
         const loginCheck = async () =>{
             const token = localStorage.getItem("token");
             const tokenExpiration = localStorage.getItem("tokenExpiration");
@@ -198,13 +179,11 @@ const MainLayout = (props) => {
                     }
                     ShowNotification(data.status, data.message)
 
-                    const validTime = tokenExpiration - currentTime;
-                    setTimeout(()=>{logOut()}, validTime)
-                    
+                    //fetch all the data after successfull login.
                     const fetchEverything = await fetchAll();
                     newState = {...newState, ...fetchEverything};
 
-                    setState({...state, ...newState})
+                    setState(state => ({...state, ...newState}))
                 }
             }
         }
@@ -212,14 +191,17 @@ const MainLayout = (props) => {
     }, [])
 
     useEffect(()=>{
+        let timeout;
         if(state.loggedIn === true){
             const date = new Date();
             const currentTime = date.getTime();
             const validTime = localStorage.getItem("tokenExpiration") - currentTime;
-            setTimeout(()=>{
+            timeout = setTimeout(() =>{
                 ShowNotification('error', "Sesja wygasła, zaloguj sie ponownie")
                 logOut()
-            }, validTime)
+            }, validTime)}
+        return () => {
+            clearTimeout(timeout)
         }
     }, [state.loggedIn])
     
