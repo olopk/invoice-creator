@@ -33,12 +33,12 @@ export const save_product = (product, id) => {
     if(id){
         query = `
         mutation UpdateProduct($id: String!, $product: ProductInputData!){
-            editProduct(id: $id, productInput: $product}){message}
+            editProduct(id: $id, productInput: $product){message}
         }`;
     }else{
         query = `
         mutation CreateNewProduct($product: ProductInputData!){
-            addProduct(productInput: $product}){message}
+            addProduct(productInput: $product){message}
         }`;
     }
     const graphqlQuery = {

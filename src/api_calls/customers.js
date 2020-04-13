@@ -33,12 +33,12 @@ export const save_customer = (customer, id) => {
     if(id){
         query = `
         mutation UpdateCustomer($id: String!, $customer: CustomerInputData!){
-            editCustomer(id: $id, customerInput: $customer}){message}
+            editCustomer(id: $id, customerInput: $customer){message}
         }`;
     }else{
         query = `
         mutation CreateNewCustomer($customer: CustomerInputData!){
-            addCustomer(customerInput: $customer}){message}
+            addCustomer(customerInput: $customer){message}
         }`;
     }
     const graphqlQuery = {
