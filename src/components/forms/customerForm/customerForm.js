@@ -1,6 +1,8 @@
 import React, {useState, useEffect} from 'react';
 import classes from './customerForm.module.css';
 
+import {save_customer} from '../../../api_calls/customers'
+
 import { Form, Icon, Input, AutoComplete, InputNumber, Button, DatePicker, Row, Col as Column } from 'antd';
 
 // eslint-disable-next-line
@@ -24,6 +26,7 @@ const CustomerForm = (props) => {
     // LOCAL STATE AND FUNCTIONS FOR CUSTOMER
     const [customer, setCustomer] = useState(
       {
+        key: '',
         _id: '',
         nip: '',
         city: '',
@@ -65,13 +68,20 @@ const CustomerForm = (props) => {
 
     const save = async () => {
       setState({...state, loading: true});
-      // let response;
-      // if(props.modalData){
-      //   response = await save_invoice(invoice, customer, products, props.modalData._id);
-      // }else{
-      //   response = await save_invoice(invoice, customer, products);
-      // }
-      // props.showNotification(response.status, response.message);
+      let response;
+      const parsedCustomer = Object.keys(customer)
+      .filter(el => el !== 'key')
+      .reduce((obj, key)=>{
+        obj[key] = customer[key]
+        return obj
+      }, {})
+
+      if(props.modalData){
+        response = await save_customer(parsedCustomer, props.modalData._id);
+      }else{
+        response = await save_customer(parsedCustomer);
+      }
+      props.showNotification(response.status, response.message);
       setState({...state, loading: false});
     }
     // TODO
