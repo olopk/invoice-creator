@@ -1,8 +1,23 @@
 import axios from 'axios';
 
+let headers = { 'content-type': 'application/json'}
+
 const axiosInstance = axios.create({
     baseURL: 'http://127.0.0.1:8080',
-    headers: { 'content-type': 'application/json' }
+    headers: headers
 })
+   
+axiosInstance.interceptors.request.use(function(config) {    
+    const token = localStorage.getItem('token');
+    if(token){
+            config.headers = {
+            ...config.headers,
+            'Authorization': 'Bearer '+token
+        }
+    }
+        return config;
+    }, function(error) {
+        return Promise.reject(error);
+});
 
 export default axiosInstance;
