@@ -1,6 +1,8 @@
 import React, {useState, useEffect} from 'react';
 import classes from './productForm.module.css';
 
+import {save_product} from '../../../api_calls/products'
+
 import { Form, Icon, Input, AutoComplete, InputNumber, Button, DatePicker, Row, Col as Column } from 'antd';
 
 // eslint-disable-next-line
@@ -27,8 +29,7 @@ const ProductForm = (props) => {
         name: '',
         unit: 'szt.',
         quantity: '',
-        price: '',
-        total_price: ''
+        price: ''
       }
     )
 
@@ -66,13 +67,23 @@ const ProductForm = (props) => {
 
     const save = async () => {
       setState({...state, loading: true});
-      // let response;
-      // if(props.modalData){
-      //   response = await save_product(product, props.modalData._id);
-      // }else{
-      //   response = await save_product(product);
-      // }
-      // props.showNotification(response.status, response.message);
+      let response;
+
+      const parsedProduct = Object.keys(product)
+      .filter(el => el !== 'key')
+      .reduce((obj, key) => {
+        obj[key] = product[key]
+        return obj
+      }, {})
+
+      console.log(parsedProduct)
+
+      if(props.modalData){
+        response = await save_product(parsedProduct, props.modalData._id);
+      }else{
+        response = await save_product(parsedProduct);
+      }
+      props.showNotification(response.status, response.message);
       setState({...state, loading: false});
     }
     const onChange = (name, value) => {  
