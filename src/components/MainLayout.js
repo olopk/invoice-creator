@@ -45,7 +45,6 @@ const MainLayout = (props) => {
     }
     const logInRequest = async (email, password) => {
         const result = await logIn(email, password)
-
         if(result.status === 'success'){
             setState({
                 ...state,
@@ -53,12 +52,10 @@ const MainLayout = (props) => {
                 userData: result.userData,
                 loading: false
             })
-            setTimeout(()=>{logOut()}, localStorage.getItem("tokenExpiration"))
         }
         ShowNotification(result.status, result.message)
     }
     const logOut = () => {
-        console.log('clicked logout')
         localStorage.removeItem("token");
         localStorage.removeItem("tokenExpiration")
         setState({
@@ -75,33 +72,7 @@ const MainLayout = (props) => {
             errors: []
         })
     }
-    
-    const loginCheck = async () =>{
-        const token = localStorage.getItem("token");
-        const tokenExpiration = localStorage.setItem("tokenExpiration");
-        if(!token || !tokenExpiration){
-            logOut()
-        }else{
-            const date = new Date();
-            const currentTime = date.getTime();
-            if(currentTime > tokenExpiration){
-                logOut()
-            }else{
-                const data = await getUser(token);
-                if(data.status === 'success'){
-                    setState({
-                        ...state,
-                        loggedIn: true,
-                        userData: data.userData,
-                        loading: false
-                    })
-                }
-                ShowNotification(data.status, data.message)
-                const validTime = currentTime - tokenExpiration;
-                setTimeout(()=>{logOut()}, validTime)
-            }
-        }
-    }
+
     //MODAL OPERATIONS
     const modalHandleOpen = (modalDataType, modalData) => {
         let modalWidth;
@@ -180,6 +151,38 @@ const MainLayout = (props) => {
 
 
     useEffect(()=>{
+        const loginCheck = async () =>{
+            const token = localStorage.getItem("token");
+            const tokenExpiration = localStorage.getItem("tokenExpiration");
+            if(!token || !tokenExpiration){
+                console.log(0)
+                logOut()
+            }else{
+                const date = new Date();
+                const currentTime = date.getTime();
+                if(currentTime > tokenExpiration){
+                    console.log(1)
+                    logOut()
+                }else{
+                    const data = await getUser(token);
+                    
+                    console.log('cos tam')
+                    if(data.status === 'success'){
+                        setState({
+                            ...state,
+                            loggedIn: true,
+                            userData: data.userData,
+                            loading: false
+                        })
+                    }
+                    console.log("user data", data)
+                    ShowNotification(data.status, data.message)
+                    // const validTime = tokenExpiration - currentTime;
+                    // setTimeout(()=>{logOut()}, validTime)
+                    // return Promise.resolve(setTimeout(()=>{logOut()}, validTime))
+                }
+            }
+        }
         const fetchAllData = async function(){
             const allFetchedData = {};
             let newState = {errors: []};
@@ -204,11 +207,23 @@ const MainLayout = (props) => {
                     }
                 }
             }
-            console.log(newState)
             setState({...state, ...newState});
         }
         fetchAllData()
     }, [])
+
+    useEffect(()=>{
+        if(state.loggedIn === true){
+            const date = new Date();
+            const currentTime = date.getTime();
+            const validTime = localStorage.getItem("tokenExpiration") - currentTime;
+            console.log(validTime)
+            setTimeout(()=>{
+                ShowNotification('error', "Sesja wygasła, zaloguj sie ponownie")
+                logOut()
+            }, validTime)
+        }
+    }, [state.loggedIn])
     
     // All tables will get some equal props, so there is a new draft.
     const Table = (props) => {
@@ -284,7 +299,7 @@ const MainLayout = (props) => {
                     />
                 )} />
                 <Route path="/" render={()=>(
-                    <SigninForm logInRequest={logInRequest}/>
+                    <LoginForm logInRequest={logInRequest}/>
                 )} />
             </Switch>
         )

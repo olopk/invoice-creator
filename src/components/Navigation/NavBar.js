@@ -67,12 +67,12 @@ const NavBar = (props) => {
                      <Icon type="setting" />
                      Ustawienia
                  </Menu.Item>
-                 <a onclick={()=>props.logOut}>
-                    <Menu.Item key="logout">
+                 {/* <a onClick={()=>props.logOut()}> */}
+                    <Menu.Item key="logout" onClick={()=>props.logOut()}>
                         <Icon type="logout" />
                         Wyloguj się
                     </Menu.Item>
-                </a>
+                {/* </a> */}
                  {/* <SubMenu
                      title={
                          <span className="submenu-title-wrapper">

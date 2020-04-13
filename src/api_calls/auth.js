@@ -67,7 +67,6 @@ export const getUser = (token) => {
         data: JSON.stringify(graphQl),
         headers:{
             'Authorization': 'Bearer '+token,
-            'Content-Type': 'application/json'
         }
     })
         .then(res => {
@@ -75,6 +74,9 @@ export const getUser = (token) => {
             return{status: 'success', message: `Witaj, ${response.name}`, userData: response}
         })
         .catch(err => {
+            if(err.response.data.message){
+                return {status: 'error', message: err.response.data.message}
+            }
             const error = err.response.data.errors[0];
             return {status: 'error', message: error.message}
         })
