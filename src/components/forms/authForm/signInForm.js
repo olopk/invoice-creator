@@ -1,5 +1,7 @@
 import React, {useState} from 'react';
-import { Form, Input, Button } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Input, Button } from 'antd';
 import classes from './authForm.module.css';
 
 const layout = {

@@ -3,7 +3,12 @@ import classes from './productForm.module.css';
 
 import {save_product} from '../../../api_calls/products'
 
-import { Form, Icon, AutoComplete, InputNumber, Button, Row, Col as Column } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
+
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+
+import { AutoComplete, InputNumber, Button, Row, Col as Column } from 'antd';
 
 // eslint-disable-next-line
 function hasErrors(fieldsError) {
@@ -206,7 +211,7 @@ const ProductForm = (props) => {
     )
 
     if(state.loading){
-      content = <Icon type="loading" className={classes.loadingIcon}/>;
+      content = <LoadingOutlined className={classes.loadingIcon} />;
     }
     
     return(

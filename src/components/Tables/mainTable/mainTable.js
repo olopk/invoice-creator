@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
-import { Table, Input, Button, Icon } from 'antd';
+import { DeleteOutlined, EditOutlined, LoadingOutlined, SearchOutlined } from '@ant-design/icons';
+import { Table, Input, Button } from 'antd';
 import Highlighter from 'react-highlight-words';
 import classes from './mainTable.module.css';
 
@@ -26,7 +27,7 @@ class MainTable extends Component {
         <Button
           type="primary"
           onClick={() => this.handleSearch(selectedKeys, confirm, dataIndex)}
-          icon="search"
+          icon={<SearchOutlined />}
           size="small"
           style={{ width: 90, marginRight: 8 }}
         >
@@ -38,7 +39,7 @@ class MainTable extends Component {
       </div>
     ),
     filterIcon: filtered => (
-      <Icon type="search" style={{ color: filtered ? '#1890ff' : undefined }} />
+      <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
     ),
     onFilter: (value, record) =>
       record[dataIndex]
@@ -78,12 +79,16 @@ class MainTable extends Component {
 
   actions = (rowData) =>{
     // console.log(rowData)
-    return(
+    return (
       <span>
-        <Icon className={classes.tableIcon} type="edit" onClick={()=>this.props.openModal(this.props.dataType, rowData)}/>
-        <Icon className={classes.tableIcon} type="delete" onClick={()=>this.props.delete(rowData._id)}/>
+        <EditOutlined
+          className={classes.tableIcon}
+          onClick={()=>this.props.openModal(this.props.dataType, rowData)} />
+        <DeleteOutlined
+          className={classes.tableIcon}
+          onClick={()=>this.props.delete(rowData._id)} />
       </span>
-    )
+    );
   }
 
   
@@ -91,7 +96,7 @@ class MainTable extends Component {
     let table, columns;
     
     if(!this.props.data){
-      table = <Icon type="loading" className={classes.loadingIcon}/>;
+      table = <LoadingOutlined className={classes.loadingIcon} />;
     }else{
         columns = this.props.columns.map(el => {
         return {

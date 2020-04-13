@@ -4,7 +4,18 @@ import moment from 'moment';
 import today from '../../../functions/today';
 import {save_invoice} from '../../../api_calls/invoices'
 
-import { Form, Icon, Input, AutoComplete, InputNumber, Button, DatePicker, Row, Col as Column } from 'antd';
+import {
+  FileAddOutlined,
+  LoadingOutlined,
+  LockOutlined,
+  MinusCircleOutlined,
+  PlusCircleOutlined,
+} from '@ant-design/icons';
+
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+
+import { Input, AutoComplete, InputNumber, Button, DatePicker, Row, Col as Column } from 'antd';
 
 // eslint-disable-next-line
 function hasErrors(fieldsError) {
@@ -197,7 +208,7 @@ const InvoiceForm = (props) => {
         
         let rem = (
           <div className={classes.minusIcon}>
-            <Icon type="minus-circle" style={{ fontSize: "24px" }} onClick={()=>delProduct(index)}/>
+            <MinusCircleOutlined style={{ fontSize: "24px" }} onClick={()=>delProduct(index)} />
           </div>
         )
 
@@ -306,7 +317,7 @@ const InvoiceForm = (props) => {
                     (<Input
                         placeholder="Numer faktury"  
                         onChange={(el) => onChange('invoice_nr', el.target.value)}
-                        prefix={<Icon type="file-add" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                        prefix={<FileAddOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
                     />,)}
                 </Form.Item>
               </Col>
@@ -361,7 +372,7 @@ const InvoiceForm = (props) => {
                   'nip',
                   {initialValue: customer.nip, rules: [{ required: true, message: 'Wpisz poprawny NIP' }],})
                   (<InputNumber
-                    prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                    prefix={<LockOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
                     placeholder="NIP"
                     style={{width: "100%"}}
                     onChange={(el) => onChange('nip', el)}
@@ -464,14 +475,14 @@ const InvoiceForm = (props) => {
             </Row>         
           </Form>
           <div style={{display: 'flex', justifyContent: 'center'}}>
-            <Icon type="plus-circle" style={{ fontSize: "22px", marginTop: '15px' }} onClick={addProduct}/>
+            <PlusCircleOutlined style={{ fontSize: "22px", marginTop: '15px' }} onClick={addProduct} />
           </div>
         </section>
       </React.Fragment>
     )
 
     if(state.loading){
-      content = <Icon type="loading" className={classes.loadingIcon}/>;
+      content = <LoadingOutlined className={classes.loadingIcon} />;
     }
     
     return(

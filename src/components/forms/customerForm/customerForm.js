@@ -3,7 +3,12 @@ import classes from './customerForm.module.css';
 
 import {save_customer} from '../../../api_calls/customers'
 
-import { Form, Icon, AutoComplete, InputNumber, Button, Row, Col as Column } from 'antd';
+import { LoadingOutlined, LockOutlined } from '@ant-design/icons';
+
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+
+import { AutoComplete, InputNumber, Button, Row, Col as Column } from 'antd';
 
 // eslint-disable-next-line
 function hasErrors(fieldsError) {
@@ -134,7 +139,7 @@ const CustomerForm = (props) => {
                   'nip',
                   {initialValue: customer.nip, rules: [{ required: true, message: 'Wpisz poprawny NIP' }],})
                   (<InputNumber
-                    prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                    prefix={<LockOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
                     placeholder="NIP"
                     style={{width: "100%"}}
                     onChange={(el) => onChange('nip', el)}
@@ -187,7 +192,7 @@ const CustomerForm = (props) => {
     )
 
     if(state.loading){
-      content = <Icon type="loading" className={classes.loadingIcon}/>;
+      content = <LoadingOutlined className={classes.loadingIcon} />;
     }
     
     return(

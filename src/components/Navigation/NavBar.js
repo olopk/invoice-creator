@@ -1,5 +1,16 @@
 import React, { useState } from 'react';
-import { Menu, Icon } from 'antd';
+
+import {
+    FileAddOutlined,
+    FolderOpenOutlined,
+    IdcardOutlined,
+    LoginOutlined,
+    LogoutOutlined,
+    ReadOutlined,
+    SettingOutlined,
+} from '@ant-design/icons';
+
+import { Menu } from 'antd';
 import {Link} from 'react-router-dom';
 
 import classes from './NavBar.module.css';
@@ -19,13 +30,13 @@ const NavBar = (props) => {
         <Menu onClick={handleClick} selectedKeys={current} mode="horizontal" className={classes.menu}>
             <Menu.Item key="login">
                 <Link to="/login">
-                    <Icon type="login" />
+                    <LoginOutlined />
                     Zaloguj się
                 </Link>
             </Menu.Item>
             <Menu.Item key="signin">
                 <Link to="/signin">
-                    <Icon type="login" />
+                    <LoginOutlined />
                     Zarejestruj się
                 </Link>
             </Menu.Item>
@@ -37,25 +48,25 @@ const NavBar = (props) => {
             <Menu onClick={handleClick} selectedKeys={current} mode="horizontal" className={classes.menu}>
                  <Menu.Item key="add-invoice">
                      <Link to="/invoice-form">
-                         <Icon type="file-add" />
+                         <FileAddOutlined />
                          Dodaj Fakturę
                      </Link>
                  </Menu.Item>
                  <Menu.Item key="invoices">
                      <Link to="/invoices-list">                
-                         <Icon type="folder-open" />
+                         <FolderOpenOutlined />
                          Faktury
                      </Link>
                  </Menu.Item>
                  <Menu.Item key="idcard">
                      <Link to="/customers-list">                
-                         <Icon type="idcard" />
+                         <IdcardOutlined />
                          Kontrahenci
                      </Link>
                  </Menu.Item>
                  <Menu.Item key="read">
                      <Link to="/products-list">                
-                         <Icon type="read" />
+                         <ReadOutlined />
                          Produkty i Usługi
                      </Link>
                  </Menu.Item>
@@ -64,12 +75,12 @@ const NavBar = (props) => {
                      Magazyn produktów
                  </Menu.Item> */}
                  <Menu.Item key="setting">
-                     <Icon type="setting" />
+                     <SettingOutlined />
                      Ustawienia
                  </Menu.Item>
                  {/* <a onClick={()=>props.logOut()}> */}
                     <Menu.Item key="logout" onClick={()=>props.logOut()}>
-                        <Icon type="logout" />
+                        <LogoutOutlined />
                         Wyloguj się
                     </Menu.Item>
                 {/* </a> */}

@@ -1,4 +1,6 @@
 import React, {useState} from 'react';
+// import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import { Form, Input, Button, Checkbox } from 'antd';
 import classes from './authForm.module.css';
 
@@ -23,12 +25,24 @@ const LogInForm = (props) =>{
           [name]: value.target.value
         });
     }
+    // onClick={()=> props.logInRequest(userData.email, userData.password)}
+
+    const onFinish = values => {
+        props.logInRequest(values.email, values.password)
+      };
+    
+    // const onFinishFailed = errorInfo => {
+    //     console.log('Failed:', errorInfo);
+    // };
+    
 
       return (
         <div className={classes.authBox}>
             <Form className={classes.authForm}
             {...layout}
             name="basic"
+            onFinish={onFinish}
+            // onFinishFailed={onFinishFailed}
             >
             <Form.Item
                 label="Email"
@@ -49,11 +63,14 @@ const LogInForm = (props) =>{
                    onChange={(el) => onChange('password', el)}
                 />
             </Form.Item>
-        
-            <Form.Item {...tailLayout} name="remember">
+
+            <Form.Item {...tailLayout} name="remember" valuePropName="checked">
                 <Checkbox>Zapamiętaj mnie</Checkbox>
-                <Button type="primary" htmlType="submit" className={classes.button} onClick={()=> props.logInRequest(userData.email, userData.password)}>
-                Zaloguj się
+            </Form.Item>
+
+            <Form.Item>
+                <Button type="primary" htmlType="submit" className={classes.button}>
+                    Zaloguj się
                 </Button>
             </Form.Item>
         
