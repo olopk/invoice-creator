@@ -1,6 +1,5 @@
 import React, {useState, useEffect} from 'react';
 import classes from './InvoiceForm.module.css';
-import moment from 'moment';
 import today from '../../../functions/today';
 import {save_invoice} from '../../../api_calls/invoices'
 
@@ -12,23 +11,15 @@ import {
   PlusCircleOutlined,
 } from '@ant-design/icons';
 
-import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
 
-import { Input, AutoComplete, InputNumber, Button, DatePicker, Row, Col as Column } from 'antd';
-
-// eslint-disable-next-line
-function hasErrors(fieldsError) {
-  return Object.keys(fieldsError).some(field => fieldsError[field]);
-}
+import { Input, AutoComplete, Form, InputNumber, Button, DatePicker, Row, Col as Column } from 'antd';
 
 const Col = props =>{
   return <Column align="center" {...props}>{props.children}</Column>
 }
 
 const InvoiceForm = (props) => {
-    // eslint-disable-next-line
-    const { getFieldDecorator, getFieldsError, setFieldsValue, getFieldError, isFieldTouched } = props.form;
 
     const [state, setState] = useState({
       error: '',
@@ -100,32 +91,7 @@ const InvoiceForm = (props) => {
       }
     }, [props.modalData])
 
-    // props.form.validateFields();
-
-    // const handleSubmit = e => {
-    //     e.preventDefault();
-    //     props.form.validateFields((err, values) => {
-    //       if (!err) {
-    //         console.log('Received values of form: ', values);
-    //       }
-    //     });
-    //   };
-
-    // const openNotification = (status, message) => {
-    //   let icon = <SmileOutlined style={{ color: '#108ee9' }} />;
-    //   if(status === 'error'){
-    //     icon = <ExclamationCircleOutlined style={{ color: '#108ee9' }} />
-    //   }
-    //   // status === 'error' ? icon = <ExclamationCircleOutlined style={{ color: '#108ee9' }} /> : null;
-
-    //   notification.info({
-    //     message: message,
-    //     placement: 'bottomLeft',
-    //     icon: icon
-    //   });
-    // };
-
-    const save = async () => {
+    const onFinish = async () => {
       setState({...state, loading: true});
       let response;
       if(props.modalData){
@@ -141,14 +107,7 @@ const InvoiceForm = (props) => {
 
     const onChange = (name, value, index) => {
         // if there is an index, we know it is about Products change.
-        console.log('its me')
-        console.log(value)
         if(index > -1){
-          // props.form.setFieldsValue({
-          //   [name]: value,
-          // },
-          //  () =>
-            // {   
             const allProducts = [...products];
             const product = {...allProducts[index]};
             product[name] = value;          
@@ -171,40 +130,25 @@ const InvoiceForm = (props) => {
               ...invoice,
               total_price: sum
             })
-          // }
-          // );
 
         }else if(name === 'invoice_nr' || name === 'total_price' || name === 'date'){
-          props.form.setFieldsValue({
-            [name]: value,
-          }, setInvoice({
+          setInvoice({
             ...invoice,
             [name]: value
-          }));         
+          })         
         }
         else{
-          props.form.setFieldsValue({
-            [name]: value,
-          }, setCustomer({
+          setCustomer({
             ...customer,
             [name]: value
-          }));
+          })
         }
     }
 
 
-    const invoicenrError = isFieldTouched('invoice_nr') && getFieldError('invoice_nr');
-    const dateError = isFieldTouched('date') && getFieldError('date');
-    const nipError = isFieldTouched('nip') && getFieldError('nip');
-    const cityError = isFieldTouched('city') && getFieldError('city');
-    const streetError = isFieldTouched('street') && getFieldError('street');
-    const nameError = isFieldTouched('name') && getFieldError('name');
-    
-
     // let products_list = <Icon type="loading" />;
 
     let products_list = products.map((position, index) => {        
-        // const nameError = isFieldTouched('name') && getFieldError('name'); 
         
         let rem = (
           <div className={classes.minusIcon}>
@@ -217,29 +161,18 @@ const InvoiceForm = (props) => {
         }
 
         return (
-          <Row key={index} 
-            // style={{
-            //   display: 'flex',
-            //   justifyContent: 'flex-end',
-            //   alignItems: 'center'
-            // }}
-          >
+          <Row key={index}>
             <Col span={11} offset={1}>
               <Form.Item
+                name={'product_name'+index}
                 style={{ marginBottom: "0px" }}
-                // validateStatus={nameError ? 'error' : ''}
-                // help={nameError || ''}
+                rules={[{ required: true, message: 'Wpisz Nazwę produktu lub usługi' }]}
                 >
-                {/* {getFieldDecorator(
-                  nam2,
-                  {initialValue: products[index].name.value, rules: [{ required: true, message: 'Wpisz poprawna nazwe' }],}) */}
-                  {/* ( */}
                     <AutoComplete
                     value={products[index].name}
                     placeholder="Nazwa produktu/usługi"
                     onChange={(el) => onChange('name', el, index)}
                     />
-                    {/* )}  */}
               </Form.Item>
             </Col>
             <Col span={2}>
@@ -255,7 +188,9 @@ const InvoiceForm = (props) => {
             </Col>
             <Col span={2}>
               <Form.Item
+                name={'product_quantity'+index}
                 style={{ marginBottom: "0px" }}
+                rules={[{ required: true, message: 'Wpisz ilość' }]}
               >
                 <InputNumber
                   style={{ width: '100%' }}
@@ -268,7 +203,9 @@ const InvoiceForm = (props) => {
             </Col>
             <Col span={3}>
               <Form.Item
+                name={'product_price'+index}
                 style={{ marginBottom: "0px" }}
+                rules={[{ required: true, message: 'Wpisz cenę' }]}
               >
                 <InputNumber
                   style={{ width: '100%' }}
@@ -302,155 +239,114 @@ const InvoiceForm = (props) => {
       <React.Fragment>
         <section>
           <h1>Dane faktury</h1>
-          <Form layout="inline" onSubmit={()=>null}>
+          <Form
+            name="basic"
+            onFinish={onFinish}
+          >
             <Row>
               <Col align="center" span={8}>
                 <Form.Item
-                  validateStatus={invoicenrError ? 'error' : ''}
-                  help={invoicenrError || ''}
+                  name={'invoice_nr'}
                   style={{ width: '80%' }}
                   wrapperCol={{ sm: 24 }}
+                  rules={[{ required: true, message: 'Wpisz numer faktury' }]}
                 >
-                  {getFieldDecorator(
-                    'invoice_nr'
-                    ,{initialValue: invoice.invoice_nr ,rules: [{ required: true, message: 'Pole nie zostało wypełnione poprawnine' }],})
-                    (<Input
+                  <Input
+                        value={invoice.invoice_nr}
                         placeholder="Numer faktury"  
                         onChange={(el) => onChange('invoice_nr', el.target.value)}
                         prefix={<FileAddOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
-                    />,)}
+                  />
                 </Form.Item>
               </Col>
-              {/* <Col span={8}>
-                <Form.Item
-                  validateStatus={cityError ? 'error' : ''}
-                  help={cityError || ''}
-                  style={{ width: '80%' }}
-                  wrapperCol={{ sm: 24 }}
-                  >
-                  {getFieldDecorator(
-                    'city',
-                    {initialValue: customer.city, rules: [{ required: true, message: 'Wpisz poprawne miasto' }],})
-                    (<Input
-                      prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                      placeholder="Miasto"
-                      onChange={(el) => onChange('city', el.target.value)}
-                    />,)} 
-                </Form.Item>
-              </Col> */}
               <Col span={8}>
               <Form.Item
-                  validateStatus={dateError ? 'error' : ''}
-                  help={dateError || ''}
+                  name={'date'}
                   style={{ width: '80%' }}
                   wrapperCol={{ sm: 24 }}
+                  rules={[{ required: true, message: 'Wybierz datę' }]}
                   >
-                  {getFieldDecorator(
-                    'date',
-                    {initialValue: moment(invoice.date, 'YYYY-MM-DD'), rules: [{ required: true, message: 'Wpisz poprawne miasto' }],})
-                    (<DatePicker
-                      onChange={(moment, el) => onChange('date', el)}
+                    <DatePicker
+                      //TODO set the right value for datepicker.
+
+                      // value={invoice.date}
+                      // onChange={(moment, el) => onChange('date', el)}
                       format={'YYYY-MM-DD'}
-                      style={{ width: '100%' }} />)} 
+                      style={{ width: '100%' }}
+                    /> 
                 </Form.Item>
               </Col>
             </Row>
-          </Form>
-        </section>
-        <section>
           <h1>Dane kontrahenta</h1>
-          <Form>
             <Row>
             <Col span={8}>
               <Form.Item
-                validateStatus={nipError ? 'error' : ''}
-                help={nipError || ''}
+                name={'customer_nip'}
                 style={{ width: '80%' }}
                 wrapperCol={{ sm: 24 }}
+                rules={[{ required: true, message: 'Wpisz poprawny NIP' }]}
                 >
-                {getFieldDecorator(
-                  'nip',
-                  {initialValue: customer.nip, rules: [{ required: true, message: 'Wpisz poprawny NIP' }],})
-                  (<InputNumber
+                <InputNumber
+                    value={customer.nip}
                     prefix={<LockOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
                     placeholder="NIP"
                     style={{width: "100%"}}
                     onChange={(el) => onChange('nip', el)}
-                  />,)} 
+                /> 
               </Form.Item>
               </Col>
               <Col span={8}>
                 <Form.Item
-                  validateStatus={cityError ? 'error' : ''}
-                  help={cityError || ''}
+                  name={'customer_city'}
                   style={{ width: '80%' }}
                   wrapperCol={{ sm: 24 }}
+                  rules={[{ required: true, message: 'Wpisz miasto' }]}
                   >
-                  {getFieldDecorator(
-                    'city',
-                    {initialValue: customer.city, rules: [{ required: true, message: 'Wpisz poprawne miasto' }],})
-                    (<AutoComplete
+                  <AutoComplete
+                    value={customer.city}
                     placeholder="Miejscowość"
                     onChange={(el) => onChange('city', el)}
-                    />)} 
+                  /> 
                 </Form.Item>
               </Col>
               <Col span={8}>
                 <Form.Item
-                  validateStatus={streetError ? 'error' : ''}
-                  help={streetError || ''}
+                  name={'customer_street'}
                   style={{ width: '80%' }}
                   wrapperCol={{ sm: 24 }}
+                  rules={[{ required: true, message: 'Wpisz ulicę' }]}
                   >
-                  {getFieldDecorator(
-                    'street',
-                    {initialValue: customer.street, rules: [{ required: true, message: 'Wpisz poprawną ulicę' }],})
-                    (<AutoComplete
+                  <AutoComplete
+                      value={customer.street}
                       placeholder="Ulica"
                       onChange={(el) => onChange('street', el)}
-                    />)} 
+                  /> 
                 </Form.Item>                
               </Col>
             </Row>
             <Row>
               <Col span={16} align="center">
               <Form.Item
-                validateStatus={nameError ? 'error' : ''}
-                help={nameError || ''}
+                name={'customer_name'}
                 style={{ width: '90%' }}
                 wrapperCol={{ sm: 24 }}
+                rules={[{ required: true, message: 'Wpisz nazwę klienta.' }]}
                 >
-                {getFieldDecorator(
-                  'name',
-                  {initialValue: customer.name, rules: [{ required: true, message: 'Wpisz poprawne miasto' }],})
-                  (<AutoComplete
-                    placeholder="Nazwa kontrahenta"
+                <AutoComplete
+                    value={customer.name}
+                    placeholder="Nazwa klienta"
                     style={{width: '100%'}}
                     onChange={(el) => onChange('name', el)}
-                    />)} 
+                /> 
               </Form.Item>               
               </Col>
             </Row>
-            {/* <Form.Item>
-              <Button type="primary" htmlType="submit" disabled={hasErrors(getFieldsError())}>
-              Log in
-              </Button>
-            </Form.Item> */}
-          </Form>
-        </section>
-        <section>
-          <h1>Towary i usługi</h1>
-          <Form>
+              <h1>Towary i usługi</h1>      
             {products_list}
             <Row key={'asfasfa'} 
               // style={{display: 'flex',justifyContent: 'flex-end',alignItems: 'center'}}
             >
-              <div style={{
-                display: 'flex',
-                // justifyContent: 'center',
-                alignItems: 'center'
-              }}>
-                <Col span={2}  offset = {19}
+              <Col span={2}  offset = {19}
                 style={{
                   display: 'flex',
                   justifyContent: 'center',
@@ -471,12 +367,22 @@ const InvoiceForm = (props) => {
                     /> 
                   </Form.Item>
                 </Col>
-              </div>
+            </Row>
+            <Row>
+                <Col span={4} offset={10}>
+                    <PlusCircleOutlined style={{ fontSize: "22px", margin: '20px 0px 70px 0px' }} onClick={addProduct} />
+                </Col>
+            </Row>
+            <Row>
+              <Col span={24} align="center">
+                <Form.Item>
+                  <Button type="primary" htmlType="submit" block>
+                    Zapisz i generuj fakturę.
+                  </Button>
+                </Form.Item>
+              </Col>
             </Row>         
           </Form>
-          <div style={{display: 'flex', justifyContent: 'center'}}>
-            <PlusCircleOutlined style={{ fontSize: "22px", marginTop: '15px' }} onClick={addProduct} />
-          </div>
         </section>
       </React.Fragment>
     )
@@ -488,14 +394,9 @@ const InvoiceForm = (props) => {
     return(
         <div className={classes.main}>
           {content}
-          <Button type="primary" onClick={() => save()}>
-            Zapisz i generuj fakturę.
-          </Button>
         </div>
         
       );
     }
 
-const WrappedHorizontalLoginForm = Form.create({ name: 'horizontal_login' })(InvoiceForm);
-
-export default WrappedHorizontalLoginForm;
+export default InvoiceForm;

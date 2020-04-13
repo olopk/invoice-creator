@@ -262,7 +262,12 @@ const MainLayout = (props) => {
                 />
             )}/>
             {/* <Route component={loginForm}/> */}
-            <Route component={InvoiceForm}/>
+            <Route render={()=>(
+                <InvoiceForm
+                    showNotification={ShowNotification}
+                />
+            )
+            }/>
         </Switch>
     );
     if(!state.loggedIn){
