@@ -94,7 +94,7 @@ const ProductForm = (props) => {
         props.form.setFieldsValue({
           [name]: value,
         }, setProduct({
-          ...product,
+            ...product,
           [name]: value,
         }));
     }

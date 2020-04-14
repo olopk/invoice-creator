@@ -69,6 +69,7 @@ const InvoiceForm = (props) => {
 
     useEffect(()=>{
       if(props.modalData){
+        console.log(props.modalData)
         const modalData = props.modalData;
         setCustomer(customer =>({...customer, ...modalData.customer}))
         setInvoice(invoice => ({
@@ -148,8 +149,20 @@ const InvoiceForm = (props) => {
 
     // let products_list = <Icon type="loading" />;
 
+    //Initial Values for form.
+    let initialValues = {
+      invoice_nr: invoice.invoice_nr,
+      product_name0: products[0].name
+    };
+
     let products_list = products.map((position, index) => {        
-        
+        initialValues = {
+          ...initialValues,
+          // ['product_name'+index]: products[index].name,
+          // ['product_quantity'+index]: products[index].quantity,
+          // ['product_price'+index]: products[index].price
+        }  
+
         let rem = (
           <div className={classes.minusIcon}>
             <MinusCircleOutlined style={{ fontSize: "24px" }} onClick={()=>delProduct(index)} />
@@ -164,7 +177,7 @@ const InvoiceForm = (props) => {
           <Row key={index}>
             <Col span={11} offset={1}>
               <Form.Item
-                name={'product_name'+index}
+                name={['product_name', index]}
                 style={{ marginBottom: "0px" }}
                 rules={[{ required: true, message: 'Wpisz Nazwę produktu lub usługi' }]}
                 >
@@ -234,7 +247,7 @@ const InvoiceForm = (props) => {
         </Row>
         )
       })
-    
+    // console.log(initialValues)
     let content = (
       <React.Fragment>
         <section>
@@ -242,6 +255,7 @@ const InvoiceForm = (props) => {
           <Form
             name="basic"
             onFinish={onFinish}
+            initialValues={initialValues}
           >
             <Row>
               <Col align="center" span={8}>
@@ -250,11 +264,13 @@ const InvoiceForm = (props) => {
                   style={{ width: '80%' }}
                   wrapperCol={{ sm: 24 }}
                   rules={[{ required: true, message: 'Wpisz numer faktury' }]}
+                  // onValuesChange={(el) => onChange('invoice_nr', el.target.value)}
                 >
                   <Input
-                        value={invoice.invoice_nr}
+                        // defaultValue={invoice.invoice_nr}
+                        // value={invoice.invoice_nr}
                         placeholder="Numer faktury"  
-                        onChange={(el) => onChange('invoice_nr', el.target.value)}
+                        // onChange={(el) => onChange('invoice_nr', el.target.value)}
                         prefix={<FileAddOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
                   />
                 </Form.Item>
