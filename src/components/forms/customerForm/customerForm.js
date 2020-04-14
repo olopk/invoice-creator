@@ -138,7 +138,6 @@ const CustomerForm = (props) => {
         <div className={classes.main}>
           {content}
         </div>
-        
       );
     }
 

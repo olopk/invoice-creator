@@ -5,206 +5,145 @@ import {save_product} from '../../../api_calls/products'
 
 import { LoadingOutlined } from '@ant-design/icons';
 
-import { Form } from '@ant-design/compatible';
+// import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
 
-import { AutoComplete, InputNumber, Button, Row, Col as Column } from 'antd';
-
-// eslint-disable-next-line
-function hasErrors(fieldsError) {
-  return Object.keys(fieldsError).some(field => fieldsError[field]);
-}
+import { AutoComplete, InputNumber, Form, Button, Row, Col as Column } from 'antd';
 
 const Col = props =>{
   return <Column align="center" {...props}>{props.children}</Column>
 }
 
 const ProductForm = (props) => {
-    // eslint-disable-next-line
-    const { getFieldDecorator, getFieldsError, setFieldsValue, getFieldError, isFieldTouched } = props.form;
+    const [productForm] = Form.useForm()
+    const { setFieldsValue, getFieldsValue } = productForm;
 
     const [state, setState] = useState({
       error: '',
       loading: false
     });
 
-    // LOCAL STATE AND FUNCTIONS FOR PRODUCTS
-    const [product, setProduct] = useState(
-      {
-        name: '',
-        unit: 'szt.',
-        quantity: '',
-        price: ''
-      }
-    )
+    // name: '',
+    // unit: 'szt.',
+    // quantity: '',
+    // price: ''
 
     useEffect(()=>{
       if(props.modalData){
-        setProduct(product => ({...product, ...props.modalData}))
+        setFieldsValue({...props.modalData})
       }
     }, [props.modalData])
 
-    // props.form.validateFields();
-
-    // const handleSubmit = e => {
-    //     e.preventDefault();
-    //     props.form.validateFields((err, values) => {
-    //       if (!err) {
-    //         console.log('Received values of form: ', values);
-    //       }
-    //     });
-    //   };
-
-    // const openNotification = (status, message) => {
-    //   let icon = <SmileOutlined style={{ color: '#108ee9' }} />;
-    //   if(status === 'error'){
-    //     icon = <ExclamationCircleOutlined style={{ color: '#108ee9' }} />
-    //   }
-    //   // status === 'error' ? icon = <ExclamationCircleOutlined style={{ color: '#108ee9' }} /> : null;
-
-    //   notification.info({
-    //     message: message,
-    //     placement: 'bottomLeft',
-    //     icon: icon
-    //   });
-    // };
-
     const save = async () => {
       setState({...state, loading: true});
+      
+      // const parsedProduct = Object.keys(product)
+      // .filter(el => el !== 'key')
+      // .reduce((obj, key) => {
+      //   obj[key] = product[key]
+      //   return obj
+      // }, {})
+
+      const productData = getFieldsValue(['name', 'brand', 'model', 'quantity', 'price'])
+      console.log(productData)
       let response;
-
-      const parsedProduct = Object.keys(product)
-      .filter(el => el !== 'key')
-      .reduce((obj, key) => {
-        obj[key] = product[key]
-        return obj
-      }, {})
-
-      console.log(parsedProduct)
-
       if(props.modalData){
-        response = await save_product(parsedProduct, props.modalData._id);
+        response = await save_product(productData, props.modalData._id);
       }else{
-        response = await save_product(parsedProduct);
+        response = await save_product(productData);
       }
       props.showNotification(response.status, response.message);
       setState({...state, loading: false});
     }
-    const onChange = (name, value) => {  
-        props.form.setFieldsValue({
-          [name]: value,
-        }, setProduct({
-            ...product,
-          [name]: value,
-        }));
-    }
-
-
-    const nameError = isFieldTouched('name') && getFieldError('name');
-    const brandError = isFieldTouched('brand') && getFieldError('brand');
-    const modelError = isFieldTouched('model') && getFieldError('model');
-    const priceError = isFieldTouched('price') && getFieldError('price');
-    const quantityError = isFieldTouched('quantity') && getFieldError('quantity');            
+    const onChange = (element) => {  
+        setFieldsValue({element})
+    }     
     
     let content = (
       <React.Fragment>
         <section className={classes.productSection}>
           <h1>Dane produktu</h1>
-          <Form className={classes.productForm}>
+          <Form className={classes.productForm}
+            form={productForm}
+            onValuesChange={onChange}
+            onFinish={save}
+          >
             <Row>
               <Col span={24}>
                 <Form.Item
-                  validateStatus={nameError ? 'error' : ''}
-                  help={nameError || ''}
                   style={{ width: '90%' }}
                   wrapperCol={{ sm: 24 }}
+                  name='name'
                   >
-                  {getFieldDecorator(
-                    'name',
-                    {initialValue: product.name, rules: [{ required: true, message: 'Wpisz nazwę' }],})
-                    (<AutoComplete
-                    placeholder="Nazwa"
-                    onChange={(el) => onChange('name', el)}
-                  />)}
-                  </Form.Item>
-                </Col>
-              </Row>
-              <Row>
-                <Col span={12}>
-                  <Form.Item
-                    validateStatus={brandError ? 'error' : ''}
-                    help={brandError || ''}
-                    style={{ width: '80%' }}
-                    wrapperCol={{ sm: 24 }}
-                    >
-                    {getFieldDecorator(
-                      'brand',
-                      {initialValue: product.brand, rules: [{ required: false, message: 'Wpisz nazwę' }],})
-                      (<AutoComplete
-                      placeholder="Marka"
-                      onChange={(el) => onChange('brand', el)}
-                    />)}
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item
-                    validateStatus={modelError ? 'error' : ''}
-                    help={modelError || ''}
-                    style={{ width: '80%' }}
-                    wrapperCol={{ sm: 24 }}
-                    >
-                    {getFieldDecorator(
-                      'model',
-                      {initialValue: product.model, rules: [{ required: false, message: 'Wpisz nazwę' }],})
-                      (<AutoComplete
-                      placeholder="Model"
-                      onChange={(el) => onChange('model', el)}
-                    />)}
-                  </Form.Item>               
-                </Col>
-              </Row>
-              <Row>
-                <Col span={8}>
-                  <Form.Item
-                    validateStatus={priceError ? 'error' : ''}
-                    help={priceError || ''}
-                    style={{ width: '70%' }}
-                    wrapperCol={{ sm: 24 }}
-                    >
-                    {getFieldDecorator(
-                      'price',
-                      {initialValue: product.price, rules: [{ required: true, message: 'Wpisz cenę' }],})
-                      (<InputNumber
-                      placeholder="Cena"
-                      onChange={(el) => onChange('price', el)}
-                      style={{width: "100%"}}
-                    />)}
-                  </Form.Item>
-                </Col>
-                <Col span={8}>
-                  <Form.Item
-                    validateStatus={quantityError ? 'error' : ''}
-                    help={quantityError || ''}
-                    style={{ width: '70%' }}
-                    wrapperCol={{ sm: 24 }}
-                    >
-                    {getFieldDecorator(
-                      'quantity',
-                      {initialValue: product.quantity, rules: [{ required: true, message: 'Wpisz stan magazynowy' }],})
-                      (<InputNumber
+                    <AutoComplete
                       placeholder="Nazwa"
-                      onChange={(el) => onChange('quantity', el)}
-                      style={{width: "100%"}}
-                    />)}
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row>
+                <Col span={12}>
+                  <Form.Item
+                    style={{ width: '80%' }}
+                    wrapperCol={{ sm: 24 }}
+                    name='brand'
+                    >
+                      <AutoComplete
+                        placeholder="Marka"
+                      />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item                    
+                    style={{ width: '80%' }}
+                    wrapperCol={{ sm: 24 }}
+                    name='model'
+                    >
+                      <AutoComplete
+                        placeholder="Model"
+                      />
                   </Form.Item>               
                 </Col>
               </Row>
-             
-            {/* <Form.Item>
-              <Button type="primary" htmlType="submit" disabled={hasErrors(getFieldsError())}>
-              Log in
-              </Button>
-            </Form.Item> */}
+              <Row>
+                <Col span={8}>
+                  <Form.Item
+                    style={{ width: '70%' }}
+                    wrapperCol={{ sm: 24 }}
+                    name='price'
+                    >
+                      <InputNumber
+                        placeholder="Cena"
+                        style={{width: "100%"}}
+                      />
+                  </Form.Item>
+                </Col>
+                <Col span={8}>
+                  <Form.Item
+                    style={{ width: '70%' }}
+                    wrapperCol={{ sm: 24 }}
+                    name='quantity'
+                    >
+                      <InputNumber
+                        placeholder="Nazwa"
+                        style={{width: "100%"}}
+                      />
+                  </Form.Item>               
+                </Col>
+              </Row>
+             <Row>
+               <Col span={24}>
+                  <Form.Item
+                  //  style={{ width: '100%' }}
+                   wrapperCol={{ sm: 24 }}
+                  >
+                    <Button type="primary" htmlType="submit" block>
+                      Zapisz
+                    </Button>
+                  </Form.Item>
+               </Col>
+             </Row>
+
           </Form>
         </section>
       </React.Fragment>
@@ -217,14 +156,9 @@ const ProductForm = (props) => {
     return(
         <div className={classes.main}>
           {content}
-          <Button type="primary" onClick={() => save()}>
-            Zapisz
-          </Button>
         </div>
         
       );
     }
 
-const WrappedHorizontalLoginForm = Form.create({ name: 'horizontal_login' })(ProductForm);
-
-export default WrappedHorizontalLoginForm;
+export default ProductForm;
