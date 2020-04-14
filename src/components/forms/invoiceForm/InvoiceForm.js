@@ -20,242 +20,234 @@ const Col = props =>{
 }
 
 const InvoiceForm = (props) => {
+    const [invoiceForm] = Form.useForm()
+    const {setFieldsValue , getFieldsValue} = invoiceForm;
 
     const [state, setState] = useState({
       error: '',
-      loading: false
+      loading: false,
+      products_count: 1
     });
 
-    // LOCAL STATE AND FUNCTIONS FOR INVOICE
-    const [invoice, setInvoice] = useState(
-      {
-        invoice_nr: '12/2019',
-        date: today(),
-        total_price: ''
-      }
-    )
+    // invoice_nr: '12/2019',
+    // date: today(),
+    // total_price: ''
 
-    // LOCAL STATE AND FUNCTIONS FOR CUSTOMER
-    const [customer, setCustomer] = useState(
-      {
-        nip: '',
-        city: '',
-        street: '',
-        name: ''
-      }
-    )
-    // LOCAL STATE AND FUNCTIONS FOR PRODUCTS
-    const [products, setProducts] = useState([
-      {
-        name: '',
-        unit: 'szt.',
-        quantity: '',
-        price: '',
-        total_price: ''
-      }
-    ])
-
+    // customer_nip: '',
+    // customer_city: '',
+    // customer_street: '',
+    // customer_name: ''
+    
+    // product1_name: '',
+    // product1_unit: 'szt.',
+    // product1_quantity: '',
+    // product1_price: '',
+    // product1_total_price: ''
+    
     const addProduct = () =>{
-      const allProducts = [...products];
-      allProducts.push({name: '',unit: 'szt.',quantity: '',price: '',total_price: ''})
-      setProducts([...allProducts])
+      setState(prevState => ({...state, products_count: prevState.products_count + 1}))
+      // const allProducts = [...products];
+      // allProducts.push({name: '',unit: 'szt.',quantity: '',price: '',total_price: ''})
+      // setProducts([...allProducts])
     }
     
     const delProduct = (id) => {
-      const allProducts = [...products];
-      allProducts.splice(id,1);
-      setProducts([...allProducts])
+      if(!state.products_count < 2){
+        setState(prevState => ({...state, products_count: prevState.products_count - 1}))
+      }
+      // const allProducts = [...products];
+      // allProducts.splice(id,1);
+      // setProducts([...allProducts])
     }
 
     useEffect(()=>{
       if(props.modalData){
-        console.log(props.modalData)
-        const modalData = props.modalData;
-        setCustomer(customer =>({...customer, ...modalData.customer}))
-        setInvoice(invoice => ({
-          ...invoice,
-          invoice_nr: modalData.invoice_nr,
-          total_price: modalData.total_price,
-          date: modalData.date
-        }))
+        const {invoice, customer, order} = props.modalData;
+        
+        setState({...state, products_count: order.length})
 
-        const products = modalData.order.map(el => {
-          return{
-            name: el.product.name,
-            unit: 'szt.',
-            quantity: el.quantity,
-            price: el.price,
-            total_price: el.total_price
+        let allProductsData = {}; 
+        
+        order.forEach((el, index) => {
+          const product = 'product'+(index+1)+'_'
+          
+          allProductsData ={
+            ...allProductsData,
+            [product+'name']: el.product.name,
+            [product+'unit']: 'szt.',
+            [product+'quantity']: el.quantity,
+            [product+'price']: el.price,
+            [product+'total_price']: el.total_price
           }
         })
-        setProducts(products)
+
+        setFieldsValue({
+            ...invoice,
+            customer_nip: customer.nip,
+            customer_city: customer.city,
+            customer_street: customer.street,
+            customer_name: customer.name,
+            ...allProductsData
+        })
       }
     }, [props.modalData])
 
     const onFinish = async () => {
       setState({...state, loading: true});
-      let response;
-      if(props.modalData){
-        response = await save_invoice(invoice, customer, products, props.modalData._id);
-      }else{
-        response = await save_invoice(invoice, customer, products);
-      }
-      props.showNotification(response.status, response.message);
+      // let response;
+      // if(props.modalData){
+      //   response = await save_invoice(invoice, customer, products, props.modalData._id);
+      // }else{
+      //   response = await save_invoice(invoice, customer, products);
+      // }
+      // props.showNotification(response.status, response.message);
       setState({...state, loading: false});
     }
     // TODO
     // I really dont like this onchange function, need to think about it.
 
-    const onChange = (name, value, index) => {
-        // if there is an index, we know it is about Products change.
-        if(index > -1){
-            const allProducts = [...products];
-            const product = {...allProducts[index]};
-            product[name] = value;          
+    const onChange = (element) => {
+      setFieldsValue({element})        
 
-            if((name === 'quantity' || name === 'price')&&(!isNaN(product.quantity) && !isNaN(product.price))){
-                product.total_price = product.quantity * product.price;                 
-              }
-              allProducts[index]= product;
-              
-              setProducts([
-                ...allProducts
-              ])
-              
-            //We need to calculate total sum when any quantity or price is changing.
-            let sum = 0;
-            allProducts.forEach(el => {
-              sum += el.total_price
-            })
-            setInvoice({
-              ...invoice,
-              total_price: sum
-            })
+        // // if there is an index, we know it is about Products change.
+        // if(index > -1){
+        //     const allProducts = [...products];
+        //     const product = {...allProducts[index]};
+        //     product[name] = value;          
 
-        }else if(name === 'invoice_nr' || name === 'total_price' || name === 'date'){
-          setInvoice({
-            ...invoice,
-            [name]: value
-          })         
-        }
-        else{
-          setCustomer({
-            ...customer,
-            [name]: value
-          })
-        }
+        //     if((name === 'quantity' || name === 'price')&&(!isNaN(product.quantity) && !isNaN(product.price))){
+        //         product.total_price = product.quantity * product.price;                 
+        //       }
+        //       allProducts[index]= product;
+              
+        //       setProducts([
+        //         ...allProducts
+        //       ])
+              
+        //     //We need to calculate total sum when any quantity or price is changing.
+        //     let sum = 0;
+        //     allProducts.forEach(el => {
+        //       sum += el.total_price
+        //     })
+        //     setInvoice({
+        //       ...invoice,
+        //       total_price: sum
+        //     })
+
+        // }else if(name === 'invoice_nr' || name === 'total_price' || name === 'date'){
+        //   setInvoice({
+        //     ...invoice,
+        //     [name]: value
+        //   })         
+        // }
+        // else{
+        //   setCustomer({
+        //     ...customer,
+        //     [name]: value
+        //   })
+        // }
     }
 
 
     // let products_list = <Icon type="loading" />;
 
     //Initial Values for form.
-    let initialValues = {
-      invoice_nr: invoice.invoice_nr,
-      product_name0: products[0].name
-    };
+    // let initialValues = {
+    //   invoice_nr: invoice.invoice_nr,
+    //   product_name0: products[0].name
+    // };
 
-    let products_list = products.map((position, index) => {        
-        initialValues = {
-          ...initialValues,
-          // ['product_name'+index]: products[index].name,
-          // ['product_quantity'+index]: products[index].quantity,
-          // ['product_price'+index]: products[index].price
-        }  
+    let products_list = () => {
+      let allProds = [];
+
+      for(let index = 1; index <= props.products_counter; index++){
 
         let rem = (
           <div className={classes.minusIcon}>
-            <MinusCircleOutlined style={{ fontSize: "24px" }} onClick={()=>delProduct(index)} />
-          </div>
-        )
+              <MinusCircleOutlined style={{ fontSize: "24px" }} onClick={()=>delProduct(index)} />
+            </div>
+          )
+          if(index === 1){
+            rem = null;
+          }
 
-        if(index === 0){
-          rem = null;
-        }
-
-        return (
-          <Row key={index}>
-            <Col span={11} offset={1}>
-              <Form.Item
-                name={['product_name', index]}
-                style={{ marginBottom: "0px" }}
-                rules={[{ required: true, message: 'Wpisz Nazwę produktu lub usługi' }]}
+          let Product = (
+            <Row key={index}>
+              <Col span={11} offset={1}>
+                <Form.Item
+                  name={`product${index}_name`}
+                  style={{ marginBottom: "0px" }}
+                  rules={[{ required: true, message: 'Wpisz Nazwę produktu lub usługi' }]}
+                  >
+                      <AutoComplete
+                      placeholder="Nazwa produktu/usługi"
+                      />
+                </Form.Item>
+              </Col>
+              <Col span={2}>
+                <Form.Item
+                  style={{ marginBottom: "0px" }}
+                  name={`product${index}_unit`}
                 >
                     <AutoComplete
-                    value={products[index].name}
-                    placeholder="Nazwa produktu/usługi"
-                    onChange={(el) => onChange('name', el, index)}
-                    />
-              </Form.Item>
-            </Col>
-            <Col span={2}>
-              <Form.Item
-                style={{ marginBottom: "0px" }}
-              >
-                  <AutoComplete
-                    placeholder="Jednostka"
-                    value={products[index].unit}
-                    onChange={(el) => onChange('unit', el, index)}
+                      placeholder="Jednostka"
+                      /> 
+                </Form.Item>
+              </Col>
+              <Col span={2}>
+                <Form.Item
+                  name={`product${index}_quantity`}
+                  style={{ marginBottom: "0px" }}
+                  rules={[{ required: true, message: 'Wpisz ilość' }]}
+                  >
+                  <InputNumber
+                    style={{ width: '100%' }}
+                    placeholder="Ilość"
+                    min={1}
                     /> 
-              </Form.Item>
-            </Col>
-            <Col span={2}>
-              <Form.Item
-                name={'product_quantity'+index}
-                style={{ marginBottom: "0px" }}
-                rules={[{ required: true, message: 'Wpisz ilość' }]}
-              >
-                <InputNumber
-                  style={{ width: '100%' }}
-                  placeholder="Ilość"
-                  min={1}
-                  value={products[index].quantity}
-                  onChange={(el) => onChange('quantity', el, index)}
-                  /> 
-              </Form.Item>
-            </Col>
-            <Col span={3}>
-              <Form.Item
-                name={'product_price'+index}
-                style={{ marginBottom: "0px" }}
-                rules={[{ required: true, message: 'Wpisz cenę' }]}
-              >
-                <InputNumber
-                  style={{ width: '100%' }}
-                  placeholder="Cena jednostkowa"
-                  value={products[index].price}
-                  onChange={(el) => onChange('price', el, index)}
-                  /> 
-              </Form.Item>
-            </Col>
-            <Col span={4}>
-              <Form.Item
-                style={{ marginBottom: "0px" }}
-              >
-                <InputNumber
-                  disabled
-                  style={{ width: '100%' }}
-                  placeholder="Cena ostateczna"
-                  value={products[index].total_price}
-                  // onChange={(el) => onChange('total_price', el, index)}
-                  /> 
-              </Form.Item>
-            </Col>
-            <Col span={1}>
-              {rem}
-            </Col>
-        </Row>
-        )
-      })
-    // console.log(initialValues)
-    let content = (
+                </Form.Item>
+              </Col>
+              <Col span={3}>
+                <Form.Item
+                  name={`product${index}_price`}
+                  style={{ marginBottom: "0px" }}
+                  rules={[{ required: true, message: 'Wpisz cenę' }]}
+                  >
+                  <InputNumber
+                    style={{ width: '100%' }}
+                    placeholder="Cena jednostkowa"
+                    /> 
+                </Form.Item>
+              </Col>
+              <Col span={4}>
+                <Form.Item
+                  style={{ marginBottom: "0px" }}
+                  name={`product${index}_total_price`}
+                  >
+                  <InputNumber
+                    disabled
+                    style={{ width: '100%' }}
+                    placeholder="Cena ostateczna"
+                    /> 
+                </Form.Item>
+              </Col>
+              <Col span={1}>
+                {rem}
+              </Col>
+          </Row>
+          )
+          allProds.push(Product);
+        }
+      return allProds
+    }
+      let content = (
       <React.Fragment>
         <section>
           <h1>Dane faktury</h1>
           <Form
-            name="basic"
+            form={invoiceForm}
             onFinish={onFinish}
-            initialValues={initialValues}
+            onValuesChange={onChange}
           >
             <Row>
               <Col align="center" span={8}>
@@ -303,11 +295,9 @@ const InvoiceForm = (props) => {
                 rules={[{ required: true, message: 'Wpisz poprawny NIP' }]}
                 >
                 <InputNumber
-                    value={customer.nip}
                     prefix={<LockOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
                     placeholder="NIP"
                     style={{width: "100%"}}
-                    onChange={(el) => onChange('nip', el)}
                 /> 
               </Form.Item>
               </Col>
@@ -319,9 +309,7 @@ const InvoiceForm = (props) => {
                   rules={[{ required: true, message: 'Wpisz miasto' }]}
                   >
                   <AutoComplete
-                    value={customer.city}
                     placeholder="Miejscowość"
-                    onChange={(el) => onChange('city', el)}
                   /> 
                 </Form.Item>
               </Col>
@@ -333,9 +321,7 @@ const InvoiceForm = (props) => {
                   rules={[{ required: true, message: 'Wpisz ulicę' }]}
                   >
                   <AutoComplete
-                      value={customer.street}
                       placeholder="Ulica"
-                      onChange={(el) => onChange('street', el)}
                   /> 
                 </Form.Item>                
               </Col>
@@ -349,10 +335,8 @@ const InvoiceForm = (props) => {
                 rules={[{ required: true, message: 'Wpisz nazwę klienta.' }]}
                 >
                 <AutoComplete
-                    value={customer.name}
                     placeholder="Nazwa klienta"
                     style={{width: '100%'}}
-                    onChange={(el) => onChange('name', el)}
                 /> 
               </Form.Item>               
               </Col>
@@ -373,13 +357,13 @@ const InvoiceForm = (props) => {
                 <Col span={2}>
                   <Form.Item
                     style={{ marginBottom: "0px" }}
+                    name={'total_price'}
                   >
                     <InputNumber
                       style={{ width: '100%', textAlign: 'center' }}
                       // placeholder="Suma końcowa"
                       // min={0}
                       disabled
-                      value={invoice.total_price}
                     /> 
                   </Form.Item>
                 </Col>
