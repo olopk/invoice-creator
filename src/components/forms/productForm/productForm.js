@@ -5,10 +5,9 @@ import {save_product} from '../../../api_calls/products'
 
 import { LoadingOutlined } from '@ant-design/icons';
 
-// import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
 
-import { AutoComplete, InputNumber, Form, Button, Row, Col as Column } from 'antd';
+import { AutoComplete, Typography,InputNumber, Form, Button, Row, Col as Column } from 'antd';
 
 const Col = props =>{
   return <Column align="center" {...props}>{props.children}</Column>
@@ -23,16 +22,19 @@ const ProductForm = (props) => {
       loading: false
     });
 
-    // name: '',
-    // unit: 'szt.',
-    // quantity: '',
-    // price: ''
+    const {Text} = Typography;
+
+    // let formInitialValues = {}
+
+    // if(props.modalData){
+    //   formInitialValues = {...props.modalData}
+    // }
 
     useEffect(()=>{
       if(props.modalData){
         setFieldsValue({...props.modalData})
       }
-    }, [props.modalData])
+    }, [props.modalData, setFieldsValue])
 
     const save = async () => {
       setState({...state, loading: true});
@@ -45,7 +47,7 @@ const ProductForm = (props) => {
       // }, {})
 
       const productData = getFieldsValue(['name', 'brand', 'model', 'quantity', 'price'])
-      console.log(productData)
+    
       let response;
       if(props.modalData){
         response = await save_product(productData, props.modalData._id);
@@ -61,12 +63,13 @@ const ProductForm = (props) => {
     
     let content = (
       <React.Fragment>
-        <section className={classes.productSection}>
-          <h1>Dane produktu</h1>
+        <section className={classes.productSection} style={props.style}>
+          <Text strong style={{marginBottom: '20px'}}>DANE KLIENTA</Text>
           <Form className={classes.productForm}
             form={productForm}
             onValuesChange={onChange}
             onFinish={save}
+            // initialValues={formInitialValues}
           >
             <Row>
               <Col span={24}>

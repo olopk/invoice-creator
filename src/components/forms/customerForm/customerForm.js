@@ -8,13 +8,16 @@ import { LoadingOutlined, LockOutlined } from '@ant-design/icons';
 // import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
 
-import { AutoComplete, InputNumber, Form, Button, Row, Col as Column } from 'antd';
+import { AutoComplete, Typography, InputNumber, Form, Button, Row, Col as Column } from 'antd';
 const Col = props =>{
   return <Column {...props}>{props.children}</Column>
 }
 
 const CustomerForm = (props) => {
     const [form] = Form.useForm();
+    const {setFieldsValue} = form;
+
+    const {Text} = Typography;
 
     const [state, setState] = useState({
       error: '',
@@ -23,11 +26,11 @@ const CustomerForm = (props) => {
 
     useEffect(()=>{
       if(props.modalData){
-        form.setFieldsValue({
+        setFieldsValue({
           ...props.modalData
         })
       }
-    }, [props.modalData])
+    }, [props.modalData, setFieldsValue])
 
     const save = async () => {
       setState({...state, loading: true});
@@ -49,12 +52,11 @@ const CustomerForm = (props) => {
 
     let content = (
       <React.Fragment>
-        <section className={classes.customerSection}>
-          <h1>Dane kontrahenta</h1>
+        <section className={classes.customerSection} style={props.style}>
+          <Text strong style={{marginBottom: '20px'}}>DANE KLIENTA</Text>
           <Form
             form={form}
             className={classes.customerForm}
-            // initialValues={{}}
             onValuesChange={onChange}
             onFinish={save}
           >

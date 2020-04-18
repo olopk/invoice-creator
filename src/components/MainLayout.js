@@ -2,6 +2,8 @@ import React, {useState, useEffect} from 'react';
 import { BrowserRouter, Route, Switch} from 'react-router-dom';
 import { Layout } from 'antd';
 
+import classes from './MainLayout.module.css'
+
 import MainModal from './Modals/mainModal';
 import NavBar from '../components/Navigation/NavBar';
 import MainTable from './Tables/mainTable/mainTable';
@@ -78,7 +80,7 @@ const MainLayout = (props) => {
         let modalWidth;
         switch(modalDataType){
             case 'invoice':
-                modalWidth = 1280;
+                modalWidth = 1080;
                 break;
             case 'customer':
                 modalWidth = 700;
@@ -97,7 +99,8 @@ const MainLayout = (props) => {
     const modalHandleCancel = () => {
         setState({
             ...state,
-            modalVisible: false
+            modalVisible: false,
+            modalData: null
         })
     }
     // ------------------------------------------------------------
@@ -292,7 +295,7 @@ const MainLayout = (props) => {
 
     return(
         <BrowserRouter>
-            <Layout>
+            <Layout className={classes.mainSection}> 
                 <Header style={{padding: 0}}>
                      <NavBar loggedIn={state.loggedIn} logOut={logOut}/>
                 </Header>

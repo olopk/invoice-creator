@@ -12,6 +12,7 @@ const MainModal = (props) => {
   if(modalDataType === 'invoice'){
     modalContent = (
       <InvoiceForm
+          style={{width: '100%'}}
           modalData={modalData}
           showNotification={ShowNotification}
       />
@@ -38,19 +39,10 @@ const MainModal = (props) => {
   <Modal
       width={props.modalWidth}
       centered={true}
-      // title="Basic Modal"
-      // onOk={props.onOk}
       onCancel={props.onCancel}
       visible={props.visible}
-      // footer={[
-      //     <Button key="back" onClick={props.onCancel}>
-      //     Anuluj
-      //     </Button>,
-      //     <Button key="submit" type="primary" loading={props.loading} onClick={()=> {return true} }>
-      //     Zapisz
-      //     </Button>,
-      // ]}
       footer={null}
+      bodyStyle={{ padding: '0' }}
   >
       {modalContent}
   </Modal>

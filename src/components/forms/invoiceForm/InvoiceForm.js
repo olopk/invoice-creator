@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import classes from './InvoiceForm.module.css';
 import today from '../../../functions/today';
 import {save_invoice} from '../../../api_calls/invoices'
@@ -14,7 +14,8 @@ import {
 
 import '@ant-design/compatible/assets/index.css';
 
-import { Input, Select, AutoComplete, Form, InputNumber, Button, DatePicker, Row, Col as Column } from 'antd';
+import { Typography, Input, Select, AutoComplete, Form, InputNumber, Button, DatePicker, Row, Col as Column } from 'antd';
+
 
 const Col = props =>{
   return <Column align="center" {...props}>{props.children}</Column>
@@ -25,10 +26,12 @@ const InvoiceForm = (props) => {
     const {setFieldsValue , getFieldsValue} = invoiceForm;
 
     const { Option } = Select;
+    const { Text } = Typography;
 
     const [state, setState] = useState({
       error: '',
       loading: false,
+      modalDataId: ''
     });
 
     let formInitialValues = {
@@ -48,31 +51,34 @@ const InvoiceForm = (props) => {
       ],
       date: moment(today(), 'YYYY-MM-DD')
     }
-
-    if(props.modalData){
-      const {invoice_nr, date, total_price , customer, order} = props.modalData;
- 
-      let parsedOrder = order.map(el => {
-        return{
-          ...el,
-          product: el.product.name,
-          unit: 'szt.'         
-        }
-      })
-
-      const parsedDate = moment(date, 'YYYY-MM-DD')
-
-      formInitialValues = {
-        invoice_nr: invoice_nr,
-        total_price: total_price,
-        date: parsedDate,        
-        customer_nip: customer.nip,
-        customer_city: customer.city,
-        customer_street: customer.street,
-        customer_name: customer.name,
-        order: parsedOrder
+    
+    useEffect(()=>{
+      if(props.modalData){
+        const {invoice_nr, date, total_price , customer, order} = props.modalData;
+        let parsedOrder = order.map(el => {
+          return{
+            ...el,
+            product: el.product.name,
+            unit: 'szt.'         
+          }
+        })
+  
+        const parsedDate = moment(date, 'YYYY-MM-DD')
+   
+        setFieldsValue({
+          invoice_nr: invoice_nr,
+          total_price: total_price,
+          date: parsedDate,        
+          customer_nip: customer.nip,
+          customer_city: customer.city,
+          customer_street: customer.street,
+          customer_name: customer.name,
+          order: parsedOrder
+        })
       }
-    }
+
+    }, [props.modalData, setFieldsValue])
+
 
     const onFinish = async () => {
       setState({...state, loading: true});
@@ -128,7 +134,9 @@ const InvoiceForm = (props) => {
 
         let sum = 0;
         data.order.forEach(el => {
-          sum += el.total_price 
+          if(el && el.total_price){
+            sum += el.total_price 
+          }
         })
         setFieldsValue({'total_price': sum})
       }
@@ -136,19 +144,23 @@ const InvoiceForm = (props) => {
 
     let content = (
     <React.Fragment>
-      <section>
-        <h1>Dane faktury</h1>
+      <section className={classes.mainSection} style={props.style}>
         <Form
           form={invoiceForm}
           onFinish={onFinish}
           onValuesChange={onChange}
           initialValues={formInitialValues}
-        >
+          >
           <Row>
-            <Col align="center" span={8}>
+          <Col className={classes.title_col} span={24}>
+              <Text strong>DANE FAKTURY</Text>
+            </Col>
+          </Row>
+          <Row>
+            <Col align="center" offset={1} span={5}>
               <Form.Item
                 name={'invoice_nr'}
-                style={{ width: '80%' }}
+                style={{ width: '100%' }}
                 wrapperCol={{ sm: 24 }}
                 rules={[{ required: true, message: 'Wpisz numer faktury' }]}
               >
@@ -158,10 +170,13 @@ const InvoiceForm = (props) => {
                 />
               </Form.Item>
             </Col>
-            <Col span={8}>
+            <Col align="right" span={5} offset={7}>
+              <Text className={classes.cityName}>Człuchów, </Text>
+            </Col>
+            <Col span={5}>
               <Form.Item
                 name={'date'}
-                style={{ width: '80%' }}
+                style={{ width: '100%' }}
                 wrapperCol={{ sm: 24 }}
                 rules={[{ required: true, message: 'Wybierz datę' }]}
                 >
@@ -172,12 +187,16 @@ const InvoiceForm = (props) => {
               </Form.Item>
             </Col>
           </Row>
-          <h1>Dane kontrahenta</h1>
           <Row>
-            <Col span={8}>
+            <Col className={classes.title_col} span={24}>
+              <Text strong>DANE KLIENTA</Text>
+            </Col>
+          </Row>
+          <Row>
+            <Col span={5} offset={1}>
               <Form.Item
                 name={'customer_nip'}
-                style={{ width: '80%' }}
+                style={{ width: '100%' }}
                 wrapperCol={{ sm: 24 }}
                 rules={[{ required: true, message: 'Wpisz poprawny NIP' }]}
               >
@@ -188,36 +207,17 @@ const InvoiceForm = (props) => {
                 /> 
               </Form.Item>
             </Col>
-            <Col span={8}>
-              <Form.Item
-                name={'customer_city'}
-                style={{ width: '80%' }}
-                wrapperCol={{ sm: 24 }}
-                rules={[{ required: true, message: 'Wpisz miasto' }]}
-                >
-                <Input
-                  placeholder="Miejscowość"
-                /> 
-              </Form.Item>
+            <Col span={4} offset={1} align="center">
+                <Form.Item>
+                  <Button type="primary" block size="small">
+                    Pobierz dane
+                  </Button>
+                </Form.Item>
             </Col>
-            <Col span={8}>
-              <Form.Item
-                name={'customer_street'}
-                style={{ width: '80%' }}
-                wrapperCol={{ sm: 24 }}
-                rules={[{ required: true, message: 'Wpisz ulicę' }]}
-                >
-                <Input
-                    placeholder="Ulica"
-                /> 
-              </Form.Item>                
-            </Col>
-          </Row>
-          <Row>
-            <Col span={16} align="center">
+            <Col span={10}  offset={2} align="center">
               <Form.Item
                 name={'customer_name'}
-                style={{ width: '90%' }}
+                style={{ width: '100%' }}
                 wrapperCol={{ sm: 24 }}
                 rules={[{ required: true, message: 'Wpisz nazwę klienta.' }]}
                 >
@@ -228,20 +228,48 @@ const InvoiceForm = (props) => {
               </Form.Item>               
             </Col>
           </Row>
-          <h1>Towary i usługi</h1>      
+          <Row>
+            <Col span={10} offset={1}>
+              <Form.Item
+                name={'customer_city'}
+                style={{ width: '100%' }}
+                wrapperCol={{ sm: 24 }}
+                rules={[{ required: true, message: 'Wpisz miasto' }]}
+                >
+                <Input
+                  placeholder="Miejscowość"
+                /> 
+              </Form.Item>
+            </Col>
+            <Col span={10} offset={2}>
+              <Form.Item
+                name={'customer_street'}
+                style={{ width: '100%' }}
+                wrapperCol={{ sm: 24 }}
+                rules={[{ required: true, message: 'Wpisz ulicę' }]}
+                >
+                <Input
+                    placeholder="Ulica"
+                /> 
+              </Form.Item>                
+            </Col>
+          </Row>
           <Form.List name="order">
             {(fields, {add,remove}) => {
               return(
                 <div>
                   <Row>
-                    <Col span={4} offset={10}>
-                      <PlusCircleOutlined style={{ fontSize: "22px", margin: '10px 0px 20px 0px' }} onClick={()=>add()} />
+                    <Col span={24}
+                      className={classes.title_col}
+                    >
+                      <Text strong>TOWARY I USŁUGI</Text>      
+                      <PlusCircleOutlined style={{ fontSize: "25px", margin: "0px 15px"}} onClick={()=>add()} />
                     </Col>
                   </Row>
                   {fields.map((field, index) => {
                   return(
                     <Row key={field.key}>
-                      <Col span={11} offset={1}>
+                      <Col span={10} offset={1}>
                         <Form.Item
                           name={[field.name, "product"]}
                           fieldKey={[field.fieldKey, "product"]}
@@ -253,7 +281,7 @@ const InvoiceForm = (props) => {
                             />
                         </Form.Item>
                       </Col>
-                      <Col span={2}>
+                      <Col span={3}>
                         <Form.Item
                           style={{ marginBottom: "0px" }}
                           name={[field.name, "unit"]}
@@ -270,7 +298,7 @@ const InvoiceForm = (props) => {
                           />  */}
                         </Form.Item>
                       </Col>
-                      <Col span={2}>
+                      <Col span={3}>
                         <Form.Item
                           name={[field.name, "quantity"]}
                           fieldKey={[field.fieldKey, "quantity"]}
@@ -299,7 +327,7 @@ const InvoiceForm = (props) => {
                           /> 
                         </Form.Item>
                       </Col>
-                      <Col span={4}>
+                      <Col span={3}>
                         <Form.Item
                           style={{ marginBottom: "0px" }}
                           name={[field.name, "total_price"]}
@@ -346,7 +374,7 @@ const InvoiceForm = (props) => {
               </Col>
             </Row>
             <Row>
-              <Col span={24} align="center">
+              <Col span={22} offset={1} align="center">
                 <Form.Item>
                   <Button type="primary" htmlType="submit" block>
                     Zapisz i generuj fakturę.
@@ -363,7 +391,7 @@ const InvoiceForm = (props) => {
     content = <LoadingOutlined className={classes.loadingIcon} />;
   }
   return(
-      <div className={classes.main}>
+      <div className={classes.container}>
         {content}
       </div>  
     );
