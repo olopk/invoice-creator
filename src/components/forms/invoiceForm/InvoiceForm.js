@@ -16,6 +16,7 @@ import '@ant-design/compatible/assets/index.css';
 
 import { Typography, Input, Select, AutoComplete, Form, InputNumber, Button, DatePicker, Row, Col as Column } from 'antd';
 
+import {fetch_dataByNIP} from '../../../api_calls/customers';
 
 const Col = props =>{
   return <Column align="center" {...props}>{props.children}</Column>
@@ -23,7 +24,7 @@ const Col = props =>{
 
 const InvoiceForm = (props) => {
     const [invoiceForm] = Form.useForm()
-    const {setFieldsValue , getFieldsValue} = invoiceForm;
+    const {setFieldsValue , getFieldValue, getFieldsValue} = invoiceForm;
 
     const { Option } = Select;
     const { Text } = Typography;
@@ -122,6 +123,19 @@ const InvoiceForm = (props) => {
       setFieldsValue({element})
     }
 
+    const fetchCustomerData = async () =>{
+      const nip = getFieldValue('customer_nip').toString()
+      const customerData = await fetch_dataByNIP(nip)
+      
+      const {data} = customerData;
+
+      setFieldsValue({
+        customer_name: data.name,
+        customer_city: data.city,
+        customer_street: data.street
+      })
+    } 
+
     const countElementSum = (index) => {
       //TODO i have no idea why this is working as expected...
       const data = getFieldsValue(['order'])
@@ -209,7 +223,7 @@ const InvoiceForm = (props) => {
             </Col>
             <Col span={4} offset={1} align="center">
                 <Form.Item>
-                  <Button type="primary" block size="small">
+                  <Button type="primary" block size="small" onClick={fetchCustomerData}>
                     Pobierz dane
                   </Button>
                 </Form.Item>

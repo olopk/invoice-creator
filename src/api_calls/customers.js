@@ -77,3 +77,17 @@ export const delete_customer = (id) => {
         return {status: 'error', message: error.message}
     })
 }
+
+//FETCH CUSTOMER DATA BASED ON NIP
+export const fetch_dataByNIP = (nip) => {
+    const graphqlQuery = {
+        query: ` 
+            query FetchCustData($nip: String!){
+                fetchCustomerData(nip: $nip){ name city street }}
+        `,
+        variables: { nip: nip }
+    }
+    return axios.post('/graphql', JSON.stringify(graphqlQuery))
+            .then(response => {return {data: response.data.data.fetchCustomerData}})
+            .catch(err => {return {error: err}})
+}

@@ -9,6 +9,7 @@ import { LoadingOutlined, LockOutlined } from '@ant-design/icons';
 import '@ant-design/compatible/assets/index.css';
 
 import { AutoComplete, Typography, InputNumber, Form, Button, Row, Col as Column } from 'antd';
+
 const Col = props =>{
   return <Column {...props}>{props.children}</Column>
 }
