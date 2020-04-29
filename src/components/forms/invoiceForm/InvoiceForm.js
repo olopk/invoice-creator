@@ -4,6 +4,8 @@ import today from '../../../functions/today';
 import {save_invoice} from '../../../api_calls/invoices'
 import moment from 'moment';
 
+import createPDF from '../pdfdocForm';
+
 import {
   FileAddOutlined,
   LoadingOutlined,
@@ -116,6 +118,10 @@ const InvoiceForm = (props) => {
         response = await save_invoice(invoiceData, customerData, products);
       }
       props.showNotification(response.status, response.message);
+
+      if(response.status == 'success'){
+        createPDF(allValues)
+      }
       setState({...state, loading: false});
     }
 
