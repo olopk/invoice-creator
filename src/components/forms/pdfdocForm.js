@@ -1,9 +1,10 @@
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
+// import {numToWords} from 'num2words';
+import num2word from '../../utils/num2word';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 const createPDF = (props) => {
-	
 	const {invoice_nr, total_price, date, customer_nip, customer_city, customer_street, customer_name, order } = props;
 
 	const items = order.map((el, index) => {
@@ -95,7 +96,7 @@ const createPDF = (props) => {
 				 
 						 },
 					 {text: 'Słownie', alignment: 'right'},
-					 {text: `tysiac pincet sto dziewiecset`, alignment: 'right'}
+					 {text: `${num2word(total_price)}`, alignment: 'right'}
 						
 					],
 				],
