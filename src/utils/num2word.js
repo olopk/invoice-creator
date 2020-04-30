@@ -8,9 +8,7 @@ const num2word = (number) =>{
     var setki = ["", " sto", " dwieście", " trzysta", " czterysta", " pięćset", " sześćset", " siedemset", " osiemset", " dziewięćset"];
     var grupy = [["" ,"" ,""],[" tysiąc" ," tysiące" ," tysięcy"],[" milion" ," miliony" ," milionów"],];
     
-    // jezeli pole zawiera poprawna wartosc calkowita
     if (number == liczba.toString()){
-    
         var wynik = '';
         var znak = '';
         if (liczba == 0)
@@ -18,8 +16,7 @@ const num2word = (number) =>{
         if (liczba < 0) {
             znak = "minus";
             liczba = -liczba;
-        }
-    
+        }    
         var g = 0;
         while (liczba > 0) {
             var s = Math.floor((liczba % 1000)/100);
@@ -31,8 +28,7 @@ const num2word = (number) =>{
                 n = j;
                 d = 0;
                 j = 0;
-            }
-            
+            }            
             var k = 2;
             if (j == 1 && s+d+n == 0)
                 k = 0;
@@ -49,5 +45,4 @@ const num2word = (number) =>{
         console.log("Podano nieprawidlowa wartosc!");
     }
 }
-
 export default num2word;
