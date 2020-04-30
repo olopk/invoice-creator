@@ -3,7 +3,7 @@ import axios from '../axiosInstance';
 // GET ALL PRODUCTS
 export const fetch_products = () => {
     const graphqlQuery = {
-        query: `{ getProducts{ _id name model brand price quantity}}`
+        query: `{ getProducts{ _id name model brand price_net price_gross vat quantity}}`
     }
     return axios.post('/graphql', JSON.stringify(graphqlQuery))
     .then(response =>{
@@ -18,7 +18,7 @@ export const fetch_single_product = (id) => {
     const graphqlQuery = {
         query: ` 
             query FetchSingleProduct($id: String!){
-                getProduct(id: $id){ _id name model brand price quantity}}
+                getProduct(id: $id){ _id name model brand price_net price_gross vat quantity}}
         `,
         variables: { id: id }
     }
