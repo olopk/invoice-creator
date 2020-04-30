@@ -11,8 +11,8 @@ const createPDF = (props) => {
 		return [
 			{text: `${index +1}`, style: 'tableRow'},{text: `${el.product}`},
 			{text: `szt. `, style: 'tableRow'},{text: `${el.quantity}`, style: 'tableRow'},
-			{text: `${el.price}`, style: 'tableRow'},{text: `23%`, style: 'tableRow'},
-			{text: ``, style: 'tableRow'},{text: `${el.total_price}`, style: 'tableRow'}
+			{text: `${el.price_net}`, style: 'tableRow'},{text: `${el.vat}`, style: 'tableRow'},
+			{text: `${el.total_price_net}`, style: 'tableRow'},{text: `${el.total_price_gross} `, style: 'tableRow'}
 		]
 	})
 
@@ -74,7 +74,7 @@ const createPDF = (props) => {
 					 //   widths: ["*"],
 						body: [
 							[{text: 'Stawka VAT', style: 'tableHeaderSM'},{text: 'Wartość netto', style: 'tableHeaderSM'},{text: 'Kwota VAT', style: 'tableHeaderSM'},{text: 'Wartość brutto', style: 'tableHeaderSM'}],
-							[{text: `23%`, style: 'tableRowSM'},{text: `30`, style: 'tableRowSM'},{text: `25`, style: 'tableRowSM'},{text: `55`, style: 'tableRowSM'}],
+							[{text: `23%`, style: 'tableRowSM'},{text: `0`, style: 'tableRowSM'},{text: `0`, style: 'tableRowSM'},{text: `55`, style: 'tableRowSM'}],
 							[{text: 'Razem', style: 'tableRowSM'},{text: `30c`, style: 'tableRowSM'},{text: `25`, style: 'tableRowSM'},{text: `${total_price}`, style: 'tableRowSM'}],
 							]
 						}
@@ -88,9 +88,9 @@ const createPDF = (props) => {
 								{text: 'Razem' }  
 							 ],
 							 [
-								{text: `55`, alignment: 'right' },
-								{text: `0`, alignment: 'right' },
-								{text: `0`, alignment: 'right' }  
+								{text: `${total_price} PLN`, alignment: 'right' },
+								{text: `0 PLN`, alignment: 'right' },
+								{text: `0 PLN`, alignment: 'right' }  
 							 ]
 							]
 				 

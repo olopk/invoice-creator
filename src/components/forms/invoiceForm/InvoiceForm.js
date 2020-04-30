@@ -100,16 +100,20 @@ const InvoiceForm = (props) => {
         street: customer_street,
         name: customer_name,
       }
-
+      console.log(order);
       const products = order.map(el => {
         return{
               name: el.product,
               unit: 'szt.',
               quantity: el.quantity,
-              price: el.price,
-              total_price: el.total_price
+              price_net: el.price_net,
+              price_gross: el.price_gross,
+              vat: el.vat,
+              total_price_net: el.total_price_net,
+              total_price_gross: el.total_price_gross,
         }
       })
+      console.log(products)
 
       let response;
       if(props.modalData){
@@ -146,19 +150,26 @@ const InvoiceForm = (props) => {
       //TODO i have no idea why this is working as expected...
       const data = getFieldsValue(['order'])
 
-      const price = data.order[index].price;
-      const quantity = data.order[index].quantity
+      const price = data.order[index].price_net;
+      const quantity = data.order[index].quantity;
+      const vat = data.order[index].vat;
 
-      if(price && quantity && !isNaN(price) && !isNaN(quantity)){
-        data.order[index].total_price = price * quantity;
+      if(price && quantity && vat && !isNaN(price) && !isNaN(quantity)  && !isNaN(vat)){
+        
+        const netValue =  price * quantity
+        data.order[index].total_price_net = parseFloat(netValue.toFixed(2))
+
+        const grossValue = (price * quantity) + (vat * (price * quantity))/100;
+
+        data.order[index].total_price_gross = parseFloat(grossValue.toFixed(2))
 
         let sum = 0;
         data.order.forEach(el => {
-          if(el && el.total_price){
-            sum += el.total_price 
+          if(el && el.total_price_gross){
+            sum += el.total_price_gross
           }
         })
-        setFieldsValue({'total_price': sum})
+        setFieldsValue({'total_price': parseFloat(sum.toFixed(2))})
       }
     }
 
@@ -301,7 +312,7 @@ const InvoiceForm = (props) => {
                             />
                         </Form.Item>
                       </Col>
-                      <Col span={3}>
+                      <Col span={2}>
                         <Form.Item
                           style={{ marginBottom: "0px" }}
                           name={[field.name, "unit"]}
@@ -312,13 +323,9 @@ const InvoiceForm = (props) => {
                               <Option value="szt. ">szt .</Option>
                               <Option value="Brak">brak</Option>
                             </Select>
-                          {/* <Input
-                            // defaultValue='szt.' 
-                            placeholder="Jednostka"
-                          />  */}
                         </Form.Item>
                       </Col>
-                      <Col span={3}>
+                      <Col span={2}>
                         <Form.Item
                           name={[field.name, "quantity"]}
                           fieldKey={[field.fieldKey, "quantity"]}
@@ -333,10 +340,10 @@ const InvoiceForm = (props) => {
                           /> 
                         </Form.Item>
                       </Col>
-                      <Col span={3}>
+                      <Col span={2}>
                         <Form.Item
-                          name={[field.name, "price"]}
-                          fieldKey={[field.fieldKey, "price"]}
+                          name={[field.name, "price_net"]}
+                          fieldKey={[field.fieldKey, "price_net"]}
                           style={{ marginBottom: "0px" }}
                           rules={[{ required: true, message: 'Wpisz cenę' }]}
                         >
@@ -347,16 +354,41 @@ const InvoiceForm = (props) => {
                           /> 
                         </Form.Item>
                       </Col>
-                      <Col span={3}>
+                      <Col span={2}>
                         <Form.Item
                           style={{ marginBottom: "0px" }}
-                          name={[field.name, "total_price"]}
-                          fieldKey={[field.fieldKey, "total_price"]}
+                          name={[field.name, "vat"]}
+                          fieldKey={[field.fieldKey, "vat"]}
+                        >
+                            <Select defaultValue="zwol. " onChange={() => countElementSum(index)}>
+                              <Option value={0}>zwol.</Option>
+                              <Option value={23}>23%</Option>
+                            </Select>
+                        </Form.Item>
+                      </Col>
+                      <Col span={2}>
+                        <Form.Item
+                          style={{ marginBottom: "0px" }}
+                          name={[field.name, "total_price_net"]}
+                          fieldKey={[field.fieldKey, "total_price_net"]}
                         >
                           <InputNumber
                             disabled
                             style={{ width: '100%' }}
-                            placeholder="Cena ostateczna"
+                            placeholder="Wartość netto"
+                          /> 
+                        </Form.Item>
+                      </Col>
+                      <Col span={2}>
+                        <Form.Item
+                          style={{ marginBottom: "0px" }}
+                          name={[field.name, "total_price_gross"]}
+                          fieldKey={[field.fieldKey, "total_price_gross"]}
+                        >
+                          <InputNumber
+                            disabled
+                            style={{ width: '100%' }}
+                            placeholder="Wartość brutto"
                           /> 
                         </Form.Item>
                       </Col>
