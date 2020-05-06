@@ -1,4 +1,5 @@
 const num2word = (number) =>{
+    
 
     var liczba = parseInt(number);
     
@@ -8,7 +9,10 @@ const num2word = (number) =>{
     var setki = ["", " sto", " dwieście", " trzysta", " czterysta", " pięćset", " sześćset", " siedemset", " osiemset", " dziewięćset"];
     var grupy = [["" ,"" ,""],[" tysiąc" ," tysiące" ," tysięcy"],[" milion" ," miliony" ," milionów"],];
     
-    if (number == liczba.toString()){
+    // console.log(liczba)
+    // console.log(typeof(liczba))
+    // console.log(!isNaN(liczba))
+    if (!isNaN(liczba)){
         var wynik = '';
         var znak = '';
         if (liczba == 0)
@@ -40,7 +44,13 @@ const num2word = (number) =>{
             g++;
             liczba = Math.floor(liczba/1000);
         }
-    return(znak + wynik);
+    if(liczba != parseInt(number)){
+        const reszta = Math.floor((number - parseInt(number))*100);
+        return(znak + wynik + ' złotych ' +reszta +'/100');
+    }
+
+    return(znak + wynik + ' złotych 00/100');
+    
     }else  {
         console.log("Podano nieprawidlowa wartosc!");
     }
