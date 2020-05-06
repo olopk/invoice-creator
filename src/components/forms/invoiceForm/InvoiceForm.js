@@ -30,6 +30,7 @@ const InvoiceForm = (props) => {
 
     const { Option } = Select;
     const { Text } = Typography;
+    const { TextArea } = Input;
 
     const [state, setState] = useState({
       error: '',
@@ -43,13 +44,15 @@ const InvoiceForm = (props) => {
       customer_city: 'Czluchow',
       customer_street: 'Wiejska',
       customer_name: 'Andrzej Albinos',
+      customer_info: 'Lewe oko -10, prawego oka brak',
       order: [
         {
-          price: '2',
+          price_net: 2,
           product: 'szklanka',
-          quantity: '5',
+          quantity: 5,
           total_price: '',
-          unit: 'szt. '
+          unit: 'szt. ',
+          vat: 0
         }
       ],
       date: moment(today(), 'YYYY-MM-DD')
@@ -75,6 +78,7 @@ const InvoiceForm = (props) => {
           customer_nip: customer.nip,
           customer_city: customer.city,
           customer_street: customer.street,
+          customer_info: customer.info,
           customer_name: customer.name,
           order: parsedOrder
         })
@@ -87,7 +91,7 @@ const InvoiceForm = (props) => {
       setState({...state, loading: true});
 
       const allValues = getFieldsValue(true)
-      const {invoice_nr, total_price, date, customer_nip, customer_city, customer_street, customer_name, order } = allValues;
+      const {invoice_nr, total_price, date, customer_nip, customer_city, customer_street, customer_info, customer_name, order } = allValues;
    
       const invoiceData = {
         invoice_nr: invoice_nr,
@@ -95,19 +99,20 @@ const InvoiceForm = (props) => {
         total_price: total_price
       }
       const customerData = {
-        nip: customer_nip,
+        nip: customer_nip.toString(),
         city: customer_city,
         street: customer_street,
+        info: customer_info,
         name: customer_name,
       }
-      console.log(order);
+      console.log(customerData);
       const products = order.map(el => {
         return{
               name: el.product,
               unit: 'szt.',
               quantity: el.quantity,
               price_net: el.price_net,
-              price_gross: el.price_gross,
+              price_gross: el.price_net * el.vat,
               vat: el.vat,
               total_price_net: el.total_price_net,
               total_price_gross: el.total_price_gross,
@@ -154,7 +159,9 @@ const InvoiceForm = (props) => {
       const quantity = data.order[index].quantity;
       const vat = data.order[index].vat;
 
-      if(price && quantity && vat && !isNaN(price) && !isNaN(quantity)  && !isNaN(vat)){
+      console.log(vat)
+
+      if(!isNaN(price) && !isNaN(quantity) && !isNaN(vat)){
         
         const netValue =  price * quantity
         data.order[index].total_price_net = parseFloat(netValue.toFixed(2))
@@ -284,6 +291,18 @@ const InvoiceForm = (props) => {
                 /> 
               </Form.Item>                
             </Col>
+            <Col span={10} offset={1}>
+              <Form.Item
+                name={'customer_info'}
+                style={{ width: '100%' }}
+                wrapperCol={{ sm: 24 }}
+                // rules={[{ required: false, message: 'Wpisz ulicę' }]}
+                >
+                <TextArea rows={4}
+                    placeholder="Informacja dodatkowa."
+                /> 
+              </Form.Item>                
+            </Col>
           </Row>
           <Form.List name="order">
             {(fields, {add,remove}) => {
@@ -319,9 +338,9 @@ const InvoiceForm = (props) => {
                           fieldKey={[field.fieldKey, "unit"]}
                           
                         >
-                            <Select defaultValue="szt. " >
+                            <Select defaultValue="brak" >
                               <Option value="szt. ">szt .</Option>
-                              <Option value="Brak">brak</Option>
+                              <Option value="brak">brak</Option>
                             </Select>
                         </Form.Item>
                       </Col>
@@ -360,7 +379,7 @@ const InvoiceForm = (props) => {
                           name={[field.name, "vat"]}
                           fieldKey={[field.fieldKey, "vat"]}
                         >
-                            <Select defaultValue="zwol. " onChange={() => countElementSum(index)}>
+                            <Select defaultValue={23} onChange={() => countElementSum(index)}>
                               <Option value={0}>zwol.</Option>
                               <Option value={23}>23%</Option>
                             </Select>
