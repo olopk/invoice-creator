@@ -82,9 +82,6 @@ const MainLayout = (props) => {
             case 'invoice':
                 modalWidth = 1080;
                 break;
-            case 'customer':
-                modalWidth = 700;
-                break;
             default:
                 modalWidth = 800;
         }
@@ -138,23 +135,24 @@ const MainLayout = (props) => {
     //ASYNC FUNCTION FOR FETCHING ALL THE DATA.
     const fetchAll = async() =>{
         const allFetchedData = {};
-            allFetchedData.invoices = await fetch_invoices();
-            allFetchedData.customers = await fetch_customers();
-            allFetchedData.products = await fetch_products();
-            
-            let returnObject = {}
-            for(let el in allFetchedData){
-                if(allFetchedData[el].error){
-                    const errorMessage = el+': '+allFetchedData[el].error.message
-                    ShowNotification('error', errorMessage)
-                }else{
-                    returnObject = {
-                        ...returnObject,
-                        [el]: allFetchedData[el].data
-                    }
+        allFetchedData.invoices = await fetch_invoices();
+        allFetchedData.customers = await fetch_customers();
+        allFetchedData.products = await fetch_products();
+        
+        let returnObject = {}
+        for(let el in allFetchedData){
+            if(allFetchedData[el].error){
+                const errorMessage = el+': '+allFetchedData[el].error.message
+                ShowNotification('error', errorMessage)
+            }else{
+                returnObject = {
+                    ...returnObject,
+                    [el]: allFetchedData[el].data
                 }
             }
-            return returnObject
+        }
+        console.log(returnObject)
+        return returnObject
     }
     // ------------------------------------------------------------
 
@@ -268,6 +266,8 @@ const MainLayout = (props) => {
             <Route render={()=>(
                 <InvoiceForm
                     showNotification={ShowNotification}
+                    customers={state.customers}
+                    products={state.products}
                 />
             )
             }/>
