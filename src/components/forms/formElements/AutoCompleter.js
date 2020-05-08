@@ -1,35 +1,49 @@
-import React, {useState} from 'react';
-
+import React, { useState } from 'react';
+// import 'antd/dist/antd.css';
+// import './index.css';
 import { AutoComplete } from 'antd';
 
-function onSelect(value) {
-  console.log('onSelect', value);
-}
+const Complete = (props) => {
+  const [val, setVal] = useState('');
+  const [options, setOptions] = useState([]);
 
-const AutoCompleter = (props) => {
-    
-    const [value, setValue] = useState('');
-    const [dataSource, setDataSource] = useState([]);
+  const {data, searchParam, onSelect} = props;
 
-    const onSearch = searchText => {
-      setDataSource(!searchText ? [] : [searchText, searchText.repeat(2), searchText.repeat(3)])
-    };
+  const { value , onChange } = props;
 
-    const onChange = value => {
-      setValue(value);
-    };
+  if(value && val !== value){
+    setVal(value)
+  }
+ 
+  const onValChange = inputValue => {
+    setVal(inputValue);
+    if (onChange) {
+      onChange(inputValue);
+    }
+  };
 
-    const width = props.width
-    return (
-        <AutoComplete
-          value={props.value}
-          dataSource={dataSource}
-          style={{ width: width }}
-          onSelect={onSelect}
-          onSearch={onSearch}
-          onChange={onChange}
-          placeholder={props.placeholder}
-        />
-    )
-}
-export default AutoCompleter;
+  const onSearch = (searchText, data, searchParam) => {
+    let opts = [];
+
+    data.forEach(el => {
+      if(el[searchParam].includes(searchText)){
+        opts.push({value: el[searchParam], el: el})
+      }
+    })
+
+    setOptions(!searchText ? [] : opts );
+  };
+
+  return (
+      <AutoComplete
+        value={val}
+        options={options}
+        onSelect={(value, object) => onSelect(object)}
+        onSearch={(searchText) => onSearch(searchText, data, searchParam)}
+        onChange={onValChange}
+        // placeholder="control mode"
+      />
+  );
+};
+
+export default Complete;
