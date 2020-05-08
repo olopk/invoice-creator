@@ -122,11 +122,9 @@ const createPDF = (props) => {
 			},
 		],
 		styles: {
-				tableExample: {
-				margin: [0, 5, 0, 15],
-			}
-		},
-		styles: {
+			tableExample: {
+				margin: [0, 5, 0, 15]
+			},
 			tableHeader: {
 				bold: true,
 				fontSize: 8,

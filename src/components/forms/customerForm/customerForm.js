@@ -8,7 +8,7 @@ import { LoadingOutlined, LockOutlined } from '@ant-design/icons';
 // import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
 
-import { AutoComplete, Typography, InputNumber, Form, Button, Row, Col as Column } from 'antd';
+import { AutoComplete, Input, Typography, InputNumber, Form, Button, Row, Col as Column } from 'antd';
 
 const Col = props =>{
   return <Column {...props}>{props.children}</Column>
@@ -19,6 +19,7 @@ const CustomerForm = (props) => {
     const {setFieldsValue} = form;
 
     const {Text} = Typography;
+    const {TextArea} = Input;
 
     const [state, setState] = useState({
       error: '',
@@ -36,7 +37,7 @@ const CustomerForm = (props) => {
     const save = async () => {
       setState({...state, loading: true});
       
-      const customerData = form.getFieldsValue(['name', 'nip', 'city', 'street'])
+      const customerData = form.getFieldsValue(['name', 'nip', 'city', 'street', 'info'])
       let response;
       if(props.modalData){
         response = await save_customer(customerData, props.modalData._id);
@@ -75,19 +76,19 @@ const CustomerForm = (props) => {
                 /> 
               </Form.Item>               
               </Col>
-            <Col span={6}>
-              <Form.Item
-                style={{ width: '90%' }}
-                wrapperCol={{ sm: 24 }}
-                name='nip'
-                rules={[{ required: true, message: 'Wpisz poprawny NIP' }]}
-                >
-                <InputNumber
-                    prefix={<LockOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
-                    placeholder="NIP"
-                    style={{width: "100%"}}
-                />
-              </Form.Item>
+              <Col span={6}>
+                <Form.Item
+                  style={{ width: '100%' }}
+                  wrapperCol={{ sm: 24 }}
+                  name='nip'
+                  rules={[{ required: true, message: 'Wpisz poprawny NIP' }]}
+                  >
+                  <InputNumber
+                      prefix={<LockOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
+                      placeholder="NIP"
+                      style={{width: "100%"}}
+                  />
+                </Form.Item>
               </Col>
             </Row>
             <Row>
@@ -105,7 +106,7 @@ const CustomerForm = (props) => {
               </Col>
               <Col span={12}>
                 <Form.Item
-                  style={{ width: '95%' }}
+                  style={{ width: '100%' }}
                   wrapperCol={{ sm: 24 }}
                   name='street'
                   rules={[{ required: true, message: 'Wpisz ulicę' }]}
@@ -115,11 +116,23 @@ const CustomerForm = (props) => {
                   />
                 </Form.Item>                
               </Col>
+              <Col span={24}>
+                <Form.Item
+                  name={'info'}
+                  style={{ width: '100%' }}
+                  wrapperCol={{ sm: 24 }}
+                  // rules={[{ required: false, message: 'Wpisz ulicę' }]}
+                  >
+                  <TextArea rows={4}
+                      placeholder="Informacja dodatkowa."
+                  /> 
+                </Form.Item> 
+              </Col>
             </Row>
             <Row>
               <Col span={24}>
                 <Form.Item
-                  style={{ width: '97%' }}
+                  style={{ width: '100%' }}
                   wrapperCol={{ sm: 24 }}
                 >
                   <Button type="primary" htmlType="submit" block>

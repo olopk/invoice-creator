@@ -7,7 +7,7 @@ import { LoadingOutlined } from '@ant-design/icons';
 
 import '@ant-design/compatible/assets/index.css';
 
-import { AutoComplete, Typography,InputNumber, Form, Button, Row, Col as Column } from 'antd';
+import { AutoComplete, Select, Typography,InputNumber, Form, Button, Row, Col as Column } from 'antd';
 
 const Col = props =>{
   return <Column align="center" {...props}>{props.children}</Column>
@@ -16,6 +16,7 @@ const Col = props =>{
 const ProductForm = (props) => {
     const [productForm] = Form.useForm()
     const { setFieldsValue, getFieldsValue } = productForm;
+    const { Option } = Select;
 
     const [state, setState] = useState({
       error: '',
@@ -32,6 +33,7 @@ const ProductForm = (props) => {
 
     useEffect(()=>{
       if(props.modalData){
+        console.log(props.modalData)
         setFieldsValue({...props.modalData})
       }
     }, [props.modalData, setFieldsValue])
@@ -46,7 +48,7 @@ const ProductForm = (props) => {
       //   return obj
       // }, {})
 
-      const productData = getFieldsValue(['name', 'brand', 'model', 'quantity', 'price'])
+      const productData = getFieldsValue(['name', 'brand', 'model', 'quantity', 'vat','price_net','price_gross'])
     
       let response;
       if(props.modalData){
@@ -59,7 +61,21 @@ const ProductForm = (props) => {
     }
     const onChange = (element) => {  
         setFieldsValue({element})
-    }     
+    }
+
+    const countElementSum = () => {
+      //TODO i have no idea why this is working as expected...
+      const data = getFieldsValue(['price_net', 'vat'])
+
+      const { price_net, vat } = data;
+
+      if(price_net && vat && !isNaN(price_net) && !isNaN(vat)){
+        
+        const grossValue = price_net + ((vat * price_net)/100);
+
+        setFieldsValue({'price_gross': parseFloat(grossValue.toFixed(2))})
+      }
+    }
     
     let content = (
       <React.Fragment>
@@ -74,7 +90,7 @@ const ProductForm = (props) => {
             <Row>
               <Col span={24}>
                 <Form.Item
-                  style={{ width: '90%' }}
+                  style={{ width: '100%' }}
                   wrapperCol={{ sm: 24 }}
                   name='name'
                   >
@@ -85,9 +101,9 @@ const ProductForm = (props) => {
                 </Col>
               </Row>
               <Row>
-                <Col span={12}>
+                <Col span={11}>
                   <Form.Item
-                    style={{ width: '80%' }}
+                    style={{ width: '100%' }}
                     wrapperCol={{ sm: 24 }}
                     name='brand'
                     >
@@ -96,9 +112,9 @@ const ProductForm = (props) => {
                       />
                   </Form.Item>
                 </Col>
-                <Col span={12}>
+                <Col span={11} offset={2}>
                   <Form.Item                    
-                    style={{ width: '80%' }}
+                    style={{ width: '100%' }}
                     wrapperCol={{ sm: 24 }}
                     name='model'
                     >
@@ -109,43 +125,74 @@ const ProductForm = (props) => {
                 </Col>
               </Row>
               <Row>
-                <Col span={8}>
+                <Col span={4}>
                   <Form.Item
-                    style={{ width: '70%' }}
-                    wrapperCol={{ sm: 24 }}
-                    name='price'
-                    >
-                      <InputNumber
-                        placeholder="Cena"
-                        style={{width: "100%"}}
-                      />
-                  </Form.Item>
-                </Col>
-                <Col span={8}>
-                  <Form.Item
-                    style={{ width: '70%' }}
+                    style={{ width: '100%' }}
                     wrapperCol={{ sm: 24 }}
                     name='quantity'
                     >
                       <InputNumber
-                        placeholder="Nazwa"
+                        placeholder="Stan magazynowy"
+                        style={{width: "100%"}}
+                      />
+                  </Form.Item>               
+                </Col>
+                <Col span={4} offset={1}>
+                  <Form.Item
+                    style={{ width: '100%' }}
+                    wrapperCol={{ sm: 24 }}
+                    name='vat'
+                    >
+                      {/* <InputNumber
+                        placeholder="Stawka VAT"
+                        style={{width: "100%"}}
+                      /> */}
+                      <Select onChange={countElementSum}>
+                        <Option value={0}>zwol.</Option>
+                        <Option value={23}>23%</Option>
+                      </Select>
+                  </Form.Item>               
+                </Col>
+                <Col span={6} offset={2}>
+                  <Form.Item
+                    style={{ width: '100%' }}
+                    wrapperCol={{ sm: 24 }}
+                    name='price_net'
+                    >
+                      <InputNumber
+                        onChange={countElementSum}
+                        placeholder="Cena netto"
+                        style={{width: "100%"}}
+                      />
+                  </Form.Item>
+                </Col>
+                <Col span={6} offset={1}>
+                  <Form.Item
+                    style={{ width: '100%' }}
+                    wrapperCol={{ sm: 24 }}
+                    name='price_gross'
+                    >
+                      <InputNumber
+                        // onChange={countElementSum}
+                        disabled
+                        placeholder="Cena brutto"
                         style={{width: "100%"}}
                       />
                   </Form.Item>               
                 </Col>
               </Row>
-             <Row>
-               <Col span={24}>
-                  <Form.Item
-                  //  style={{ width: '100%' }}
-                   wrapperCol={{ sm: 24 }}
-                  >
-                    <Button type="primary" htmlType="submit" block>
-                      Zapisz
-                    </Button>
-                  </Form.Item>
-               </Col>
-             </Row>
+              <Row>
+                <Col span={24}>
+                    <Form.Item
+                    //  style={{ width: '100%' }}
+                    wrapperCol={{ sm: 24 }}
+                    >
+                      <Button type="primary" htmlType="submit" block>
+                        Zapisz
+                      </Button>
+                    </Form.Item>
+                </Col>
+              </Row>
 
           </Form>
         </section>

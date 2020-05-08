@@ -15,6 +15,7 @@ const num2word = (number) =>{
     if (!isNaN(liczba)){
         var wynik = '';
         var znak = '';
+        // eslint-disable-next-line
         if (liczba == 0)
             wynik = "zero";
         if (liczba < 0) {
@@ -27,15 +28,17 @@ const num2word = (number) =>{
             var n = 0;
             var d = Math.floor((liczba % 100)/10);
             var j = Math.floor(liczba % 10);
-    
+    // eslint-disable-next-line
             if (d == 1 && j>0) {
                 n = j;
                 d = 0;
                 j = 0;
             }            
             var k = 2;
+           // eslint-disable-next-line
             if (j == 1 && s+d+n == 0)
                 k = 0;
+            // eslint-disable-next-line
             if (j == 2 || j == 3 || j == 4)
                 k = 1;
             if (s+d+n+j > 0)
@@ -44,6 +47,7 @@ const num2word = (number) =>{
             g++;
             liczba = Math.floor(liczba/1000);
         }
+        // eslint-disable-next-line
     if(liczba != parseInt(number)){
         const reszta = Math.floor((number - parseInt(number))*100);
         return(znak + wynik + ' złotych ' +reszta +'/100');
