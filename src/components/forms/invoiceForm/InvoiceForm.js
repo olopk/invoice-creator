@@ -18,6 +18,8 @@ import '@ant-design/compatible/assets/index.css';
 
 import { Typography, Input, Select, AutoComplete, Form, InputNumber, Button, DatePicker, Row, Col as Column } from 'antd';
 
+import Complete from '../formElements/AutoCompleter'
+
 import {fetch_dataByNIP} from '../../../api_calls/customers';
 
 const Col = props =>{
@@ -27,6 +29,8 @@ const Col = props =>{
 const InvoiceForm = (props) => {
     const [invoiceForm] = Form.useForm()
     const {setFieldsValue , getFieldValue, getFieldsValue} = invoiceForm;
+
+    const {showNotification, customers} = props;
 
     const { Option } = Select;
     const { Text } = Typography;
@@ -86,7 +90,35 @@ const InvoiceForm = (props) => {
 
     }, [props.modalData, setFieldsValue])
 
+    const onSelectCustomer = (data) =>{
+      const { el } = data;
 
+      setFieldsValue(
+        {
+          customer_nip: el.nip,
+          customer_city: el.city,
+          customer_street: el.street,
+          customer_info: el.info,
+          customer_name: el.name
+        }
+      )
+
+      const order = getFieldValue('order');
+    }
+    const onSelectProduct = (data, index) =>{
+      const { el } = data;
+      
+      let order = getFieldValue('order');
+      order[index] = {
+        ...order[index],
+        price_net: el.price_net,
+        product: el.product,
+        quantity: el.quantity,
+        vat: el.vat,
+      }
+      setFieldsValue({order: order})
+    }
+    
     const onFinish = async () => {
       setState({...state, loading: true});
 
@@ -105,7 +137,7 @@ const InvoiceForm = (props) => {
         info: customer_info,
         name: customer_name,
       }
-      console.log(customerData);
+
       const products = order.map(el => {
         return{
               name: el.product,
@@ -118,7 +150,6 @@ const InvoiceForm = (props) => {
               total_price_gross: el.total_price_gross,
         }
       })
-      console.log(products)
 
       let response;
       if(props.modalData){
@@ -126,9 +157,9 @@ const InvoiceForm = (props) => {
       }else{
         response = await save_invoice(invoiceData, customerData, products);
       }
-      props.showNotification(response.status, response.message);
+      showNotification(response.status, response.message);
 
-      if(response.status == 'success'){
+      if(response.status === 'success'){
         createPDF(allValues)
       }
       setState({...state, loading: false});
@@ -158,8 +189,6 @@ const InvoiceForm = (props) => {
       const price = data.order[index].price_net;
       const quantity = data.order[index].quantity;
       const vat = data.order[index].vat;
-
-      console.log(vat)
 
       if(!isNaN(price) && !isNaN(quantity) && !isNaN(vat)){
         
@@ -238,11 +267,17 @@ const InvoiceForm = (props) => {
                 wrapperCol={{ sm: 24 }}
                 rules={[{ required: true, message: 'Wpisz poprawny NIP' }]}
               >
-                <InputNumber
+                {/* <InputNumber
                   prefix={<LockOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
                   placeholder="NIP"
                   style={{width: "100%"}}
-                /> 
+                />  */}
+                <Complete
+                  data={customers}
+                  searchParam='nip'
+                  onSelect={onSelectCustomer}
+                  placeholder="NIP"
+                />
               </Form.Item>
             </Col>
             <Col span={4} offset={1} align="center">
@@ -259,10 +294,18 @@ const InvoiceForm = (props) => {
                 wrapperCol={{ sm: 24 }}
                 rules={[{ required: true, message: 'Wpisz nazwę klienta.' }]}
                 >
-                <AutoComplete
+                {/* <AutoComplete
                     placeholder="Nazwa klienta"
                     style={{width: '100%'}}
-                /> 
+                />  */}
+                 <Complete
+                  data={customers}
+                  searchParam='name'
+                  onSelect={onSelectCustomer}
+                  placeholder="Nazwa klienta"
+                >
+                  
+                </Complete>
               </Form.Item>               
             </Col>
           </Row>
@@ -326,9 +369,15 @@ const InvoiceForm = (props) => {
                           style={{ marginBottom: "0px" }}
                           rules={[{ required: true, message: 'Wpisz Nazwę produktu lub usługi' }]}
                           >
-                            <AutoComplete
+                            {/* <AutoComplete
                             placeholder="Nazwa produktu/usługi"
-                            />
+                            /> */}
+                               <Complete
+                                data={props.products}
+                                searchParam='name'
+                                onSelect={(data) => onSelectProduct(data, index)}
+                                // placeholder="NIP"
+                              />
                         </Form.Item>
                       </Col>
                       <Col span={2}>
