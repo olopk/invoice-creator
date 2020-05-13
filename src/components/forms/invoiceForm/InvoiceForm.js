@@ -237,7 +237,8 @@ const InvoiceForm = (props) => {
                 />
               </Form.Item>
             </Col>
-            <Col align="right" span={5} offset={7}>
+            <Col align="center" offset={1} span={4}>{props.children}</Col>
+            <Col align="right" span={5} offset={2}>
               <Text className={classes.cityName}>Człuchów, </Text>
             </Col>
             <Col span={5}>

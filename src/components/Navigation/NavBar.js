@@ -49,7 +49,7 @@ const NavBar = (props) => {
                  <Menu.Item key="add-invoice">
                      <Link to="/invoice-form">
                          <FileAddOutlined />
-                         Dodaj Fakturę
+                         Nowy Dokument
                      </Link>
                  </Menu.Item>
                  <Menu.Item key="invoices">

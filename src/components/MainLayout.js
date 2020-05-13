@@ -7,7 +7,10 @@ import classes from './MainLayout.module.css'
 import MainModal from './Modals/mainModal';
 import NavBar from '../components/Navigation/NavBar';
 import MainTable from './Tables/mainTable/mainTable';
+
 import InvoiceForm from './forms/invoiceForm/InvoiceForm';
+import NewDocument from './newDocument/newDocument';
+
 import LoginForm from './forms/authForm/loginForm';
 import SigninForm from './forms/authForm/signInForm';
 import ShowNotification from '../components/NotificationSnackbar/Notification';
@@ -264,7 +267,9 @@ const MainLayout = (props) => {
             )}/>
             {/* <Route component={loginForm}/> */}
             <Route render={()=>(
-                <InvoiceForm
+                // <InvoiceForm
+                // />
+                <NewDocument
                     showNotification={ShowNotification}
                     customers={state.customers}
                     products={state.products}
@@ -310,7 +315,7 @@ const MainLayout = (props) => {
                             />
                            {switchRoutes}
                     </Content>
-                <Footer>Facebook</Footer>
+                {/* <Footer>Facebook</Footer> */}
             </Layout>
         </BrowserRouter>
     )
