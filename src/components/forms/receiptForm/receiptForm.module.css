@@ -1,0 +1,34 @@
+.container{
+    display: flex;
+    justify-content: center;
+    border: none;
+}
+.mainSection{
+    border: none;
+    width: 80%;
+}
+.main{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+.loadingIcon{
+    font-size: 40px;
+    padding: 30px;
+}
+.minusIcon{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 4px;
+}
+.title_col{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 20px;
+}
+.cityName{
+    line-height: 2.3;
+    margin-right: 15px;
+}
