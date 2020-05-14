@@ -1,39 +1,69 @@
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
-// import {numToWords} from 'num2words';
+import logo from '../../assets/logo64base';
 import num2word from '../../utils/num2word';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 const createPDF = (props) => {
-	const {invoice_nr, total_price, date, customer_nip, customer_city, customer_street, customer_name, order } = props;
+	const {invoice_nr, receipt_nr, payment, total_price, date, customer_nip, customer_city, customer_street, customer_name, order } = props;
 
 	const items = order.map((el, index) => {
 		return [
 			{text: `${index +1}`, style: 'tableRow'},{text: `${el.product}`},
 			{text: `szt. `, style: 'tableRow'},{text: `${el.quantity}`, style: 'tableRow'},
-			{text: `${el.price_net}`, style: 'tableRow'},{text: `${el.vat}`, style: 'tableRow'},
+			{text: `${el.price_net}`, style: 'tableRow'},{text: `${el.vat == 0 ? 'zwol.' : el.vat}`, style: 'tableRow'},
 			{text: `${el.total_price_net}`, style: 'tableRow'},{text: `${el.total_price_gross} `, style: 'tableRow'}
 		]
 	})
+
+	
+	let detailTab = [
+		[{text: 'Stawka VAT', style: 'tableHeaderSM'},{text: 'Wartość netto', style: 'tableHeaderSM'},{text: 'Kwota VAT', style: 'tableHeaderSM'},{text: 'Wartość brutto', style: 'tableHeaderSM'}],
+		[{text: `zwol.`, style: 'tableRowSM'},{text: 0, style: 'tableRowSM'},{text: 0, style: 'tableRowSM'},{text: 0, style: 'tableRowSM'}],
+		[{text: `23%`, style: 'tableRowSM'},{text: 0, style: 'tableRowSM'},{text: 0, style: 'tableRowSM'},{text: 0, style: 'tableRowSM'}],
+		[{text: 'Razem', style: 'tableRowSM'},{text: 0, style: 'tableRowSM'},{text: 0, style: 'tableRowSM'},{text: `${total_price}`, style: 'tableRowSM'}],
+	]
+
+	order.forEach((el, index) => {
+		if(el.vat == 0){
+			detailTab[1][1].text += el.total_price_net;
+			detailTab[1][2].text += el.total_price_gross - el.total_price_net;
+			detailTab[1][3].text += el.total_price_gross;
+			
+		}else if(el.vat == 23){
+			detailTab[2][1].text += el.total_price_net;
+			detailTab[2][2].text += el.total_price_gross - el.total_price_net;
+			detailTab[2][3].text += el.total_price_gross;
+		}
+		detailTab[3][1].text += el.total_price_net;
+		detailTab[3][2].text += el.total_price_gross - el.total_price_net;
+		detailTab[3][3].text += el.total_price_gross;
+	})
+
+
+	let sellDocType = `Faktura nr ${invoice_nr}`;
+	if(props.receipt_nr){
+		sellDocType = `Dokument sprzedażowy nr ${receipt_nr}`
+	}
 
 	var dd = {
 		content: [
 			{
 				columns: [
-					// {   image: `sampleImage.jpg`, width: 200 }
-					{text: 'tu bedzie logo'}
-					,
+					{   image: logo, width: 100 },
 					{
 						table: {
 						widths: ["*"],
 						body: [
-							[{text: `Faktura nr ${invoice_nr}`}],
+							[{text: sellDocType}],
 							[{text: `Data wystawienia: ${date._i}`}],
-							[{text: `Termin płatności: ${date._i}`}],
-							]
-						}
-					},
-				]
+							// [{text: `Termin płatności: ${date._i}`}],
+							[{text: `Typ płatności: ${payment}`}],
+        			    ]
+        		    }
+        	    },
+			],
+			columnGap: 210,
 			},
 			{
 				columns: [
@@ -48,10 +78,10 @@ const createPDF = (props) => {
 					],
 					[
 						{	text: `Nabywca`, style: `header` },
-						{	text: `${customer_name}` },
-						{	text: `${customer_street}` },
-						{	text: `${customer_city}` },
-						{	text: `NIP: ${customer_nip}` },
+						{	text: customer_name ? `${customer_name}` : null },
+						{	text: customer_street ? `${customer_street}` : null },
+						{	text: customer_city ? `${customer_city}` : null },
+						{	text: customer_nip ? `NIP: ${customer_nip}` : null },
 					]
 				]
 				,
@@ -62,7 +92,7 @@ const createPDF = (props) => {
 				table: {
 					widths: [15, "*", 20, 20, 40,30,60, 60],   
 					body: [
-						[{text: `Lp.`, style: 'tableHeader'},{text: `Nazwa`, style: 'tableHeader'},{text: `Jedn.`, style: 'tableHeader'},{text: `Ilość`, style: 'tableHeader'},{text: `Cena netto`, style: 'tableHeader'},{text: `Stawka`, style: 'tableHeader'},{text: `Wartość netto`, style: 'tableHeader'},{text: `Wartość brutto`, style: 'tableHeader'}],
+						[{text: `Lp.`, style: 'tableHeader'},{text: `Nazwa`, style: 'tableHeader'},{text: `Jedn.`, style: 'tableHeader'},{text: `Ilość`, style: 'tableHeader'},{text: `Cena netto`, style: 'tableHeader'},{text: `Stawka VAT`, style: 'tableHeader'},{text: `Wartość netto`, style: 'tableHeader'},{text: `Wartość brutto`, style: 'tableHeader'}],
 						...items
 					]
 				}
@@ -72,11 +102,7 @@ const createPDF = (props) => {
 					{
 						table: {
 					 //   widths: ["*"],
-						body: [
-							[{text: 'Stawka VAT', style: 'tableHeaderSM'},{text: 'Wartość netto', style: 'tableHeaderSM'},{text: 'Kwota VAT', style: 'tableHeaderSM'},{text: 'Wartość brutto', style: 'tableHeaderSM'}],
-							[{text: `23%`, style: 'tableRowSM'},{text: `0`, style: 'tableRowSM'},{text: `0`, style: 'tableRowSM'},{text: `55`, style: 'tableRowSM'}],
-							[{text: 'Razem', style: 'tableRowSM'},{text: `30c`, style: 'tableRowSM'},{text: `25`, style: 'tableRowSM'},{text: `${total_price}`, style: 'tableRowSM'}],
-							]
+						body: detailTab
 						}
 					},
 					[
