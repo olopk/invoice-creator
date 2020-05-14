@@ -16,7 +16,7 @@ import {
 
 import '@ant-design/compatible/assets/index.css';
 
-import { Typography, Input, Select, AutoComplete, Form, InputNumber, Button, DatePicker, Row, Col as Column } from 'antd';
+import { Typography, Input, Select, Radio, Form, InputNumber, Button, DatePicker, Row, Col as Column } from 'antd';
 
 import Complete from '../formElements/AutoCompleter'
 
@@ -44,6 +44,7 @@ const InvoiceForm = (props) => {
 
     let formInitialValues = {
       invoice_nr: '19/2020',
+      payment: 'cash',
       customer_nip: '84359',
       customer_city: 'Czluchow',
       customer_street: 'Wiejska',
@@ -224,7 +225,7 @@ const InvoiceForm = (props) => {
             </Col>
           </Row>
           <Row>
-            <Col align="center" offset={1} span={5}>
+            <Col align="center" offset={1} span={3}>
               <Form.Item
                 name={'invoice_nr'}
                 style={{ width: '100%' }}
@@ -237,11 +238,25 @@ const InvoiceForm = (props) => {
                 />
               </Form.Item>
             </Col>
-            <Col align="center" offset={1} span={4}>{props.children}</Col>
-            <Col align="right" span={5} offset={2}>
+            <Col align="right" offset={1} span={6}>
+              <Form.Item
+                  name={'payment'}
+                  style={{ width: '100%' }}
+                  wrapperCol={{ sm: 24 }}
+                  // rules={[{ required: true, message: 'Wpisz numer faktury' }]}
+                >
+                <Radio.Group buttonStyle="solid">
+                  <Radio.Button value="cash">Gotówka</Radio.Button>
+                  <Radio.Button value="card">Karta</Radio.Button>
+                  <Radio.Button value="transfer" >Przelew</Radio.Button>
+                </Radio.Group>
+              </Form.Item>
+            </Col>
+            <Col align="left" offset={2} span={4}>{props.children}</Col>
+            <Col align="right" span={2} offset={1}>
               <Text className={classes.cityName}>Człuchów, </Text>
             </Col>
-            <Col span={5}>
+            <Col span={3}>
               <Form.Item
                 name={'date'}
                 style={{ width: '100%' }}
