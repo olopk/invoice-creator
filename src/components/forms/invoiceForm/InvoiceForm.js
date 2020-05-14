@@ -103,7 +103,7 @@ const InvoiceForm = (props) => {
         }
       )
 
-      const order = getFieldValue('order');
+      // const order = getFieldValue('order');
     }
     const onSelectProduct = (data, index) =>{
       const { el } = data;
@@ -112,7 +112,7 @@ const InvoiceForm = (props) => {
       order[index] = {
         ...order[index],
         price_net: el.price_net,
-        product: el.product,
+        product: el.name,
         quantity: el.quantity,
         vat: el.vat,
       }
