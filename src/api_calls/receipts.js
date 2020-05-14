@@ -27,7 +27,7 @@ export const save_receipt = async (receipt, customer, products, id) => {
     if(id){
         query = `
             mutation UpdateReceipt($id: String!, $receipt_nr: String!, $date: String!, $total_price: Float!, $order: [ProductInputData!]!, $customer: CustomerInputData!){
-                editInvoice(id: $id, invoiceInput: {
+                editReceipt(id: $id, receiptInput: {
                     receipt_nr: $receipt_nr,
                     date: $date,
                     total_price: $total_price,
@@ -38,7 +38,7 @@ export const save_receipt = async (receipt, customer, products, id) => {
     }else{
         query = `
             mutation CreateNewReceipt($receipt_nr: String!, $date: String!, $total_price: Float!, $order: [ProductInputData!]!, $customer: CustomerInputData!){
-                addInvoice(invoiceInput: {
+                addReceipt(receiptInput: {
                     receipt_nr: $receipt_nr,
                     date: $date,
                     total_price: $total_price,
