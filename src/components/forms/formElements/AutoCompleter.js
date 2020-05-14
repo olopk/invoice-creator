@@ -26,7 +26,7 @@ const Complete = (props) => {
     let opts = [];
 
     data.forEach(el => {
-      if(el[searchParam].includes(searchText)){
+      if(el[searchParam] && el[searchParam].includes(searchText)){
         opts.push({value: el[searchParam], el: el})
       }
     })
