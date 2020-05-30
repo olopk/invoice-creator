@@ -11,7 +11,7 @@ const createPDF = (props) => {
 		return [
 			{text: `${index +1}`, style: 'tableRow'},{text: `${el.product}`},
 			{text: `szt. `, style: 'tableRow'},{text: `${el.quantity}`, style: 'tableRow'},
-			{text: `${el.price_net}`, style: 'tableRow'},{text: `${el.vat == 0 ? 'zwol.' : el.vat}`, style: 'tableRow'},
+			{text: `${el.price_net}`, style: 'tableRow'},{text: `${el.vat === 0 ? 'zwol.' : el.vat}`, style: 'tableRow'},
 			{text: `${el.total_price_net}`, style: 'tableRow'},{text: `${el.total_price_gross} `, style: 'tableRow'}
 		]
 	})
@@ -19,25 +19,28 @@ const createPDF = (props) => {
 	
 	let detailTab = [
 		[{text: 'Stawka VAT', style: 'tableHeaderSM'},{text: 'Wartość netto', style: 'tableHeaderSM'},{text: 'Kwota VAT', style: 'tableHeaderSM'},{text: 'Wartość brutto', style: 'tableHeaderSM'}],
-		[{text: `zwol.`, style: 'tableRowSM'},{text: 0, style: 'tableRowSM'},{text: 0, style: 'tableRowSM'},{text: 0, style: 'tableRowSM'}],
-		[{text: `23%`, style: 'tableRowSM'},{text: 0, style: 'tableRowSM'},{text: 0, style: 'tableRowSM'},{text: 0, style: 'tableRowSM'}],
-		[{text: 'Razem', style: 'tableRowSM'},{text: 0, style: 'tableRowSM'},{text: 0, style: 'tableRowSM'},{text: `${total_price}`, style: 'tableRowSM'}],
+		[{text: `zwol.`, style: 'tableRowSM'},{text: 0.00, style: 'tableRowSM'},{text: 0.00, style: 'tableRowSM'},{text: 0, style: 'tableRowSM'}],
+		[{text: `23%`, style: 'tableRowSM'},{text: 0.00, style: 'tableRowSM'},{text: 0.00, style: 'tableRowSM'},{text: 0, style: 'tableRowSM'}],
+		[{text: 'Razem', style: 'tableRowSM'},{text: 0.00, style: 'tableRowSM'},{text: 0.00, style: 'tableRowSM'},{text: `${total_price}`, style: 'tableRowSM'}],
 	]
 
 	order.forEach((el, index) => {
-		if(el.vat == 0){
+		if(el.vat === 0){
 			detailTab[1][1].text += el.total_price_net;
-			detailTab[1][2].text += el.total_price_gross - el.total_price_net;
+			// detailTab[1][2].text += el.total_price_gross - el.total_price_net;
 			detailTab[1][3].text += el.total_price_gross;
 			
-		}else if(el.vat == 23){
-			detailTab[2][1].text += el.total_price_net;
-			detailTab[2][2].text += el.total_price_gross - el.total_price_net;
-			detailTab[2][3].text += el.total_price_gross;
+		}else if(el.vat === 23){
+			console.log('elem', detailTab[2][2].text, typeof(detailTab[2][2].text))
+			console.log('net', el.total_price_net, typeof(el.total_price_net))
+			console.log('gross', el.total_price_gross, typeof(el.total_price_gross))
+
+			detailTab[2][1].text = parseFloat(parseFloat(detailTab[2][1].text) +el.total_price_net).toFixed(2);
+			detailTab[2][2].text = parseFloat(parseFloat(detailTab[2][2].text) + (el.total_price_gross - el.total_price_net)).toFixed(2);
+			detailTab[2][3].text = parseFloat(parseFloat(detailTab[2][3].text) + el.total_price_gross).toFixed(2);
 		}
 		detailTab[3][1].text += el.total_price_net;
-		detailTab[3][2].text += el.total_price_gross - el.total_price_net;
-		detailTab[3][3].text += el.total_price_gross;
+		detailTab[3][2].text = parseFloat(detailTab[2][2].text + (el.total_price_gross - el.total_price_net)).toFixed(2);
 	})
 
 
