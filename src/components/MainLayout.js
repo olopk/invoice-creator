@@ -312,6 +312,8 @@ const MainLayout = (props) => {
                                 modalDataType={state.modalDataType}
                                 modalData={state.modalData}
                                 modalWidth={state.modalWidth}
+                                customers={state.customers}
+                                products={state.products}
                             />
                            {switchRoutes}
                     </Content>

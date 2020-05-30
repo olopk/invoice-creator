@@ -15,6 +15,8 @@ const MainModal = (props) => {
           style={{width: '100%'}}
           modalData={modalData}
           showNotification={ShowNotification}
+          customers={props.customers}
+          products={props.products}
       />
     )
   }
@@ -23,6 +25,7 @@ const MainModal = (props) => {
       <CustomerForm
           modalData={modalData}
           showNotification={ShowNotification}
+          customers={props.customers}
       />
     )
   }
@@ -31,6 +34,7 @@ const MainModal = (props) => {
       <ProductForm
           modalData={modalData}
           showNotification={ShowNotification}
+          products={props.products}
       />
     )
   }
