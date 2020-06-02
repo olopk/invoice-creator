@@ -3,7 +3,7 @@ import axios from '../axiosInstance';
 // GET ALL INVOICES
 export const fetch_invoices = () => {
     const graphqlQuery = {
-        query: `{ getInvoices{ _id invoice_nr date total_price customer{ name nip city street info} order{ product{ name } quantity price_net total_price_net price_gross total_price_gross vat }} }`
+        query: `{ getInvoices{ _id invoice_nr date total_price pay_method customer{ name nip city street info} order{ product{ name } quantity price_net total_price_net price_gross total_price_gross vat }} }`
     };
     return axios.post('/graphql', JSON.stringify(graphqlQuery))
             .then(response => {
@@ -24,7 +24,7 @@ export const fetch_single_invoice = (id) => {
     const graphqlQuery = {
         query: `
             query fetchInvoice($id: String!){
-                getInvoice(id: $id){ _id invoice_nr total_price date customer{ nip name street city } order{ _id product{ _id name } quantity price_net total_price_net price_gross total_price_gross vat } }
+                getInvoice(id: $id){ _id invoice_nr total_price pay_method date customer{ nip name street city } order{ _id product{ _id name } quantity price_net total_price_net price_gross total_price_gross vat } }
             }
         `,
         variables: {
@@ -42,27 +42,29 @@ export const fetch_single_invoice = (id) => {
 
 // SAVE INVOICE (NEW & EXISTING)
 export const save_invoice = async (invoice, customer, products, id) => {   
-    const {invoice_nr, date, total_price} = invoice;
+    const {invoice_nr, date, total_price, pay_method} = invoice;
     let query;
 
     if(id){
         query = `
-            mutation UpdateInvoice($id: String!, $invoice_nr: String!, $date: String!, $total_price: Float!, $order: [ProductInputData!]!, $customer: CustomerInputData!){
+            mutation UpdateInvoice($id: String!, $invoice_nr: String!, $date: String!, $total_price: Float!, $pay_method: String!, $order: [ProductInputData!]!, $customer: CustomerInputData!){
                 editInvoice(id: $id, invoiceInput: {
                     invoice_nr: $invoice_nr,
                     date: $date,
                     total_price: $total_price,
+                    pay_method: $pay_method
                     order: $order
                     customer: $customer
                 }){message}
             }`
     }else{
         query = `
-            mutation CreateNewInvoice($invoice_nr: String!, $date: String!, $total_price: Float!, $order: [ProductInputData!]!, $customer: CustomerInputData!){
+            mutation CreateNewInvoice($invoice_nr: String!, $date: String!, $total_price: Float!, $pay_method: String!, $order: [ProductInputData!]!, $customer: CustomerInputData!){
                 addInvoice(invoiceInput: {
                     invoice_nr: $invoice_nr,
                     date: $date,
                     total_price: $total_price,
+                    pay_method: $pay_method
                     order: $order
                     customer: $customer
                 }){message}
@@ -76,6 +78,7 @@ export const save_invoice = async (invoice, customer, products, id) => {
             invoice_nr: invoice_nr,
             date: date,
             total_price: total_price,
+            pay_method: pay_method,
             customer: {...customer},
             order: [...products]
         }

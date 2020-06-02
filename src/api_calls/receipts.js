@@ -3,7 +3,7 @@ import axios from '../axiosInstance';
 // GET ALL RECEIPTS
 export const fetch_receipts = () => {
     const graphqlQuery = {
-        query: `{ getReceipts{ _id receipt_nr date total_price customer{ name city street info} order{ product{ name } quantity price_net total_price_net price_gross total_price_gross vat }} }`
+        query: `{ getReceipts{ _id receipt_nr date total_price pay_method customer{ name city street info} order{ product{ name } quantity price_net total_price_net price_gross total_price_gross vat }} }`
     };
     return axios.post('/graphql', JSON.stringify(graphqlQuery))
             .then(response => {
@@ -21,27 +21,29 @@ export const fetch_receipts = () => {
 
 // SAVE RECEIPT (NEW & EXISTING)
 export const save_receipt = async (receipt, customer, products, id) => {   
-    const {receipt_nr, date, total_price} = receipt;
+    const {receipt_nr, date, total_price, pay_method} = receipt;
     let query;
 
     if(id){
         query = `
-            mutation UpdateReceipt($id: String!, $receipt_nr: String!, $date: String!, $total_price: Float!, $order: [ProductInputData!]!, $customer: CustomerInputData!){
+            mutation UpdateReceipt($id: String!, $receipt_nr: String!, $date: String!, $total_price: Float!, $pay_method: String! , $order: [ProductInputData!]!, $customer: CustomerInputData!){
                 editReceipt(id: $id, receiptInput: {
                     receipt_nr: $receipt_nr,
                     date: $date,
                     total_price: $total_price,
+                    pay_method: $pay_method
                     order: $order
                     customer: $customer
                 }){message}
             }`
     }else{
         query = `
-            mutation CreateNewReceipt($receipt_nr: String!, $date: String!, $total_price: Float!, $order: [ProductInputData!]!, $customer: CustomerInputData!){
+            mutation CreateNewReceipt($receipt_nr: String!, $date: String!, $total_price: Float!, $pay_method: String!, $order: [ProductInputData!]!, $customer: CustomerInputData!){
                 addReceipt(receiptInput: {
                     receipt_nr: $receipt_nr,
                     date: $date,
                     total_price: $total_price,
+                    pay_method: $pay_method
                     order: $order
                     customer: $customer
                 }){message}
@@ -55,6 +57,7 @@ export const save_receipt = async (receipt, customer, products, id) => {
             receipt_nr: receipt_nr,
             date: date,
             total_price: total_price,
+            pay_method: pay_method,
             customer: {...customer},
             order: [...products]
         }

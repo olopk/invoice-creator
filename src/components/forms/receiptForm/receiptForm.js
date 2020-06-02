@@ -42,7 +42,7 @@ const ReceiptForm = (props) => {
 
     let formInitialValues = {
       receipt_nr: '12',
-      payment: 'cash',
+      pay_method: 'card',
       customer_city: 'Chojnice',
       customer_street: 'Człuchowska',
       customer_name: 'Roman Abramowicz',
@@ -62,7 +62,7 @@ const ReceiptForm = (props) => {
     
     useEffect(()=>{
       if(props.modalData){
-        const {receipt_nr, date, total_price , customer, order} = props.modalData;
+        const {receipt_nr, date, total_price, pay_method , customer, order} = props.modalData;
         let parsedOrder = order.map(el => {
           return{
             ...el,
@@ -76,6 +76,7 @@ const ReceiptForm = (props) => {
         setFieldsValue({
           receipt_nr: receipt_nr,
           total_price: total_price,
+          pay_method: pay_method,
           date: parsedDate,        
           customer_city: customer.city,
           customer_street: customer.street,
@@ -119,12 +120,13 @@ const ReceiptForm = (props) => {
       setState({...state, loading: true});
 
       const allValues = getFieldsValue(true)
-      const {receipt_nr, total_price, date, customer_city, customer_street, customer_info, customer_name, order } = allValues;
+      const {receipt_nr, total_price, pay_method, date, customer_city, customer_street, customer_info, customer_name, order } = allValues;
    
       const receiptData = {
         receipt_nr: receipt_nr,
         date: date._i,
-        total_price: total_price
+        total_price: total_price,
+        pay_method: pay_method
       }
       const customerData = {
         city: customer_city,
@@ -221,7 +223,7 @@ const ReceiptForm = (props) => {
             </Col>
             <Col align="right" offset={1} span={6}>
               <Form.Item
-                  name={'payment'}
+                  name={'pay_method'}
                   style={{ width: '100%' }}
                   wrapperCol={{ sm: 24 }}
                   // rules={[{ required: true, message: 'Wpisz numer faktury' }]}
