@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import classes from './InvoiceForm.module.css';
 import today from '../../../functions/today';
 import {save_invoice} from '../../../api_calls/invoices'
+import validateNip from '../../../functions/nipValidation';
 import moment from 'moment';
 
 import createPDF from '../pdfdocForm';
@@ -42,9 +43,19 @@ const InvoiceForm = (props) => {
       modalDataId: ''
     });
 
+    const [nipValidity, setNipValidity] = useState({value: ''})
+
+    const checkNipValidity = (value) =>{
+      setNipValidity({
+        ...validateNip(value),
+        value
+      })
+    }
+
     let formInitialValues = {
       invoice_nr: '19/2020',
-      payment: 'cash',
+      pay_method: 'cash',
+      customer_id: '',
       customer_nip: '84359',
       customer_city: 'Czluchow',
       customer_street: 'Wiejska',
@@ -65,7 +76,7 @@ const InvoiceForm = (props) => {
     
     useEffect(()=>{
       if(props.modalData){
-        const {invoice_nr, date, total_price , customer, order} = props.modalData;
+        const {invoice_nr, date, total_price, pay_method, customer, order} = props.modalData;
         let parsedOrder = order.map(el => {
           return{
             ...el,
@@ -79,7 +90,9 @@ const InvoiceForm = (props) => {
         setFieldsValue({
           invoice_nr: invoice_nr,
           total_price: total_price,
-          date: parsedDate,        
+          pay_method: pay_method,
+          date: parsedDate,
+          customer_id: customer._id,        
           customer_nip: customer.nip,
           customer_city: customer.city,
           customer_street: customer.street,
@@ -93,9 +106,9 @@ const InvoiceForm = (props) => {
 
     const onSelectCustomer = (data) =>{
       const { el } = data;
-
       setFieldsValue(
         {
+          customer_id: el._id,
           customer_nip: el.nip,
           customer_city: el.city,
           customer_street: el.street,
@@ -103,15 +116,13 @@ const InvoiceForm = (props) => {
           customer_name: el.name
         }
       )
-
-      // const order = getFieldValue('order');
     }
     const onSelectProduct = (data, index) =>{
       const { el } = data;
-      
       let order = getFieldValue('order');
       order[index] = {
         ...order[index],
+        id: el._id,
         price_net: el.price_net,
         product: el.name,
         quantity: el.quantity,
@@ -124,14 +135,17 @@ const InvoiceForm = (props) => {
       setState({...state, loading: true});
 
       const allValues = getFieldsValue(true)
-      const {invoice_nr, total_price, date, customer_nip, customer_city, customer_street, customer_info, customer_name, order } = allValues;
+      const {invoice_nr, total_price, pay_method, date, customer_id, customer_nip, customer_city, customer_street, customer_info, customer_name, order } = allValues;
    
       const invoiceData = {
         invoice_nr: invoice_nr,
         date: date._i,
-        total_price: total_price
+        total_price: total_price,
+        pay_method: pay_method
       }
+
       const customerData = {
+        _id: customer_id,
         nip: customer_nip.toString(),
         city: customer_city,
         street: customer_street,
@@ -139,8 +153,11 @@ const InvoiceForm = (props) => {
         name: customer_name,
       }
 
+      console.log(customerData)
+
       const products = order.map(el => {
         return{
+              _id: el.id,
               name: el.product,
               unit: 'szt.',
               quantity: el.quantity,
@@ -240,7 +257,7 @@ const InvoiceForm = (props) => {
             </Col>
             <Col align="right" offset={1} span={6}>
               <Form.Item
-                  name={'payment'}
+                  name={'pay_method'}
                   style={{ width: '100%' }}
                   wrapperCol={{ sm: 24 }}
                   // rules={[{ required: true, message: 'Wpisz numer faktury' }]}
@@ -281,7 +298,9 @@ const InvoiceForm = (props) => {
                 name={'customer_nip'}
                 style={{ width: '100%' }}
                 wrapperCol={{ sm: 24 }}
-                rules={[{ required: true, message: 'Wpisz poprawny NIP' }]}
+                validateStatus={nipValidity.validateStatus}
+                help={nipValidity.errorMsg}
+                // rules={[{ required: true, message: 'Wpisz poprawny NIP' }]}
               >
                 {/* <InputNumber
                   prefix={<LockOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
@@ -293,13 +312,15 @@ const InvoiceForm = (props) => {
                   searchParam='nip'
                   onSelect={onSelectCustomer}
                   placeholder="NIP"
+                  onChange={checkNipValidity}
+                  value={nipValidity.value}
                 />
               </Form.Item>
             </Col>
             <Col span={4} offset={1} align="center">
                 <Form.Item>
-                  <Button type="primary" block size="small" onClick={fetchCustomerData}>
-                    Pobierz dane
+                  <Button type="primary" block size="small" onClick={fetchCustomerData} disabled={nipValidity.value.length != 10 || nipValidity.validateStatus == 'error' ? true : false}>
+                    Pobierz dane z GUS
                   </Button>
                 </Form.Item>
             </Col>
