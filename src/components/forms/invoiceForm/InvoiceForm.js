@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import classes from './InvoiceForm.module.css';
 import today from '../../../functions/today';
 import {save_invoice} from '../../../api_calls/invoices'
@@ -36,6 +36,9 @@ const InvoiceForm = (props) => {
     const { Option } = Select;
     const { Text } = Typography;
     const { TextArea } = Input;
+
+    const custInfoRef = useRef();
+    const productRef = useRef();
 
     const [state, setState] = useState({
       error: '',
@@ -118,6 +121,7 @@ const InvoiceForm = (props) => {
           customer_name: el.name
         }
       )
+      custInfoRef.current.focus()
     }
     const onSelectProduct = (data, index) =>{
       const { el } = data;
@@ -131,6 +135,7 @@ const InvoiceForm = (props) => {
         vat: el.vat,
       }
       setFieldsValue({order: order})
+      productRef.current.focus()
     }
     
     const onFinish = async () => {
@@ -388,6 +393,7 @@ const InvoiceForm = (props) => {
                 >
                 <TextArea rows={4}
                     placeholder="Informacja dodatkowa."
+                    ref={custInfoRef}
                 /> 
               </Form.Item>                
             </Col>
@@ -414,16 +420,13 @@ const InvoiceForm = (props) => {
                           style={{ marginBottom: "0px" }}
                           rules={[{ required: true, message: 'Wpisz Nazwę produktu lub usługi' }]}
                           >
-                            {/* <AutoComplete
-                            placeholder="Nazwa produktu/usługi"
-                            /> */}
-                               <Complete
-                                data={props.products}
-                                searchParam='name'
-                                onSelect={(data) => onSelectProduct(data, index)}
-                                onChange={(value) => onProductNameChange(value, index)}
-                                // placeholder="NIP"
-                              />
+                            <Complete
+                              data={props.products}
+                              searchParam='name'
+                              onSelect={(data) => onSelectProduct(data, index)}
+                              onChange={(value) => onProductNameChange(value, index)}
+                              // placeholder="NIP"
+                            />
                         </Form.Item>
                       </Col>
                       <Col span={2}>
@@ -451,6 +454,7 @@ const InvoiceForm = (props) => {
                             placeholder="Ilość"
                             min={1}
                             onChange={() => countElementSum(index)}
+                            ref={productRef}
                           /> 
                         </Form.Item>
                       </Col>
