@@ -127,7 +127,7 @@ const ReceiptForm = (props) => {
       setState({...state, loading: true});
 
       const allValues = getFieldsValue(true)
-      const {receipt_nr, total_price, pay_method, date, customer_city, customer_street, customer_info, customer_name, order } = allValues;
+      const {receipt_nr, total_price, pay_method, date, customer_id, customer_city, customer_street, customer_info, customer_name, order } = allValues;
    
       const receiptData = {
         receipt_nr: receipt_nr,
@@ -136,6 +136,7 @@ const ReceiptForm = (props) => {
         pay_method: pay_method
       }
       const customerData = {
+        _id: customer_id,
         city: customer_city,
         street: customer_street,
         info: customer_info,
@@ -144,6 +145,7 @@ const ReceiptForm = (props) => {
 
       const products = order.map(el => {
         return{
+              _id: el.id,
               name: el.product,
               unit: 'szt.',
               quantity: el.quantity,
@@ -171,6 +173,12 @@ const ReceiptForm = (props) => {
 
     const onChange = (element) => {
       setFieldsValue({element})
+    }
+    
+    const onProductNameChange = (value, index) =>{
+      const order = getFieldValue('order');
+      order[index].id = null;
+      setFieldsValue({order: order})
     }
 
     const countElementSum = (index) => {
@@ -350,6 +358,7 @@ const ReceiptForm = (props) => {
                                 data={props.products}
                                 searchParam='name'
                                 onSelect={(data) => onSelectProduct(data, index)}
+                                onChange={(value) => onProductNameChange(value, index)}
                                 // placeholder="NIP"
                               />
                         </Form.Item>
