@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import classes from './receiptForm.module.css';
 import today from '../../../functions/today';
 import {save_receipt} from '../../../api_calls/receipts'
@@ -26,9 +26,12 @@ const Col = props =>{
 
 const ReceiptForm = (props) => {
     const [receiptForm] = Form.useForm()
-    const {setFieldsValue , getFieldValue, getFieldsValue} = receiptForm;
+    const {setFieldsValue , resetFields, getFieldValue, getFieldsValue} = receiptForm;
 
-    const {showNotification, customers} = props;
+    const productRef = useRef();
+    const custInfoRef = useRef();
+
+    const {showNotification, customers, lastReceiptNr} = props;
 
     const { Option } = Select;
     const { Text } = Typography;
@@ -41,7 +44,7 @@ const ReceiptForm = (props) => {
     });
 
     let formInitialValues = {
-      receipt_nr: '12',
+      receipt_nr: parseInt(lastReceiptNr)+1 || '',
       pay_method: 'card',
       customer_city: 'Chojnice',
       customer_street: 'Człuchowska',
@@ -93,12 +96,14 @@ const ReceiptForm = (props) => {
 
       setFieldsValue(
         {
+          customer_id: el._id,
           customer_city: el.city,
           customer_street: el.street,
           customer_info: el.info,
           customer_name: el.name
         }
       )
+      custInfoRef.current.focus()
 
       // const order = getFieldValue('order');
     }
@@ -108,12 +113,14 @@ const ReceiptForm = (props) => {
       let order = getFieldValue('order');
       order[index] = {
         ...order[index],
+        id: el._id,
         price_net: el.price_net,
         product: el.name,
         quantity: el.quantity,
         vat: el.vat,
       }
       setFieldsValue({order: order})
+      productRef.current.focus()
     }
     
     const onFinish = async () => {
@@ -275,6 +282,7 @@ const ReceiptForm = (props) => {
                   searchParam='name'
                   onSelect={onSelectCustomer}
                   placeholder="Nazwa klienta"
+                  onChange={()=>resetFields(['customer_id'])}
                 >
                 </Complete>
               </Form.Item>               
@@ -308,6 +316,7 @@ const ReceiptForm = (props) => {
                 >
                 <TextArea rows={4}
                     placeholder="Informacja dodatkowa."
+                    ref={custInfoRef}
                 /> 
               </Form.Item>                
             </Col>
@@ -369,6 +378,7 @@ const ReceiptForm = (props) => {
                             style={{ width: '100%' }}
                             placeholder="Ilość"
                             min={1}
+                            ref={productRef}
                             onChange={() => countElementSum(index)}
                           /> 
                         </Form.Item>
