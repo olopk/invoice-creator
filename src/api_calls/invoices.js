@@ -10,9 +10,9 @@ export const fetch_invoices = () => {
                    let data = response.data.data.getInvoices.map((invoice, index) => {
                     const date = invoice.date.slice(0, 10)
                         return {
-                        ...invoice,
-                        date: date,
-                        key: index
+                            ...invoice,
+                            date: date,
+                            key: index
                         }
                     })
                return {data: data}

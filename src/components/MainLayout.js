@@ -273,6 +273,7 @@ const MainLayout = (props) => {
                     showNotification={ShowNotification}
                     customers={state.customers}
                     products={state.products}
+                    lastInvoiceNr={state.invoices && state.invoices.length > 0 ? state.invoices[state.invoices.length -1].invoice_nr : null}
                 />
             )
             }/>
@@ -297,6 +298,8 @@ const MainLayout = (props) => {
             </Switch>
         )
     }
+
+    // console.log(state.invoices && state.invoices.length > 0 ? state.invoices[state.invoices.length -1].invoice_nr : null)
 
     return(
         <BrowserRouter>

@@ -31,7 +31,7 @@ const InvoiceForm = (props) => {
     const [invoiceForm] = Form.useForm()
     const { resetFields, setFieldsValue , getFieldValue, getFieldsValue} = invoiceForm;
 
-    const {showNotification, customers} = props;
+    const {showNotification, customers, lastInvoiceNr} = props;
 
     const { Option } = Select;
     const { Text } = Typography;
@@ -58,7 +58,7 @@ const InvoiceForm = (props) => {
     }
 
     let formInitialValues = {
-      invoice_nr: '19/2020',
+      invoice_nr: parseInt(lastInvoiceNr)+1 || '',
       pay_method: 'cash',
       customer_id: '',
       customer_nip: '84359',
