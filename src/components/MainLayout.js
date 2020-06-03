@@ -8,7 +8,6 @@ import MainModal from './Modals/mainModal';
 import NavBar from '../components/Navigation/NavBar';
 import MainTable from './Tables/mainTable/mainTable';
 
-import InvoiceForm from './forms/invoiceForm/InvoiceForm';
 import NewDocument from './newDocument/newDocument';
 
 import LoginForm from './forms/authForm/loginForm';
@@ -16,6 +15,7 @@ import SigninForm from './forms/authForm/signInForm';
 import ShowNotification from '../components/NotificationSnackbar/Notification';
 
 import {fetch_invoices, delete_invoice} from '../api_calls/invoices';
+import {fetch_receipts, delete_receipt} from '../api_calls/receipts';
 import {fetch_customers, delete_customer} from '../api_calls/customers';
 import {fetch_products, delete_product} from '../api_calls/products';
 import {getUser, logIn, signIn} from '../api_calls/auth';
@@ -114,6 +114,16 @@ const MainLayout = (props) => {
         ShowNotification(request.status, request.message, callUpdate)
     }
     // ------------------------------------------------------------
+    // RECEIPTS OPERATIONS 
+    const receipt_remove = async (id) => {
+        const callUpdate = () => {
+            const updatedReceipts = state.receipts.filter(el => el._id !== id);
+            setState({...state, receipts: updatedReceipts})
+        }
+        const request = await delete_receipt(id);
+        ShowNotification(request.status, request.message, callUpdate)
+    }
+    // ------------------------------------------------------------
      // CUSTOMERS OPERATIONS 
     const customer_remove = async (id) => {
         const callUpdate = () => {
@@ -139,6 +149,7 @@ const MainLayout = (props) => {
     const fetchAll = async() =>{
         const allFetchedData = {};
         allFetchedData.invoices = await fetch_invoices();
+        allFetchedData.receipts = await fetch_receipts();
         allFetchedData.customers = await fetch_customers();
         allFetchedData.products = await fetch_products();
         
@@ -238,6 +249,21 @@ const MainLayout = (props) => {
                     />
                 )}
                 />
+            <Route path="/receipts-list"
+            render={()=> (
+                    <Table
+                        dataType='receipts' 
+                        data={state.receipts}
+                        columns={[
+                            {title: 'Nr Paragonu', dataIndex: 'receipt_nr', width: '20%'},
+                            {title: 'Data', dataIndex: 'date', width: '15%'},
+                            {title: 'Nazwa Kontrahenta',dataIndex: 'customer.name', width: '35%'},
+                            {title: 'Wartość Paragonu',dataIndex: 'total_price', width: '20%'}
+                        ]}
+                        delete={receipt_remove}
+                    />
+                )}
+                />
             <Route path="/customers-list" render={()=> (
                     <Table
                         dataType='customer' 
@@ -274,6 +300,7 @@ const MainLayout = (props) => {
                     customers={state.customers}
                     products={state.products}
                     lastInvoiceNr={state.invoices && state.invoices.length > 0 ? state.invoices[state.invoices.length -1].invoice_nr : null}
+                    lastReceiptNr={state.receipts && state.receipts.length > 0 ? state.receipts[state.receipts.length -1].receipt_nr : null}
                 />
             )
             }/>

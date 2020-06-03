@@ -58,6 +58,12 @@ const NavBar = (props) => {
                          Faktury
                      </Link>
                  </Menu.Item>
+                 <Menu.Item key="receipts">
+                     <Link to="/receipts-list">                
+                         <FolderOpenOutlined />
+                         Paragony
+                     </Link>
+                 </Menu.Item>
                  <Menu.Item key="idcard">
                      <Link to="/customers-list">                
                          <IdcardOutlined />
