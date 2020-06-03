@@ -29,7 +29,7 @@ const Col = props =>{
 
 const InvoiceForm = (props) => {
     const [invoiceForm] = Form.useForm()
-    const {setFieldsValue , getFieldValue, getFieldsValue} = invoiceForm;
+    const { resetFields, setFieldsValue , getFieldValue, getFieldsValue} = invoiceForm;
 
     const {showNotification, customers} = props;
 
@@ -46,6 +46,8 @@ const InvoiceForm = (props) => {
     const [nipValidity, setNipValidity] = useState({value: ''})
 
     const checkNipValidity = (value) =>{
+      resetFields(['customer_id'])
+
       setNipValidity({
         ...validateNip(value),
         value
@@ -153,8 +155,6 @@ const InvoiceForm = (props) => {
         name: customer_name,
       }
 
-      console.log(customerData)
-
       const products = order.map(el => {
         return{
               _id: el.id,
@@ -185,6 +185,12 @@ const InvoiceForm = (props) => {
 
     const onChange = (element) => {
       setFieldsValue({element})
+    }
+
+    const onProductNameChange = (value, index) =>{
+      const order = getFieldValue('order');
+      order[index].id = null;
+      setFieldsValue({order: order})
     }
 
     const fetchCustomerData = async () =>{
@@ -319,7 +325,9 @@ const InvoiceForm = (props) => {
             </Col>
             <Col span={4} offset={1} align="center">
                 <Form.Item>
-                  <Button type="primary" block size="small" onClick={fetchCustomerData} disabled={nipValidity.value.length != 10 || nipValidity.validateStatus == 'error' ? true : false}>
+                  <Button type="primary" block size="small" onClick={fetchCustomerData}
+                   disabled={nipValidity.value.length != 10 || nipValidity.validateStatus == 'error' ? true : false}
+                   >
                     Pobierz dane z GUS
                   </Button>
                 </Form.Item>
@@ -413,6 +421,7 @@ const InvoiceForm = (props) => {
                                 data={props.products}
                                 searchParam='name'
                                 onSelect={(data) => onSelectProduct(data, index)}
+                                onChange={(value) => onProductNameChange(value, index)}
                                 // placeholder="NIP"
                               />
                         </Form.Item>
