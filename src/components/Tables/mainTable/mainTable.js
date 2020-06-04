@@ -86,7 +86,9 @@ class MainTable extends Component {
           onClick={()=>this.props.openModal(this.props.dataType, rowData)} />
         <DeleteOutlined
           className={classes.tableIcon}
-          onClick={()=>this.props.delete(rowData._id)} />
+          // onClick={()=>this.props.delete(rowData._id)}
+          onClick={()=>this.props.confirmModalOpen(this.props.dataType, rowData)}
+        />
       </span>
     );
   }

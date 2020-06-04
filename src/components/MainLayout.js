@@ -16,10 +16,10 @@ import LoginForm from './forms/authForm/loginForm';
 import SigninForm from './forms/authForm/signInForm';
 import ShowNotification from '../components/NotificationSnackbar/Notification';
 
-import {fetch_invoices, delete_invoice} from '../api_calls/invoices';
-import {fetch_receipts, delete_receipt} from '../api_calls/receipts';
-import {fetch_customers, delete_customer} from '../api_calls/customers';
-import {fetch_products, delete_product} from '../api_calls/products';
+import {fetch_invoices} from '../api_calls/invoices';
+import {fetch_receipts} from '../api_calls/receipts';
+import {fetch_customers} from '../api_calls/customers';
+import {fetch_products} from '../api_calls/products';
 import {getUser, logIn, signIn} from '../api_calls/auth';
 
 // import classes from './MainLayout.module.css';
@@ -42,6 +42,7 @@ const MainLayout = (props) => {
     })
     const [confirmModal, setConfirmModal] = useState({
         visible: false,
+        dataType: null,
         data: null
     })
     //AUTH OPERATIONS
@@ -109,6 +110,23 @@ const MainLayout = (props) => {
             modalData: null
         })
     }
+    //MODAL OPERATIONS
+    const confirmModalOpen = (dataType, data) => {
+        setConfirmModal({
+            ...state,
+            visible: true,
+            dataType: dataType,
+            data: data
+        })
+    }
+    const confirmModalClose = () => {
+        setConfirmModal({
+            ...state,
+            visible: false,
+            dataType: null,
+            data: null
+        })
+    }
     // ------------------------------------------------------------
     // REMOVING ELEMENT
     // args -> (array, delReqApiFunc, id)
@@ -118,6 +136,12 @@ const MainLayout = (props) => {
             setState({...state, [array]: updated})
         }
         const request = await func(id);
+        setConfirmModal({
+            ...state,
+            visible: false,
+            dataType: null,
+            data: null
+        })
         ShowNotification(request.status, request.message, callUpdate)
     }
     // ------------------------------------------------------------
@@ -201,8 +225,9 @@ const MainLayout = (props) => {
         return(
             <MainTable
              openModal={modalHandleOpen}
-             showNotification={ShowNotification}
              onCancel={modalHandleCancel}
+             showNotification={ShowNotification}
+             confirmModalOpen={confirmModalOpen}
              errors={state.errors}
              {...props}/>
         )
@@ -221,14 +246,13 @@ const MainLayout = (props) => {
                             {title: 'Nazwa Kontrahenta',dataIndex: 'customer.name', width: '35%'},
                             {title: 'Wartość Faktury',dataIndex: 'total_price', width: '20%'}
                         ]}
-                        delete={(id) => removeTableRow("invoices", delete_invoice, id)}
                     />
                 )}
                 />
             <Route path="/receipts-list"
             render={()=> (
                     <Table
-                        dataType='receipts' 
+                        dataType='receipt' 
                         data={state.receipts}
                         columns={[
                             {title: 'Nr Paragonu', dataIndex: 'receipt_nr', width: '20%'},
@@ -236,7 +260,6 @@ const MainLayout = (props) => {
                             {title: 'Nazwa Kontrahenta',dataIndex: 'customer.name', width: '35%'},
                             {title: 'Wartość Paragonu',dataIndex: 'total_price', width: '20%'}
                         ]}
-                        delete={(id) => removeTableRow("receipts", delete_receipt, id)}
                     />
                 )}
                 />
@@ -250,7 +273,6 @@ const MainLayout = (props) => {
                             {title: 'Miasto',dataIndex: 'city', width: '30%'},
                             {title: 'Ulica',dataIndex: 'street', width: '20%'}
                         ]}
-                        delete={(id) => removeTableRow("customers", delete_customer, id)}
                 />
             )}/>
             <Route path="/products-list" render={()=> (
@@ -264,7 +286,6 @@ const MainLayout = (props) => {
                             {title: 'Stan magazynowy',dataIndex: 'quantity', width: '20%'},
                             {title: 'Cena',dataIndex: 'price', width: '15%'}
                         ]}
-                        delete={(id) => removeTableRow("products", delete_product, id)}
                 />
             )}/>
             {/* <Route component={loginForm}/> */}
@@ -321,9 +342,10 @@ const MainLayout = (props) => {
                             />
                             <ConfirmModal
                                 visible={confirmModal.visible}
+                                dataType={confirmModal.dataType}
                                 data={confirmModal.data}
-                                onConfirm={()=>setConfirmModal({...confirmModal, data: null, visible: false})}
-                                onClose={()=>setConfirmModal({...confirmModal, data: null, visible: false})}
+                                onOk={removeTableRow}
+                                onClose={confirmModalClose}
                             />
                            {switchRoutes}
                     </Content>
