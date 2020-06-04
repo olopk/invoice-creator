@@ -5,6 +5,8 @@ import { Layout } from 'antd';
 import classes from './MainLayout.module.css'
 
 import MainModal from './Modals/mainModal';
+import ConfirmModal from './Modals/confirmModal';
+
 import NavBar from '../components/Navigation/NavBar';
 import MainTable from './Tables/mainTable/mainTable';
 
@@ -37,6 +39,10 @@ const MainLayout = (props) => {
         modalDataType: null,
         modalWidth: null,
         errors: []
+    })
+    const [confirmModal, setConfirmModal] = useState({
+        visible: false,
+        data: null
     })
     //AUTH OPERATIONS
     const signInRequest = async (userData) =>{
@@ -102,6 +108,17 @@ const MainLayout = (props) => {
             modalVisible: false,
             modalData: null
         })
+    }
+    // ------------------------------------------------------------
+    // REMOVING ELEMENT
+    // args -> (array, delReqApiFunc, id)
+    const removeTableRow = async (array, func, id) => {
+        const callUpdate = () => {
+            const updated = state[array].filter(el => el._id !== id);
+            setState({...state, [array]: updated})
+        }
+        const request = await func(id);
+        ShowNotification(request.status, request.message, callUpdate)
     }
     // ------------------------------------------------------------
     // INVOICES OPERATIONS 
@@ -344,6 +361,12 @@ const MainLayout = (props) => {
                                 modalWidth={state.modalWidth}
                                 customers={state.customers}
                                 products={state.products}
+                            />
+                            <ConfirmModal
+                                visible={confirmModal.visible}
+                                data={confirmModal.data}
+                                onConfirm={()=>setConfirmModal({...confirmModal, data: null, visible: false})}
+                                onClose={()=>setConfirmModal({...confirmModal, data: null, visible: false})}
                             />
                            {switchRoutes}
                     </Content>
