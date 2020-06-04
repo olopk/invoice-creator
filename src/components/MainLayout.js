@@ -121,47 +121,6 @@ const MainLayout = (props) => {
         ShowNotification(request.status, request.message, callUpdate)
     }
     // ------------------------------------------------------------
-    // INVOICES OPERATIONS 
-    const invoice_remove = async (id) => {
-        const callUpdate = () => {
-            const updatedInvoices = state.invoices.filter(el => el._id !== id);
-            setState({...state, invoices: updatedInvoices})
-        }
-        const request = await delete_invoice(id);
-        ShowNotification(request.status, request.message, callUpdate)
-    }
-    // ------------------------------------------------------------
-    // RECEIPTS OPERATIONS 
-    const receipt_remove = async (id) => {
-        const callUpdate = () => {
-            const updatedReceipts = state.receipts.filter(el => el._id !== id);
-            setState({...state, receipts: updatedReceipts})
-        }
-        const request = await delete_receipt(id);
-        ShowNotification(request.status, request.message, callUpdate)
-    }
-    // ------------------------------------------------------------
-     // CUSTOMERS OPERATIONS 
-    const customer_remove = async (id) => {
-        const callUpdate = () => {
-            const updatedCustomers = state.customers.filter(el => el._id !== id);
-            setState({...state, customers: updatedCustomers})
-        }
-        const request = await delete_customer(id);
-        ShowNotification(request.status, request.message, callUpdate)
-    }
-    // ------------------------------------------------------------
-    // PRODUCTS OPERATIONS 
-    const product_remove = async (id) => {
-        const callUpdate = () =>{
-            const updatedProducts = state.products.filter(el => el._id !== id);
-            setState({...state, products: updatedProducts})
-        }
-        const request = await delete_product(id)
-        ShowNotification(request.status, request.message, callUpdate)
-    }
-    // ------------------------------------------------------------
-
     //ASYNC FUNCTION FOR FETCHING ALL THE DATA.
     const fetchAll = async() =>{
         const allFetchedData = {};
@@ -262,7 +221,7 @@ const MainLayout = (props) => {
                             {title: 'Nazwa Kontrahenta',dataIndex: 'customer.name', width: '35%'},
                             {title: 'Wartość Faktury',dataIndex: 'total_price', width: '20%'}
                         ]}
-                        delete={invoice_remove}
+                        delete={(id) => removeTableRow("invoices", delete_invoice, id)}
                     />
                 )}
                 />
@@ -277,7 +236,7 @@ const MainLayout = (props) => {
                             {title: 'Nazwa Kontrahenta',dataIndex: 'customer.name', width: '35%'},
                             {title: 'Wartość Paragonu',dataIndex: 'total_price', width: '20%'}
                         ]}
-                        delete={receipt_remove}
+                        delete={(id) => removeTableRow("receipts", delete_receipt, id)}
                     />
                 )}
                 />
@@ -291,7 +250,7 @@ const MainLayout = (props) => {
                             {title: 'Miasto',dataIndex: 'city', width: '30%'},
                             {title: 'Ulica',dataIndex: 'street', width: '20%'}
                         ]}
-                        delete={customer_remove}
+                        delete={(id) => removeTableRow("customers", delete_customer, id)}
                 />
             )}/>
             <Route path="/products-list" render={()=> (
@@ -305,7 +264,7 @@ const MainLayout = (props) => {
                             {title: 'Stan magazynowy',dataIndex: 'quantity', width: '20%'},
                             {title: 'Cena',dataIndex: 'price', width: '15%'}
                         ]}
-                        delete={product_remove}
+                        delete={(id) => removeTableRow("products", delete_product, id)}
                 />
             )}/>
             {/* <Route component={loginForm}/> */}
@@ -343,8 +302,6 @@ const MainLayout = (props) => {
         )
     }
 
-    // console.log(state.invoices && state.invoices.length > 0 ? state.invoices[state.invoices.length -1].invoice_nr : null)
-
     return(
         <BrowserRouter>
             <Layout className={classes.mainSection}> 
@@ -370,7 +327,6 @@ const MainLayout = (props) => {
                             />
                            {switchRoutes}
                     </Content>
-                {/* <Footer>Facebook</Footer> */}
             </Layout>
         </BrowserRouter>
     )
