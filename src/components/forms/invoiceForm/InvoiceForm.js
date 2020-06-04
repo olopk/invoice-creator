@@ -58,7 +58,7 @@ const InvoiceForm = (props) => {
     }
 
     let formInitialValues = {
-      invoice_nr: parseInt(lastInvoiceNr)+1 || '',
+      invoice_nr: (parseInt(lastInvoiceNr)+1).toString() || '',
       pay_method: 'cash',
       customer_id: '',
       customer_nip: '84359',

@@ -44,7 +44,7 @@ const ReceiptForm = (props) => {
     });
 
     let formInitialValues = {
-      receipt_nr: parseInt(lastReceiptNr)+1 || '',
+      receipt_nr: lastReceiptNr ? (parseInt(lastReceiptNr)+1).toString() : '',
       pay_method: 'card',
       customer_city: 'Chojnice',
       customer_street: 'Człuchowska',
@@ -174,7 +174,7 @@ const ReceiptForm = (props) => {
     const onChange = (element) => {
       setFieldsValue({element})
     }
-    
+
     const onProductNameChange = (value, index) =>{
       const order = getFieldValue('order');
       order[index].id = null;
