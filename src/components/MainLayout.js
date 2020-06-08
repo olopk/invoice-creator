@@ -34,11 +34,13 @@ const MainLayout = (props) => {
         loggedIn: false,
         userData: null,
         loading: false,
-        modalVisible: false,
-        modalData: null,
-        modalDataType: null,
-        modalWidth: null,
         errors: []
+    })
+    const [mainModal, setMainModal] = useState({
+        visible: false,
+        dataType: null,
+        data: null,
+        width: null
     })
     const [confirmModal, setConfirmModal] = useState({
         visible: false,
@@ -77,40 +79,39 @@ const MainLayout = (props) => {
             loggedIn: false,
             userData: null,
             loading: false,
-            modalVisible: false,
-            modalData: null,
-            modalDataType: null,
-            modalWidth: null,
             errors: []
         })
     }
 
-    //MODAL OPERATIONS
+    //MAIN MODAL OPERATIONS
     const modalHandleOpen = (modalDataType, modalData) => {
         let modalWidth;
         switch(modalDataType){
             case 'invoice':
                 modalWidth = 1080;
                 break;
+            case 'receipt':
+                modalWidth = 1080;
+                break;
             default:
                 modalWidth = 800;
         }
-        setState({
-            ...state,
-            modalVisible: true,
-            modalDataType: modalDataType,
-            modalData: modalData,
-            modalWidth: modalWidth
+        setMainModal({
+            ...mainModal,
+            visible: true,
+            dataType: modalDataType,
+            data: modalData,
+            width: modalWidth
         })
     }
     const modalHandleCancel = () => {
-        setState({
-            ...state,
-            modalVisible: false,
-            modalData: null
+        setMainModal({
+            ...mainModal,
+            visible: false,
+            data: null
         })
     }
-    //MODAL OPERATIONS
+    //CONFIRM MODAL OPERATIONS
     const confirmModalOpen = (dataType, data) => {
         setConfirmModal({
             ...state,
@@ -165,7 +166,6 @@ const MainLayout = (props) => {
                 }
             }
         }
-        console.log(returnObject)
         return returnObject
     }
     // ------------------------------------------------------------
@@ -243,7 +243,7 @@ const MainLayout = (props) => {
                         columns={[
                             {title: 'Nr Faktury', dataIndex: 'invoice_nr', width: '20%'},
                             {title: 'Data', dataIndex: 'date', width: '15%'},
-                            {title: 'Nazwa Kontrahenta',dataIndex: 'customer.name', width: '35%'},
+                            {title: 'Nazwa Kontrahenta',dataIndex: ['customer', 'name'], width: '35%'},
                             {title: 'Wartość Faktury',dataIndex: 'total_price', width: '20%'}
                         ]}
                     />
@@ -257,7 +257,7 @@ const MainLayout = (props) => {
                         columns={[
                             {title: 'Nr Paragonu', dataIndex: 'receipt_nr', width: '20%'},
                             {title: 'Data', dataIndex: 'date', width: '15%'},
-                            {title: 'Nazwa Kontrahenta',dataIndex: 'customer.name', width: '35%'},
+                            {title: 'Nazwa Kontrahenta',dataIndex: ['customer', 'name'], width: '35%'},
                             {title: 'Wartość Paragonu',dataIndex: 'total_price', width: '20%'}
                         ]}
                     />
@@ -268,9 +268,9 @@ const MainLayout = (props) => {
                         dataType='customer' 
                         data={state.customers}
                         columns={[
-                            {title: 'Nazwa kontrahenta', dataIndex: 'name', width: '30%'},
+                            {title: 'Nazwa kontrahenta', dataIndex: 'name', width: '40%'},
                             {title: 'NIP', dataIndex: 'nip', width: '10%'},
-                            {title: 'Miasto',dataIndex: 'city', width: '30%'},
+                            {title: 'Miasto',dataIndex: 'city', width: '20%'},
                             {title: 'Ulica',dataIndex: 'street', width: '20%'}
                         ]}
                 />
@@ -290,8 +290,6 @@ const MainLayout = (props) => {
             )}/>
             {/* <Route component={loginForm}/> */}
             <Route render={()=>(
-                // <InvoiceForm
-                // />
                 <NewDocument
                     showNotification={ShowNotification}
                     customers={state.customers}
@@ -331,12 +329,12 @@ const MainLayout = (props) => {
                 </Header>
                     <Content>
                             <MainModal
-                                visible={state.modalVisible}
+                                visible={mainModal.visible}
                                 loading={state.loading}
                                 onCancel={modalHandleCancel}
-                                modalDataType={state.modalDataType}
-                                modalData={state.modalData}
-                                modalWidth={state.modalWidth}
+                                modalDataType={mainModal.dataType}
+                                modalData={mainModal.data}
+                                modalWidth={mainModal.width}
                                 customers={state.customers}
                                 products={state.products}
                             />
@@ -353,5 +351,4 @@ const MainLayout = (props) => {
         </BrowserRouter>
     )
 }
-
 export default MainLayout;
