@@ -3,6 +3,7 @@ import { Modal } from 'antd';
 
 import ShowNotification from '../NotificationSnackbar/Notification';
 import InvoiceForm from '../forms/invoiceForm/InvoiceForm';
+import ReceiptForm from '../forms/receiptForm/receiptForm';
 import CustomerForm from '../forms/customerForm/customerForm';
 import ProductForm from '../forms/productForm/productForm';
 
@@ -12,6 +13,17 @@ const MainModal = (props) => {
   if(modalDataType === 'invoice'){
     modalContent = (
       <InvoiceForm
+          style={{width: '100%'}}
+          modalData={modalData}
+          showNotification={ShowNotification}
+          customers={props.customers}
+          products={props.products}
+      />
+    )
+  }
+  else if(modalDataType === 'receipt'){
+    modalContent = (
+      <ReceiptForm
           style={{width: '100%'}}
           modalData={modalData}
           showNotification={ShowNotification}
