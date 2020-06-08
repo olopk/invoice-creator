@@ -1,6 +1,8 @@
 import React from 'react';
 import { Modal, Button} from 'antd';
 
+import classes from './confirmModal.module.css';
+
 import {delete_invoice} from '../../api_calls/invoices';
 import {delete_receipt} from '../../api_calls/receipts';
 import {delete_customer} from '../../api_calls/customers';
@@ -43,15 +45,15 @@ const ConfirmModal = (props) => {
         <Modal
           visible={visible}
           onOk={()=>onOk(array, func, data._id)}
-        //   onCancel={onCancel}
+          onCancel={onClose}
           footer={null}
-        //   bodyStyle={{ padding: '0' }}
+          bodyStyle={{ padding: '30px' }}
         >
           <p>Czy na pewno chcesz usunąć{msg}</p>
-          <Button type="primary" htmlType="submit" block onClick={()=>onOk(array, func, data._id)}>
+          <Button className={classes.button} type="primary" danger htmlType="submit" block onClick={()=>onOk(array, func, data._id)}>
             Usuń
           </Button>
-          <Button type="secondary" htmlType="submit" block onClick={onClose}>
+          <Button className={classes.button} type="primary" htmlType="submit" block onClick={onClose}>
             Anuluj
           </Button>
         </Modal>

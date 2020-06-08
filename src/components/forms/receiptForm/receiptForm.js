@@ -279,12 +279,7 @@ const ReceiptForm = (props) => {
                 name={'customer_name'}
                 style={{ width: '100%' }}
                 wrapperCol={{ sm: 24 }}
-                // rules={[{ required: true, message: 'Wpisz nazwę klienta.' }]}
                 >
-                {/* <AutoComplete
-                    placeholder="Nazwa klienta"
-                    style={{width: '100%'}}
-                />  */}
                  <Complete
                   data={customers}
                   searchParam='name'
@@ -298,7 +293,6 @@ const ReceiptForm = (props) => {
                 name={'customer_city'}
                 style={{ width: '100%' }}
                 wrapperCol={{ sm: 24 }}
-                rules={[{ required: true, message: 'Wpisz miasto' }]}
                 >
                 <Input
                   placeholder="Miejscowość"
@@ -308,7 +302,6 @@ const ReceiptForm = (props) => {
                 name={'customer_street'}
                 style={{ width: '100%' }}
                 wrapperCol={{ sm: 24 }}
-                rules={[{ required: true, message: 'Wpisz ulicę' }]}
                 >
                 <Input
                     placeholder="Ulica"
