@@ -100,9 +100,7 @@ class MainTable extends Component {
     if(!this.props.data){
       table = <LoadingOutlined className={classes.loadingIcon} />;
     }else{
-      console.log(this.props.data)
         columns = this.props.columns.map(el => {
-          console.log(el.dataIndex)
         return {
               title: el.title,
               dataIndex: el.dataIndex,

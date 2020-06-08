@@ -35,7 +35,6 @@ export const fetch_single_invoice = (id) => {
             .then(response => {
                let invoice = response.data.data.getInvoice;
                invoice.date = invoice.date.slice(0, 10)
-                console.log(invoice)
             //    return {data: data}
             }).catch(err => {return {error: err}})
 }

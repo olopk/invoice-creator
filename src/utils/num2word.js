@@ -9,9 +9,6 @@ const num2word = (number) =>{
     var setki = ["", " sto", " dwieście", " trzysta", " czterysta", " pięćset", " sześćset", " siedemset", " osiemset", " dziewięćset"];
     var grupy = [["" ,"" ,""],[" tysiąc" ," tysiące" ," tysięcy"],[" milion" ," miliony" ," milionów"],];
     
-    // console.log(liczba)
-    // console.log(typeof(liczba))
-    // console.log(!isNaN(liczba))
     if (!isNaN(liczba)){
         var wynik = '';
         var znak = '';
