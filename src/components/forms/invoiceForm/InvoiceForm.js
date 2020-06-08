@@ -43,7 +43,8 @@ const InvoiceForm = (props) => {
     const [state, setState] = useState({
       error: '',
       loading: false,
-      modalDataId: ''
+      modalDataId: '',
+      payment_date: false
     });
 
     const [nipValidity, setNipValidity] = useState({value: ''})
@@ -81,7 +82,7 @@ const InvoiceForm = (props) => {
     
     useEffect(()=>{
       if(props.modalData){
-        const {invoice_nr, date, total_price, pay_method, customer, order} = props.modalData;
+        const {invoice_nr, date, total_price, pay_method, pay_date, customer, order} = props.modalData;
         let parsedOrder = order.map(el => {
           return{
             ...el,
@@ -96,6 +97,7 @@ const InvoiceForm = (props) => {
           invoice_nr: invoice_nr,
           total_price: total_price,
           pay_method: pay_method,
+          pay_date: pay_date,
           date: parsedDate,
           customer_id: customer._id,        
           customer_nip: customer.nip,
@@ -142,13 +144,14 @@ const InvoiceForm = (props) => {
       setState({...state, loading: true});
 
       const allValues = getFieldsValue(true)
-      const {invoice_nr, total_price, pay_method, date, customer_id, customer_nip, customer_city, customer_street, customer_info, customer_name, order } = allValues;
+      const {invoice_nr, total_price, pay_method, pay_date, date, customer_id, customer_nip, customer_city, customer_street, customer_info, customer_name, order } = allValues;
    
       const invoiceData = {
         invoice_nr: invoice_nr,
         date: date._i,
         total_price: total_price,
-        pay_method: pay_method
+        pay_method: pay_method,
+        pay_date: pay_method === 'transfer' ? pay_date : null
       }
 
       const customerData = {
@@ -238,6 +241,38 @@ const InvoiceForm = (props) => {
       }
     }
 
+    
+    let payment_date = null;
+    if(state.payment_date){
+      payment_date = (
+        <React.Fragment>
+          <Col align="right" span={3} offset={5}>
+            <Text className={classes.cityName}>Termin płatności: </Text>
+          </Col>
+          <Col span={3}>
+            <Form.Item
+              name={'payment_date'}
+              style={{ width: '100%' }}
+              wrapperCol={{ sm: 24 }}
+              rules={[{ required: true, message: 'Wybierz datę' }]}
+              >
+                <DatePicker
+                  format={'YYYY-MM-DD'}
+                  style={{ width: '100%' }}
+                /> 
+            </Form.Item>
+          </Col>
+        </React.Fragment>
+      )
+    }
+    const checkPaymentType = (e) => {
+      if(e.target.value === 'transfer'){
+        setState({...state, payment_date: true})
+      }else{
+        setState({...state, payment_date: false})
+      }
+    }
+
     let content = (
     <React.Fragment>
       <section className={classes.mainSection} style={props.style}>
@@ -273,7 +308,7 @@ const InvoiceForm = (props) => {
                   wrapperCol={{ sm: 24 }}
                   // rules={[{ required: true, message: 'Wpisz numer faktury' }]}
                 >
-                <Radio.Group buttonStyle="solid">
+                <Radio.Group buttonStyle="solid" onChange={checkPaymentType}>
                   <Radio.Button value="cash">Gotówka</Radio.Button>
                   <Radio.Button value="card">Karta</Radio.Button>
                   <Radio.Button value="transfer" >Przelew</Radio.Button>
@@ -297,6 +332,7 @@ const InvoiceForm = (props) => {
                   /> 
               </Form.Item>
             </Col>
+            {payment_date}
           </Row>
           <Row>
             <Col className={classes.title_col} span={24}>
