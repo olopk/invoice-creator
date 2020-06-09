@@ -5,7 +5,7 @@
 }
 .mainSection{
     border: none;
-    width: 80%;
+    width: 90%;
 }
 .main{
     display: flex;
@@ -27,6 +27,12 @@
     justify-content: center;
     align-items: center;
     padding-bottom: 20px;
+}
+.title_col__products{
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding-bottom: 15px;
 }
 .cityName{
     line-height: 2.3;

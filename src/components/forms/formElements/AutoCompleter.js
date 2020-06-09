@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 // import 'antd/dist/antd.css';
 // import './index.css';
-import { AutoComplete } from 'antd';
+import { AutoComplete, Input } from 'antd';
 
 const Complete = (props) => {
   const [val, setVal] = useState('');
   const [options, setOptions] = useState([]);
 
-  const {data, searchParam, onSelect} = props;
+  const {data, searchParam, onSelect, placeholder} = props;
 
   const { value , onChange } = props;
 
@@ -41,8 +41,11 @@ const Complete = (props) => {
         onSelect={(value, object) => onSelect(object)}
         onSearch={(searchText) => onSearch(searchText, data, searchParam)}
         onChange={onValChange}
-        // placeholder="control mode"
-      />
+        >
+        <Input
+          placeholder={placeholder}
+        />
+      </AutoComplete>
   );
 };
 

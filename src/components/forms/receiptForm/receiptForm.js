@@ -454,7 +454,7 @@ const ReceiptForm = (props) => {
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  marginBottom: '70px'
+                  marginBottom: '45px'
                 }}>
                   <p style={{height: '100%', margin: 0}}><b>Suma</b></p>
               </Col>

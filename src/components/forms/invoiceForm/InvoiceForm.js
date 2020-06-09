@@ -92,12 +92,19 @@ const InvoiceForm = (props) => {
         })
   
         const parsedDate = moment(date, 'YYYY-MM-DD')
-   
+        const parsedPayDate = pay_date ? moment(pay_date, 'YYYY-MM-DD') : moment(today(), 'YYYY-MM-DD')
+        
+        if(pay_date){
+          setState({...state, payment_date: true})
+        }else{
+          setState({...state, payment_date: false})
+        }
+
         setFieldsValue({
           invoice_nr: invoice_nr,
           total_price: total_price,
           pay_method: pay_method,
-          pay_date: pay_date,
+          pay_date: parsedPayDate,
           date: parsedDate,
           customer_id: customer._id,        
           customer_nip: customer.nip,
@@ -109,7 +116,7 @@ const InvoiceForm = (props) => {
         })
       }
 
-    }, [props.modalData, setFieldsValue])
+    }, [props.modalData, setFieldsValue, setState])
 
     const onSelectCustomer = (data) =>{
       const { el } = data;
@@ -151,7 +158,7 @@ const InvoiceForm = (props) => {
         date: date._i,
         total_price: total_price,
         pay_method: pay_method,
-        pay_date: pay_method === 'transfer' ? pay_date : null
+        pay_date: pay_method === 'transfer' ? pay_date._i : null
       }
 
       const customerData = {
@@ -162,6 +169,8 @@ const InvoiceForm = (props) => {
         info: customer_info,
         name: customer_name,
       }
+
+      console.log(invoiceData);
 
       const products = order.map(el => {
         return{
@@ -251,7 +260,7 @@ const InvoiceForm = (props) => {
           </Col>
           <Col span={3}>
             <Form.Item
-              name={'payment_date'}
+              name={'pay_date'}
               style={{ width: '100%' }}
               wrapperCol={{ sm: 24 }}
               rules={[{ required: true, message: 'Wybierz datę' }]}
@@ -439,12 +448,16 @@ const InvoiceForm = (props) => {
               return(
                 <div>
                   <Row>
-                    <Col span={24}
-                      className={classes.title_col}
+                    <Col span={13}
+                      className={classes.title_col__products}
                     >
                       <Text strong>TOWARY I USŁUGI</Text>      
-                      <PlusCircleOutlined style={{ fontSize: "25px", margin: "0px 15px"}} onClick={()=>add()} />
                     </Col>
+                    <Col span={1}>
+                      <PlusCircleOutlined style={{ fontSize: "25px", margin: "0px 15px"}} onClick={add} />
+                    </Col>
+                    <Col span={2} offset={5}>razem netto</Col>
+                    <Col span={2}>razem brutto</Col>
                   </Row>
                   {fields.map((field, index) => {
                   return(
@@ -461,7 +474,7 @@ const InvoiceForm = (props) => {
                               searchParam='name'
                               onSelect={(data) => onSelectProduct(data, index)}
                               onChange={(value) => onProductNameChange(value, index)}
-                              // placeholder="NIP"
+                              placeholder="Nazwa"
                             />
                         </Form.Item>
                       </Col>
@@ -503,7 +516,7 @@ const InvoiceForm = (props) => {
                         >
                           <InputNumber
                             style={{ width: '100%' }}
-                            placeholder="Cena jednostkowa"
+                            placeholder="Cena jedn."
                             onChange={() => countElementSum(index)}
                           /> 
                         </Form.Item>
@@ -529,7 +542,7 @@ const InvoiceForm = (props) => {
                           <InputNumber
                             disabled
                             style={{ width: '100%' }}
-                            placeholder="Wartość netto"
+                            // placeholder="Wartość netto"
                           /> 
                         </Form.Item>
                       </Col>
@@ -542,7 +555,7 @@ const InvoiceForm = (props) => {
                           <InputNumber
                             disabled
                             style={{ width: '100%' }}
-                            placeholder="Wartość brutto"
+                            // placeholder="Wartość brutto"
                           /> 
                         </Form.Item>
                       </Col>
@@ -563,7 +576,7 @@ const InvoiceForm = (props) => {
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  marginBottom: '70px'
+                  marginBottom: '45px'
                 }}>
                   <p style={{height: '100%', margin: 0}}><b>Suma</b></p>
               </Col>
