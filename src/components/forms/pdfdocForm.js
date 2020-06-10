@@ -5,7 +5,19 @@ import num2word from '../../utils/num2word';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 const createPDF = (props) => {
-	const {invoice_nr, receipt_nr, payment, total_price, date, customer_nip, customer_city, customer_street, customer_name, order } = props;
+	const {invoice_nr, receipt_nr, pay_method, pay_date, total_price, date, customer_nip, customer_city, customer_street, customer_name, order } = props;
+
+	const DocName = invoice_nr ? `FV_${invoice_nr}` : `Paragon_${receipt_nr}`;
+
+	let pay_methodParsed;
+	
+	if(pay_method === 'transfer'){
+		pay_methodParsed = "przelew"
+	}else if(pay_method === 'card'){
+		pay_methodParsed = "karta"
+	}else if(pay_method === 'cash'){
+		pay_methodParsed = "gotówka"
+	}
 
 	const items = order.map((el, index) => {
 		return [
@@ -31,16 +43,16 @@ const createPDF = (props) => {
 			detailTab[1][3].text += el.total_price_gross;
 			
 		}else if(el.vat === 23){
-			console.log('elem', detailTab[2][2].text, typeof(detailTab[2][2].text))
-			console.log('net', el.total_price_net, typeof(el.total_price_net))
-			console.log('gross', el.total_price_gross, typeof(el.total_price_gross))
+			// console.log('elem', detailTab[2][2].text, typeof(detailTab[2][2].text))
+			// console.log('net', el.total_price_net, typeof(el.total_price_net))
+			// console.log('gross', el.total_price_gross, typeof(el.total_price_gross))
 
-			detailTab[2][1].text = parseFloat(parseFloat(detailTab[2][1].text) +el.total_price_net).toFixed(2);
-			detailTab[2][2].text = parseFloat(parseFloat(detailTab[2][2].text) + (el.total_price_gross - el.total_price_net)).toFixed(2);
-			detailTab[2][3].text = parseFloat(parseFloat(detailTab[2][3].text) + el.total_price_gross).toFixed(2);
+			detailTab[2][1].text = Math.round((parseFloat(detailTab[2][1].text) + el.total_price_net)*100)/100;
+			detailTab[2][2].text = Math.round((parseFloat(detailTab[2][2].text) + (el.total_price_gross - el.total_price_net))*100)/100
+			detailTab[2][3].text = Math.round((parseFloat(detailTab[2][3].text) + el.total_price_gross)*100)/100
 		}
 		detailTab[3][1].text += el.total_price_net;
-		detailTab[3][2].text = parseFloat(detailTab[2][2].text + (el.total_price_gross - el.total_price_net)).toFixed(2);
+		detailTab[3][2].text = Math.round((detailTab[2][2].text + (el.total_price_gross - el.total_price_net))*100)/100
 	})
 
 
@@ -53,25 +65,9 @@ const createPDF = (props) => {
 		content: [
 			{
 				columns: [
-					{   image: logo, width: 100 },
-					{
-						table: {
-						widths: ["*"],
-						body: [
-							[{text: sellDocType}],
-							[{text: `Data wystawienia: ${date._i}`}],
-							// [{text: `Termin płatności: ${date._i}`}],
-							[{text: `Typ płatności: ${payment}`}],
-        			    ]
-        		    }
-        	    },
-			],
-			columnGap: 210,
-			},
-			{
-				columns: [
 					[
-						{	text: `Sprzedawca`, style: `header` },
+						{   image: logo, width: 100 },
+						{	text: `Sprzedawca`, style: `header`, margin: [0, 10, 0, 10]  },
 						{	text: `OPTYK Barbara Pałosz` },
 						{	text: `os. Długosza 37` },
 						{	text: `77-300 Człuchów` },
@@ -80,15 +76,26 @@ const createPDF = (props) => {
 						{	text: `8888 8888 8888 8888 8888 8888 ` },
 					],
 					[
-						{	text: `Nabywca`, style: `header` },
+						{
+							table: {
+							widths: ["*"],
+							body: [
+								[{text: sellDocType}],
+								[{text: `Data wystawienia: ${date.format('YYYY-MM-DD')}`}],
+								[{text: `Termin płatności: ${pay_date ? pay_date.format('YYYY-MM-DD') : date.format('YYYY-MM-DD')}`}],
+								[{text: `Typ płatności: ${pay_methodParsed}`}],
+								]
+							}
+						},
+						{	text: `Nabywca`, style: `header`, margin: [0, 40, 0, 10]  },
 						{	text: customer_name ? `${customer_name}` : null },
 						{	text: customer_street ? `${customer_street}` : null },
 						{	text: customer_city ? `${customer_city}` : null },
 						{	text: customer_nip ? `NIP: ${customer_nip}` : null },
+
 					]
-				]
-				,
-				margin: [0, 10, 0, 20]  
+				],
+				columnGap: 100,
 			},
 			{
 				style: 'tableExample',
@@ -117,9 +124,9 @@ const createPDF = (props) => {
 								{text: 'Razem' }  
 							 ],
 							 [
-								{text: `${total_price} PLN`, alignment: 'right' },
-								{text: `0 PLN`, alignment: 'right' },
-								{text: `0 PLN`, alignment: 'right' }  
+								{text: `${pay_method === 'transfer' ? '0.00' : total_price} PLN`, alignment: 'right' },
+								{text: `${pay_method === 'transfer' ? total_price : '0.00'} PLN`, alignment: 'right' },
+								{text: `${total_price} PLN`, alignment: 'right' }  
 							 ]
 							]
 				 
@@ -186,7 +193,7 @@ const createPDF = (props) => {
 		}
 	}
 	
-	pdfMake.createPdf(dd).download();
+	pdfMake.createPdf(dd).download(DocName);
 }
 
 export default createPDF;
