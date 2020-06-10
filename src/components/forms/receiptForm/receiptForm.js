@@ -69,6 +69,7 @@ const ReceiptForm = (props) => {
         let parsedOrder = order.map(el => {
           return{
             ...el,
+            id: el.product._id,
             product: el.product.name,
             unit: 'szt.'         
           }
@@ -81,6 +82,7 @@ const ReceiptForm = (props) => {
           total_price: total_price,
           pay_method: pay_method,
           date: parsedDate,        
+          customer_id: customer._id,
           customer_city: customer.city,
           customer_street: customer.street,
           customer_info: customer.info,
