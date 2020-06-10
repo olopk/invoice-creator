@@ -3,7 +3,7 @@ import axios from '../axiosInstance';
 // GET ALL INVOICES
 export const fetch_invoices = () => {
     const graphqlQuery = {
-        query: `{ getInvoices{ _id invoice_nr date total_price pay_method pay_date customer{ name nip city street info} order{ product{ name } quantity price_net total_price_net price_gross total_price_gross vat }} }`
+        query: `{ getInvoices{ _id invoice_nr date total_price pay_method pay_date customer{ _id name nip city street info} order{ product{ _id name } quantity price_net total_price_net price_gross total_price_gross vat }} }`
     };
     return axios.post('/graphql', JSON.stringify(graphqlQuery))
             .then(response => {
