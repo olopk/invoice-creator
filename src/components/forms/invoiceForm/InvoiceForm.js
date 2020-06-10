@@ -77,7 +77,8 @@ const InvoiceForm = (props) => {
           vat: 0
         }
       ],
-      date: moment(today(), 'YYYY-MM-DD')
+      date: moment(today(), 'YYYY-MM-DD'),
+      pay_date: moment(today(), 'YYYY-MM-DD')
     }
     
     useEffect(()=>{
@@ -86,11 +87,11 @@ const InvoiceForm = (props) => {
         let parsedOrder = order.map(el => {
           return{
             ...el,
+            id: el.product._id,
             product: el.product.name,
             unit: 'szt.'         
           }
         })
-  
         const parsedDate = moment(date, 'YYYY-MM-DD')
         const parsedPayDate = pay_date ? moment(pay_date, 'YYYY-MM-DD') : moment(today(), 'YYYY-MM-DD')
         
@@ -152,13 +153,13 @@ const InvoiceForm = (props) => {
 
       const allValues = getFieldsValue(true)
       const {invoice_nr, total_price, pay_method, pay_date, date, customer_id, customer_nip, customer_city, customer_street, customer_info, customer_name, order } = allValues;
-   
+      
       const invoiceData = {
         invoice_nr: invoice_nr,
-        date: date._i,
+        date: date.format('YYYY-MM-DD'),
         total_price: total_price,
         pay_method: pay_method,
-        pay_date: pay_method === 'transfer' ? pay_date._i : null
+        pay_date: pay_method === 'transfer' ? pay_date.format('YYYY-MM-DD') : date.format('YYYY-MM-DD')
       }
 
       const customerData = {
@@ -169,8 +170,6 @@ const InvoiceForm = (props) => {
         info: customer_info,
         name: customer_name,
       }
-
-      console.log(invoiceData);
 
       const products = order.map(el => {
         return{
@@ -195,6 +194,7 @@ const InvoiceForm = (props) => {
       showNotification(response.status, response.message);
 
       if(response.status === 'success'){
+        console.log(allValues)
         createPDF(allValues)
       }
       setState({...state, loading: false});
@@ -202,6 +202,12 @@ const InvoiceForm = (props) => {
 
     const onChange = (element) => {
       setFieldsValue({element})
+    }
+
+    const dateChanger = (value) =>{
+      console.log(value.format('YYYY-MM-DD'));
+      console.log('actual', getFieldValue('date'))
+      // setFieldsValue({date: 'cos tam'})
     }
 
     const onProductNameChange = (value, index) =>{
@@ -268,6 +274,7 @@ const InvoiceForm = (props) => {
                 <DatePicker
                   format={'YYYY-MM-DD'}
                   style={{ width: '100%' }}
+                  // onChange={(moment, dateString)=>setFieldsValue({pay_date: dateString})}
                 /> 
             </Form.Item>
           </Col>
@@ -338,6 +345,7 @@ const InvoiceForm = (props) => {
                   <DatePicker
                     format={'YYYY-MM-DD'}
                     style={{ width: '100%' }}
+                    // onChange={(moment, dateString)=>dateChanger(dateString)}
                   /> 
               </Form.Item>
             </Col>
