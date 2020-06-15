@@ -45,6 +45,14 @@ const CustomerForm = (props) => {
         response = await save_customer(customerData);
       }
       props.showNotification(response.status, response.message);
+
+      if(response.status === 'success'){
+        props.fetchData('customers')
+        if(props.onClose){
+          props.onClose()
+        }
+      }
+
       setState({...state, loading: false});
     }
 

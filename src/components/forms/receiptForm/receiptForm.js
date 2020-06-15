@@ -168,7 +168,11 @@ const ReceiptForm = (props) => {
       showNotification(response.status, response.message);
 
       if(response.status === 'success'){
+        props.fetchData('receipts')
         createPDF(allValues)
+        if(props.onClose){
+          props.onClose()
+        }
       }
       setState({...state, loading: false});
     }

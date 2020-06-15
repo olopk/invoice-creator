@@ -57,6 +57,14 @@ const ProductForm = (props) => {
         response = await save_product(productData);
       }
       props.showNotification(response.status, response.message);
+
+      if(response.status === 'success'){
+        props.fetchData('products')
+        if(props.onClose){
+          props.onClose()
+        }
+      }
+
       setState({...state, loading: false});
     }
     const onChange = (element) => {  

@@ -194,8 +194,11 @@ const InvoiceForm = (props) => {
       showNotification(response.status, response.message);
 
       if(response.status === 'success'){
-        console.log(allValues)
+        props.fetchData('invoices')
         createPDF(allValues)
+        if(props.onClose){
+          props.onClose()
+        }
       }
       setState({...state, loading: false});
     }
