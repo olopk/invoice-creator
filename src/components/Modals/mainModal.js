@@ -18,6 +18,8 @@ const MainModal = (props) => {
           showNotification={ShowNotification}
           customers={props.customers}
           products={props.products}
+          onClose={props.onCancel}
+          fetchData={props.fetchData}
       />
     )
   }
@@ -29,6 +31,8 @@ const MainModal = (props) => {
           showNotification={ShowNotification}
           customers={props.customers}
           products={props.products}
+          onClose={props.onCancel}
+          fetchData={props.fetchData}
       />
     )
   }
@@ -38,6 +42,8 @@ const MainModal = (props) => {
           modalData={modalData}
           showNotification={ShowNotification}
           customers={props.customers}
+          onClose={props.onCancel}
+          fetchData={props.fetchData}
       />
     )
   }
@@ -47,6 +53,8 @@ const MainModal = (props) => {
           modalData={modalData}
           showNotification={ShowNotification}
           products={props.products}
+          onClose={props.onCancel}
+          fetchData={props.fetchData}
       />
     )
   }

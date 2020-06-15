@@ -11,7 +11,7 @@ const validateNip = (nip) => {
         errorMsg: 'Podany NIP jest nieprawidłowy'
       }
     }
-    if(nip.length == 10){
+    if(nip.length === 10){
       const count = (nip[0]*6+nip[1]*5+nip[2]*7+nip[3]*2+nip[4]*3+nip[5]*4+nip[6]*5+nip[7]*6+nip[8]*7)%11;
       if(count != nip[9]){
         return{

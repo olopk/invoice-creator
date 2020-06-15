@@ -4,7 +4,10 @@
     align-items: center;
     margin-top: 6%;
 }
-
+.loadingIcon{
+    font-size: 40px;
+    padding: 30px;
+}
 .authForm{
     width: 30%;
 }
