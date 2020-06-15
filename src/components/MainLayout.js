@@ -24,7 +24,7 @@ import {getUser, logIn, signIn} from '../api_calls/auth';
 
 // import classes from './MainLayout.module.css';
 
-const { Header, Content, Footer} = Layout;
+const { Header, Content } = Layout;
 
 const MainLayout = (props) => {
     const [state, setState] = useState({
@@ -54,6 +54,7 @@ const MainLayout = (props) => {
             //TODO redirect to loginpage
         }
         ShowNotification(result.status, result.message)
+        return Promise.resolve()
     }
     const logInRequest = async (email, password) => {
         const result = await logIn(email, password)
@@ -68,6 +69,7 @@ const MainLayout = (props) => {
             })
         }
         ShowNotification(result.status, result.message)
+        return Promise.resolve()
     }
     const logOut = () => {
         localStorage.removeItem("token");
@@ -147,12 +149,19 @@ const MainLayout = (props) => {
     }
     // ------------------------------------------------------------
     //ASYNC FUNCTION FOR FETCHING ALL THE DATA.
-    const fetchAll = async() =>{
+    const fetchAll = async(trigger) =>{
         const allFetchedData = {};
-        allFetchedData.invoices = await fetch_invoices();
-        allFetchedData.receipts = await fetch_receipts();
-        allFetchedData.customers = await fetch_customers();
-        allFetchedData.products = await fetch_products();
+
+        if(!trigger || trigger !== 'products'){
+            allFetchedData.customers = await fetch_customers();
+        }
+        if(!trigger || trigger !== 'customers'){
+            allFetchedData.products = await fetch_products();
+        }
+        if(!trigger || (trigger !== 'products' && trigger !== 'customers')){
+            allFetchedData.invoices = await fetch_invoices();
+            allFetchedData.receipts = await fetch_receipts();
+        }
         
         let returnObject = {}
         for(let el in allFetchedData){
@@ -166,10 +175,13 @@ const MainLayout = (props) => {
                 }
             }
         }
+        if(trigger){
+            setState({...state, ...returnObject})
+            return
+        }
         return returnObject
     }
     // ------------------------------------------------------------
-
     useEffect(()=>{
         let newState = {errors: []};
         const loginCheck = async () =>{
@@ -195,6 +207,7 @@ const MainLayout = (props) => {
                     ShowNotification(data.status, data.message)
 
                     //fetch all the data after successfull login.
+                    // TODO fetchAll is not returning a promise so "await" is useless here.
                     const fetchEverything = await fetchAll();
                     newState = {...newState, ...fetchEverything};
 
@@ -294,6 +307,7 @@ const MainLayout = (props) => {
                     showNotification={ShowNotification}
                     customers={state.customers}
                     products={state.products}
+                    fetchData={fetchAll}
                     lastInvoiceNr={state.invoices && state.invoices.length > 0 ? state.invoices[state.invoices.length -1].invoice_nr : null}
                     lastReceiptNr={state.receipts && state.receipts.length > 0 ? state.receipts[state.receipts.length -1].receipt_nr : null}
                 />
@@ -337,6 +351,7 @@ const MainLayout = (props) => {
                                 modalWidth={mainModal.width}
                                 customers={state.customers}
                                 products={state.products}
+                                fetchData={fetchAll}
                             />
                             <ConfirmModal
                                 visible={confirmModal.visible}
