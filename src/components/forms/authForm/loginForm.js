@@ -2,7 +2,9 @@ import React, {useState} from 'react';
 // import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
 import { Form, Input, Button, Checkbox } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
 import classes from './authForm.module.css';
+import sha256 from 'sha256';
 
 const layout = {
     labelCol: { span: 5 },
@@ -14,9 +16,11 @@ const tailLayout = {
 
 
 const LogInForm = (props) =>{
+    const [loading, setLoading] = useState(false);
+
     const [userData, setUserData] = useState({
         email: '',
-        password: 'elo',
+        password: '',
     })
     
     const onChange = (name, value) => {
@@ -25,58 +29,63 @@ const LogInForm = (props) =>{
           [name]: value.target.value
         });
     }
-    // onClick={()=> props.logInRequest(userData.email, userData.password)}
 
-    const onFinish = values => {
-        props.logInRequest(values.email, values.password)
-      };
+    const onFinish = () => {
+        setLoading(true)
+        props.logInRequest(userData.email, sha256(userData.password))
+        .then(res => {
+            setLoading(false)
+        })
+    };
+
+    let content = (
+        <Form className={classes.authForm}
+        {...layout}
+        name="basic"
+        onFinish={onFinish}
+        >
+        <Form.Item
+            label="Email"
+            name="email"
+            rules={[{ required: true, message: 'Wpisz email' }]}
+        >
+            <Input 
+               onChange={(el) => onChange('email', el)}
+            />
+        </Form.Item>
     
-    // const onFinishFailed = errorInfo => {
-    //     console.log('Failed:', errorInfo);
-    // };
+        <Form.Item
+            label="Hasło"
+            name="password"
+            rules={[{ required: true, message: 'Wpisz hasło' }]}
+        >
+            <Input.Password
+               onChange={(el) => onChange('password', el)}
+            />
+        </Form.Item>
+
+        <Form.Item {...tailLayout} name="remember" valuePropName="checked">
+            <Checkbox>Zapamiętaj mnie</Checkbox>
+        </Form.Item>
+
+        <Form.Item>
+            <Button type="primary" htmlType="submit" className={classes.button}>
+                Zaloguj się
+            </Button>
+        </Form.Item>
     
+        <Form.Item {...tailLayout}>
+        </Form.Item>
+        </Form>
+    )
+
+    if(loading){
+        content = <LoadingOutlined className={classes.loadingIcon} />
+    }
 
       return (
         <div className={classes.authBox}>
-            <Form className={classes.authForm}
-            {...layout}
-            name="basic"
-            onFinish={onFinish}
-            // onFinishFailed={onFinishFailed}
-            >
-            <Form.Item
-                label="Email"
-                name="email"
-                rules={[{ required: true, message: 'Wpisz email' }]}
-            >
-                <Input 
-                   onChange={(el) => onChange('email', el)}
-                />
-            </Form.Item>
-        
-            <Form.Item
-                label="Hasło"
-                name="password"
-                rules={[{ required: true, message: 'Wpisz hasło' }]}
-            >
-                <Input.Password
-                   onChange={(el) => onChange('password', el)}
-                />
-            </Form.Item>
-
-            <Form.Item {...tailLayout} name="remember" valuePropName="checked">
-                <Checkbox>Zapamiętaj mnie</Checkbox>
-            </Form.Item>
-
-            <Form.Item>
-                <Button type="primary" htmlType="submit" className={classes.button}>
-                    Zaloguj się
-                </Button>
-            </Form.Item>
-        
-            <Form.Item {...tailLayout}>
-            </Form.Item>
-            </Form>
+           {content}
         </div>
       );
 
