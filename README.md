@@ -7,6 +7,7 @@
 - React
 - GraphQL
 - JWT
+- PdfMake
 - AntD
 
 ## Description
