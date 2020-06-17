@@ -3,7 +3,7 @@ import axios from 'axios';
 let headers = { 'content-type': 'application/json'}
 
 const axiosInstance = axios.create({
-    baseURL: 'http://127.0.0.1:8080',
+    baseURL: 'https://powerful-lake-55337.herokuapp.com',
     headers: headers
 })
    

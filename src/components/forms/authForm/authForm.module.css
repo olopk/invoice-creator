@@ -2,7 +2,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 6%;
+    padding-top: 6%;
+    /* background-color: #242527; */
 }
 .loadingIcon{
     font-size: 40px;
