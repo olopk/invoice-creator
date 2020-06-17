@@ -6,20 +6,22 @@
 - CSS3
 - React
 - GraphQL
+- JWT
+- PdfMake
 - AntD
 
 ## Description
 
-FrontEnd
-</br>
-Application that support:
+Features:
 - Authentication ( signup, signin )
+- Input data validation
 - CRUD for customers, products, invoices, receipts.
 - Preparing PDF documents based on invoices,receipts.
-- Fetching companies data from API, 
-</br>
-Commercial project
+- Fetching data from API using GraphQL
+
+## About
+
+FrontEnd of private project for commercial usage.
 
 ## Author:
-
 Aleksander Wojas
