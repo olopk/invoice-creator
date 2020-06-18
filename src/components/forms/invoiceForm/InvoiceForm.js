@@ -10,7 +10,6 @@ import createPDF from '../pdfdocForm';
 import {
   FileAddOutlined,
   LoadingOutlined,
-  LockOutlined,
   MinusCircleOutlined,
   PlusCircleOutlined,
 } from '@ant-design/icons';
@@ -205,12 +204,6 @@ const InvoiceForm = (props) => {
 
     const onChange = (element) => {
       setFieldsValue({element})
-    }
-
-    const dateChanger = (value) =>{
-      console.log(value.format('YYYY-MM-DD'));
-      console.log('actual', getFieldValue('date'))
-      // setFieldsValue({date: 'cos tam'})
     }
 
     const onProductNameChange = (value, index) =>{

@@ -9,7 +9,6 @@ import createPDF from '../pdfdocForm';
 import {
   FileAddOutlined,
   LoadingOutlined,
-  LockOutlined,
   MinusCircleOutlined,
   PlusCircleOutlined,
 } from '@ant-design/icons';

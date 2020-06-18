@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
-import { Form } from '@ant-design/compatible';
+// import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
-import { Input, Button } from 'antd';
+import { Form, Input, Button } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import classes from './authForm.module.css';
 import sha256 from 'sha256';
