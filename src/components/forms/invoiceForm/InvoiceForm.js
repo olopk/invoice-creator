@@ -61,19 +61,19 @@ const InvoiceForm = (props) => {
       invoice_nr: lastInvoiceNr ? (parseInt(lastInvoiceNr)+1).toString() : '',
       pay_method: 'cash',
       customer_id: '',
-      customer_nip: '84359',
-      customer_city: 'Czluchow',
-      customer_street: 'Wiejska',
-      customer_name: 'Andrzej Albinos',
-      customer_info: 'Lewe oko -10, prawego oka brak',
+      customer_nip: '',
+      customer_city: '',
+      customer_street: '',
+      customer_name: '',
+      customer_info: '',
       order: [
         {
-          price_net: 2,
-          product: 'szklanka',
-          quantity: 5,
-          total_price: '',
+          // price_net: 2,
+          // product: 'klanka',
+          // quantity: 5,
+          // total_price: '',
           unit: 'szt. ',
-          vat: 0
+          // vat: 0
         }
       ],
       date: moment(today(), 'YYYY-MM-DD'),
@@ -478,7 +478,7 @@ const InvoiceForm = (props) => {
                               searchParam='name'
                               onSelect={(data) => onSelectProduct(data, index)}
                               onChange={(value) => onProductNameChange(value, index)}
-                              placeholder="Nazwa"
+                              placeholder="Nazwa produktu/usługi"
                             />
                         </Form.Item>
                       </Col>

@@ -45,18 +45,18 @@ const ReceiptForm = (props) => {
     let formInitialValues = {
       receipt_nr: lastReceiptNr ? (parseInt(lastReceiptNr)+1).toString() : '',
       pay_method: 'card',
-      customer_city: 'Chojnice',
-      customer_street: 'Człuchowska',
-      customer_name: 'Roman Abramowicz',
-      customer_info: 'Prawe oko +6',
+      customer_city: '',
+      customer_street: '',
+      customer_name: '',
+      customer_info: '',
       order: [
         {
-          price_net: 2,
-          product: 'szklanka',
-          quantity: 5,
+          // price_net: 0,
+          product: '',
+          // quantity: 0,
           total_price: '',
           unit: 'szt. ',
-          vat: 0
+          // vat: 0
         }
       ],
       date: moment(today(), 'YYYY-MM-DD')
@@ -350,9 +350,9 @@ const ReceiptForm = (props) => {
                           rules={[{ required: true, message: 'Wpisz Nazwę produktu lub usługi' }]}
                           >
                             {/* <AutoComplete
-                            placeholder="Nazwa produktu/usługi"
                             /> */}
                                <Complete
+                                placeholder="Nazwa produktu/usługi"
                                 data={props.products}
                                 searchParam='name'
                                 onSelect={(data) => onSelectProduct(data, index)}
