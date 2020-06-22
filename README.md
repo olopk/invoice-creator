@@ -25,3 +25,4 @@ FrontEnd of private project for commercial usage.
 
 ## Author:
 Aleksander Wojas
+[Playground](http://invoice-creator.olekwojas.pl)
