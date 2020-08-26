@@ -297,7 +297,7 @@ const MainLayout = (props) => {
                             {title: 'Marka', dataIndex: 'brand', width: '15%'},
                             {title: 'Model',dataIndex: 'model', width: '15%'},
                             {title: 'Stan magazynowy',dataIndex: 'quantity', width: '20%'},
-                            {title: 'Cena',dataIndex: 'price', width: '15%'}
+                            {title: 'Cena',dataIndex: 'price_gross', width: '15%'}
                         ]}
                 />
             )}/>
