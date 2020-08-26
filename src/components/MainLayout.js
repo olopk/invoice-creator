@@ -227,7 +227,8 @@ const MainLayout = (props) => {
             timeout = setTimeout(() =>{
                 ShowNotification('error', "Sesja wygasła, zaloguj sie ponownie")
                 logOut()
-            }, validTime)}
+            }, validTime)
+        }
         return () => {
             clearTimeout(timeout)
         }

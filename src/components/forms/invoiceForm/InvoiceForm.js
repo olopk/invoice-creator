@@ -171,18 +171,21 @@ const InvoiceForm = (props) => {
       }
 
       const products = order.map(el => {
+        const grossValue = el.price_net + ((el.vat * el.price_net)/100);
         return{
               _id: el.id,
               name: el.product,
               unit: 'szt.',
               quantity: el.quantity,
               price_net: el.price_net,
-              price_gross: el.price_net * el.vat,
+              price_gross: parseFloat(grossValue.toFixed(2)),
               vat: el.vat,
               total_price_net: el.total_price_net,
               total_price_gross: el.total_price_gross,
         }
       })
+
+      console.log(products)
 
       let response;
       if(props.modalData){

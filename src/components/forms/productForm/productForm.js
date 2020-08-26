@@ -77,18 +77,22 @@ const ProductForm = (props) => {
 
       const { price_net, vat } = data;
 
-      if(price_net && vat && !isNaN(price_net) && !isNaN(vat)){
+      console.log(vat)
+      console.log(!isNaN(vat))
+
+      if(price_net && vat > -1 && !isNaN(price_net) && !isNaN(vat)){
         
         const grossValue = price_net + ((vat * price_net)/100);
-
         setFieldsValue({'price_gross': parseFloat(grossValue.toFixed(2))})
+      }else{
+        setFieldsValue({'price_gross': 0})
       }
     }
     
     let content = (
       <React.Fragment>
         <section className={classes.productSection} style={props.style}>
-          <Text strong style={{marginBottom: '20px'}}>DANE KLIENTA</Text>
+          <Text strong style={{marginBottom: '20px'}}>DANE PRODUKTU</Text>
           <Form className={classes.productForm}
             form={productForm}
             onValuesChange={onChange}
@@ -97,6 +101,7 @@ const ProductForm = (props) => {
           >
             <Row>
               <Col span={24}>
+                <Text style={{textAlign: 'left', display: 'block'}}>Nazwa</Text>
                 <Form.Item
                   style={{ width: '100%' }}
                   wrapperCol={{ sm: 24 }}
@@ -110,6 +115,7 @@ const ProductForm = (props) => {
               </Row>
               <Row>
                 <Col span={11}>
+                <Text style={{textAlign: 'left', display: 'block'}}>Marka</Text>
                   <Form.Item
                     style={{ width: '100%' }}
                     wrapperCol={{ sm: 24 }}
@@ -121,6 +127,7 @@ const ProductForm = (props) => {
                   </Form.Item>
                 </Col>
                 <Col span={11} offset={2}>
+                <Text style={{textAlign: 'left', display: 'block'}}>Model</Text>
                   <Form.Item                    
                     style={{ width: '100%' }}
                     wrapperCol={{ sm: 24 }}
@@ -134,6 +141,7 @@ const ProductForm = (props) => {
               </Row>
               <Row>
                 <Col span={4}>
+                  <Text style={{textAlign: 'left', display: 'block'}}>Stan mag.</Text>
                   <Form.Item
                     style={{ width: '100%' }}
                     wrapperCol={{ sm: 24 }}
@@ -146,6 +154,7 @@ const ProductForm = (props) => {
                   </Form.Item>               
                 </Col>
                 <Col span={4} offset={1}>
+                  <Text style={{textAlign: 'left', display: 'block'}}>Stawka VAT</Text>
                   <Form.Item
                     style={{ width: '100%' }}
                     wrapperCol={{ sm: 24 }}
@@ -162,6 +171,7 @@ const ProductForm = (props) => {
                   </Form.Item>               
                 </Col>
                 <Col span={6} offset={2}>
+                  <Text style={{textAlign: 'left', display: 'block'}}>Cena netto</Text>
                   <Form.Item
                     style={{ width: '100%' }}
                     wrapperCol={{ sm: 24 }}
@@ -175,6 +185,7 @@ const ProductForm = (props) => {
                   </Form.Item>
                 </Col>
                 <Col span={6} offset={1}>
+                  <Text style={{textAlign: 'left', display: 'block'}}>Cena brutto</Text>
                   <Form.Item
                     style={{ width: '100%' }}
                     wrapperCol={{ sm: 24 }}
