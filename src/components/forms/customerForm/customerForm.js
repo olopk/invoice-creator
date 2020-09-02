@@ -21,18 +21,20 @@ const CustomerForm = (props) => {
     const {Text} = Typography;
     const {TextArea} = Input;
 
+    const { modalData } = props;
+
     const [state, setState] = useState({
       error: '',
       loading: false
     });
 
     useEffect(()=>{
-      if(props.modalData){
+      if(modalData){
         setFieldsValue({
-          ...props.modalData
+          ...modalData
         })
       }
-    }, [props.modalData, setFieldsValue])
+    }, [modalData, setFieldsValue])
 
     const save = async () => {
       setState({...state, loading: true});
@@ -40,7 +42,7 @@ const CustomerForm = (props) => {
       const customerData = form.getFieldsValue(['name', 'nip', 'city', 'street', 'info'])
       let response;
       if(props.modalData){
-        response = await save_customer(customerData, props.modalData._id);
+        response = await save_customer(customerData, modalData._id);
       }else{
         response = await save_customer(customerData);
       }
@@ -72,24 +74,26 @@ const CustomerForm = (props) => {
           >
             <Row>
               <Col span={18}>
-              <Form.Item
-                style={{ width: '95%' }}
-                wrapperCol={{ sm: 24 }}
-                name="name"
-                rules={[{ required: true, message: 'Wpisz poprawna nazwe klienta' }]}
-                >
-                <AutoComplete
-                    placeholder="Nazwa klienta"
-                    style={{width: '100%'}}
-                /> 
-              </Form.Item>               
+                <Text style={{textAlign: 'left', display: 'block'}}>Nazwa</Text>
+                <Form.Item
+                  style={{ width: '95%' }}
+                  wrapperCol={{ sm: 24 }}
+                  name="name"
+                  rules={[{ required: true, message: 'Wpisz poprawna nazwe klienta' }]}
+                  >
+                  <AutoComplete
+                      placeholder="Nazwa klienta"
+                      style={{width: '100%'}}
+                  /> 
+                </Form.Item>               
               </Col>
               <Col span={6}>
+                <Text style={{textAlign: 'left', display: 'block'}}>Nip</Text>
                 <Form.Item
                   style={{ width: '100%' }}
                   wrapperCol={{ sm: 24 }}
                   name='nip'
-                  rules={[{ required: true, message: 'Wpisz poprawny NIP' }]}
+                  rules={[{ required: modalData && modalData.hasInvoice ? true : false , message: 'Wpisz poprawny NIP' }]}
                   >
                   <InputNumber
                       prefix={<LockOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
@@ -101,11 +105,12 @@ const CustomerForm = (props) => {
             </Row>
             <Row>
               <Col span={12}>
+                <Text style={{textAlign: 'left', display: 'block'}}>Miejscowość</Text>
                 <Form.Item
                   style={{ width: '95%' }}
                   wrapperCol={{ sm: 24 }}
                   name='city'
-                  rules={[{ required: true, message: 'Wpisz miejscowość' }]}
+                  rules={[{ required: modalData && modalData.hasInvoice ? true : false, message: 'Wpisz miejscowość' }]}
                   >
                   <AutoComplete
                     placeholder="Miejscowość"
@@ -113,11 +118,12 @@ const CustomerForm = (props) => {
                 </Form.Item>
               </Col>
               <Col span={12}>
+                <Text style={{textAlign: 'left', display: 'block'}}>Ulica</Text>
                 <Form.Item
                   style={{ width: '100%' }}
                   wrapperCol={{ sm: 24 }}
                   name='street'
-                  rules={[{ required: true, message: 'Wpisz ulicę' }]}
+                  rules={[{ required: modalData && modalData.hasInvoice ? true : false, message: 'Wpisz ulicę' }]}
                   >
                   <AutoComplete
                       placeholder="Ulica"
@@ -125,6 +131,7 @@ const CustomerForm = (props) => {
                 </Form.Item>                
               </Col>
               <Col span={24}>
+                <Text style={{textAlign: 'left', display: 'block'}}>Informacje dodatkowe</Text>
                 <Form.Item
                   name={'info'}
                   style={{ width: '100%' }}

@@ -3,7 +3,7 @@ import axios from '../axiosInstance';
 // GET ALL CUSTOMERS
 export const fetch_customers = () => {
     const graphqlQuery = {
-        query: `{ getCustomers{ _id name nip city street info}}`
+        query: `{ getCustomers{ _id name nip city street info hasInvoice}}`
     }
     return axios.post('/graphql', JSON.stringify(graphqlQuery))
     .then(response =>{

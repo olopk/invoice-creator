@@ -185,8 +185,6 @@ const InvoiceForm = (props) => {
         }
       })
 
-      console.log(products)
-
       let response;
       if(props.modalData){
         response = await save_invoice(invoiceData, customerData, products, props.modalData._id);
@@ -363,7 +361,7 @@ const InvoiceForm = (props) => {
                 wrapperCol={{ sm: 24 }}
                 validateStatus={nipValidity.validateStatus}
                 help={nipValidity.errorMsg}
-                // rules={[{ required: true, message: 'Wpisz poprawny NIP' }]}
+                rules={[{ required: true, message: 'Wpisz poprawny NIP' }]}
               >
                 {/* <InputNumber
                   prefix={<LockOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
