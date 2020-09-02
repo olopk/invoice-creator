@@ -83,11 +83,11 @@ class MainTable extends Component {
       <span>
         <EditOutlined
           className={classes.tableIcon}
-          onClick={()=>this.props.openModal(this.props.dataType, rowData)} />
+          onClick={this.props.openModal.bind(this, this.props.dataType, rowData)} />
         <DeleteOutlined
           className={classes.tableIcon}
           // onClick={()=>this.props.delete(rowData._id)}
-          onClick={()=>this.props.confirmModalOpen(this.props.dataType, rowData)}
+          onClick={this.props.confirmModalOpen.bind(this, this.props.dataType, rowData)}
         />
       </span>
     );
@@ -96,6 +96,8 @@ class MainTable extends Component {
   
   render() {
     let table, columns;
+
+    const {dataType} = this.props;
     
     if(!this.props.data){
       table = <LoadingOutlined className={classes.loadingIcon} />;
@@ -114,7 +116,14 @@ class MainTable extends Component {
             key: 'action',
             render: (data) => this.actions(data)
           })
-      table = <Table columns={columns} dataSource={this.props.data} />;
+      table = (
+      <React.Fragment>
+        <Table columns={columns} dataSource={this.props.data} />
+        {dataType === 'product' || dataType === 'customer' ?
+          <Button type="primary" htmlType="submit" block onClick={this.props.openModal.bind(this, dataType, null)}>Dodaj {dataType === 'customer' ? 'nowego klienta' : 'nowy produkt'}</Button>
+          : null}
+      </React.Fragment>
+      );
     }
 
     return <div className={classes.main}>{table}</div>;
