@@ -40,6 +40,15 @@ const CustomerForm = (props) => {
       setState({...state, loading: true});
       
       const customerData = form.getFieldsValue(['name', 'nip', 'city', 'street', 'info'])
+
+      const {nip, city, street, info} = customerData;
+
+      customerData.nip = nip ? nip.toString(): ''
+      customerData.city = city ? city : ''
+      customerData.street = street ? street : ''
+      customerData.info = info ? info : ''
+      customerData.hasInvoice = modalData && modalData.hasInvoice ? true : false
+
       let response;
       if(props.modalData){
         response = await save_customer(customerData, modalData._id);

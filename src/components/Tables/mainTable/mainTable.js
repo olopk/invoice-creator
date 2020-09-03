@@ -78,7 +78,6 @@ class MainTable extends Component {
   };
 
   actions = (rowData) =>{
-    // console.log(rowData)
     return (
       <span>
         <EditOutlined
