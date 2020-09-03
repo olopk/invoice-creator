@@ -33,7 +33,6 @@ const ProductForm = (props) => {
 
     useEffect(()=>{
       if(props.modalData){
-        console.log(props.modalData)
         setFieldsValue({...props.modalData})
       }
     }, [props.modalData, setFieldsValue])
@@ -41,13 +40,6 @@ const ProductForm = (props) => {
     const save = async () => {
       setState({...state, loading: true});
       
-      // const parsedProduct = Object.keys(product)
-      // .filter(el => el !== 'key')
-      // .reduce((obj, key) => {
-      //   obj[key] = product[key]
-      //   return obj
-      // }, {})
-
       const productData = getFieldsValue(['name', 'brand', 'model', 'quantity', 'vat','price_net','price_gross'])
     
       let response;
@@ -77,9 +69,6 @@ const ProductForm = (props) => {
 
       const { price_net, vat } = data;
 
-      console.log(vat)
-      console.log(!isNaN(vat))
-
       if(price_net && vat > -1 && !isNaN(price_net) && !isNaN(vat)){
         
         const grossValue = price_net + ((vat * price_net)/100);
@@ -106,6 +95,7 @@ const ProductForm = (props) => {
                   style={{ width: '100%' }}
                   wrapperCol={{ sm: 24 }}
                   name='name'
+                  rules={[{ required: true, message: 'Nazwa produktu jest wymagana' }]}
                   >
                     <AutoComplete
                       placeholder="Nazwa"
@@ -146,6 +136,7 @@ const ProductForm = (props) => {
                     style={{ width: '100%' }}
                     wrapperCol={{ sm: 24 }}
                     name='quantity'
+                    rules={[{ required: true, message: 'Stan magazynowy jest wymagany' }]}
                     >
                       <InputNumber
                         placeholder="Stan magazynowy"
@@ -176,6 +167,7 @@ const ProductForm = (props) => {
                     style={{ width: '100%' }}
                     wrapperCol={{ sm: 24 }}
                     name='price_net'
+                    rules={[{ required: true, message: 'Cena jest wymagana' }]}
                     >
                       <InputNumber
                         onChange={countElementSum}
