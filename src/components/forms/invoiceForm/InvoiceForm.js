@@ -135,11 +135,12 @@ const InvoiceForm = (props) => {
     const onSelectProduct = (data, index) =>{
       const { el } = data;
       let order = getFieldValue('order');
+
       order[index] = {
         ...order[index],
         id: el._id,
         price_net: el.price_net,
-        product: el.name,
+        product: `${el.name}${el.brand ? `, ${el.brand}` : ''}${el.model ? `, ${el.model}` : ''}`,
         quantity: el.quantity,
         vat: el.vat,
       }
@@ -477,6 +478,7 @@ const InvoiceForm = (props) => {
                             <Complete
                               data={props.products}
                               searchParam='name'
+                              dataType='products'
                               onSelect={(data) => onSelectProduct(data, index)}
                               onChange={(value) => onProductNameChange(value, index)}
                               placeholder="Nazwa produktu/usługi"

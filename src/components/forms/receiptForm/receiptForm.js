@@ -116,7 +116,7 @@ const ReceiptForm = (props) => {
         ...order[index],
         id: el._id,
         price_net: el.price_net,
-        product: el.name,
+        product: `${el.name}${el.brand ? `, ${el.brand}` : ''}${el.model ? `, ${el.model}` : ''}`,
         quantity: el.quantity,
         vat: el.vat,
       }

@@ -7,7 +7,7 @@ const Complete = (props) => {
   const [val, setVal] = useState('');
   const [options, setOptions] = useState([]);
 
-  const {data, searchParam, onSelect, placeholder} = props;
+  const {data, searchParam, onSelect, placeholder, dataType} = props;
 
   const { value , onChange } = props;
 
@@ -26,7 +26,15 @@ const Complete = (props) => {
     let opts = [];
 
     data.forEach(el => {
-      if(el[searchParam] && el[searchParam].includes(searchText)){
+      if(dataType === 'products' &&
+        ((el[searchParam] && el[searchParam].includes(searchText))
+        || ( el.brand && el.brand.includes(searchText))
+        || (el.model && el.model.includes(searchText)))){
+               
+          opts.push({value: `${el[searchParam]}${el.brand ? `, ${el.brand}` : ''}${el.model ? `, ${el.model}` : ''}`, el: el})
+      }
+      else if(el[searchParam] && el[searchParam].includes(searchText)){
+        
         opts.push({value: el[searchParam], el: el})
       }
     })
