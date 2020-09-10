@@ -11,6 +11,7 @@ import {
   LoadingOutlined,
   MinusCircleOutlined,
   PlusCircleOutlined,
+  SaveOutlined
 } from '@ant-design/icons';
 
 import '@ant-design/compatible/assets/index.css';
@@ -124,7 +125,7 @@ const ReceiptForm = (props) => {
       productRef.current.focus()
     }
     
-    const onFinish = async () => {
+    const onFinish = async (data, saveOnly) => {
       setState({...state, loading: true});
 
       const allValues = getFieldsValue(true)
@@ -168,7 +169,11 @@ const ReceiptForm = (props) => {
 
       if(response.status === 'success'){
         props.fetchData('receipts')
-        createPDF(allValues)
+        if(!saveOnly){
+          createPDF(allValues)
+        }
+        resetFields()
+        setFieldsValue({receipt_nr: +receipt_nr+1})
         if(props.onClose){
           props.onClose()
         }
@@ -288,6 +293,7 @@ const ReceiptForm = (props) => {
                  <Complete
                   data={customers}
                   searchParam='name'
+                  dataType='products'
                   onSelect={onSelectCustomer}
                   placeholder="Nazwa klienta"
                   onChange={()=>resetFields(['customer_id'])}
@@ -476,10 +482,17 @@ const ReceiptForm = (props) => {
               </Col>
             </Row>
             <Row>
-              <Col span={22} offset={1} align="center">
+              <Col span={10} offset={1} align="center">
                 <Form.Item>
-                  <Button type="primary" htmlType="submit" block>
-                    Zapisz i generuj fakturę.
+                  <Button type="primary" icon={<FileAddOutlined />} htmlType="submit" block>
+                    Zapisz i drukuj PDF
+                  </Button>
+                </Form.Item>
+              </Col>
+              <Col span={10} offset={2} align="center">
+                <Form.Item>
+                  <Button type="primary" icon={<SaveOutlined/>} danger block onClick={onFinish.bind(this, null, true)}>
+                    Zapisz
                   </Button>
                 </Form.Item>
               </Col>

@@ -7,7 +7,7 @@ const Complete = (props) => {
   const [val, setVal] = useState('');
   const [options, setOptions] = useState([]);
 
-  const {data, searchParam, onSelect, placeholder, dataType} = props;
+  const {data, searchParam, onSelect, placeholder, dataType, disabled} = props;
 
   const { value , onChange } = props;
 
@@ -49,6 +49,7 @@ const Complete = (props) => {
         onSelect={(value, object) => onSelect(object)}
         onSearch={(searchText) => onSearch(searchText, data, searchParam)}
         onChange={onValChange}
+        disabled={disabled}
         >
         <Input
           placeholder={placeholder}

@@ -1,7 +1,7 @@
 import React, {useState, useRef, useEffect} from 'react';
 import classes from './InvoiceForm.module.css';
 import today from '../../../functions/today';
-import {save_invoice} from '../../../api_calls/invoices'
+import {save_invoice} from '../../../api_calls/invoices';
 import validateNip from '../../../functions/nipValidation';
 import moment from 'moment';
 
@@ -10,8 +10,10 @@ import createPDF from '../pdfdocForm';
 import {
   FileAddOutlined,
   LoadingOutlined,
+  DownloadOutlined,
   MinusCircleOutlined,
   PlusCircleOutlined,
+  SaveOutlined
 } from '@ant-design/icons';
 
 import '@ant-design/compatible/assets/index.css';
@@ -45,6 +47,8 @@ const InvoiceForm = (props) => {
       modalDataId: '',
       payment_date: false
     });
+
+    const [loadingGui, setLoadingGui] = useState(false)
 
     const [nipValidity, setNipValidity] = useState({value: ''})
 
@@ -148,7 +152,7 @@ const InvoiceForm = (props) => {
       productRef.current.focus()
     }
     
-    const onFinish = async () => {
+    const onFinish = async (data, saveOnly) => {
       setState({...state, loading: true});
 
       const allValues = getFieldsValue(true)
@@ -196,7 +200,11 @@ const InvoiceForm = (props) => {
 
       if(response.status === 'success'){
         props.fetchData('invoices')
-        createPDF(allValues)
+        if(!saveOnly){
+          createPDF(allValues)
+        }
+        resetFields()
+        setFieldsValue({invoice_nr: +invoice_nr+1})
         if(props.onClose){
           props.onClose()
         }
@@ -215,9 +223,10 @@ const InvoiceForm = (props) => {
     }
 
     const fetchCustomerData = async () =>{
+      setLoadingGui(true);
       const nip = getFieldValue('customer_nip').toString()
       const customerData = await fetch_dataByNIP(nip)
-      
+      setLoadingGui(false)
       const {data} = customerData;
 
       setFieldsValue({
@@ -374,6 +383,7 @@ const InvoiceForm = (props) => {
                   searchParam='nip'
                   onSelect={onSelectCustomer}
                   placeholder="NIP"
+                  disabled={loadingGui}
                   onChange={checkNipValidity}
                   value={nipValidity.value}
                 />
@@ -381,10 +391,10 @@ const InvoiceForm = (props) => {
             </Col>
             <Col span={4} offset={1} align="center">
                 <Form.Item>
-                  <Button type="primary" block size="small" onClick={fetchCustomerData}
+                  <Button type="primary" block size="small" onClick={loadingGui ? null : fetchCustomerData} icon={loadingGui ? <LoadingOutlined/> : <DownloadOutlined />}
                    disabled={nipValidity.value.length != 10 || nipValidity.validateStatus == 'error' ? true : false}
                    >
-                    Pobierz dane z GUS
+                    Pobierz z GUS
                   </Button>
                 </Form.Item>
             </Col>
@@ -398,9 +408,10 @@ const InvoiceForm = (props) => {
                 {/* <AutoComplete
                     placeholder="Nazwa klienta"
                     style={{width: '100%'}}
-                />  */}
+                  />  */}
                  <Complete
                   data={customers}
+                  disabled={loadingGui}
                   searchParam='name'
                   onSelect={onSelectCustomer}
                   placeholder="Nazwa klienta"
@@ -419,6 +430,7 @@ const InvoiceForm = (props) => {
                 rules={[{ required: true, message: 'Wpisz miasto' }]}
                 >
                 <Input
+                  disabled={loadingGui}
                   placeholder="Miejscowość"
                 /> 
               </Form.Item>
@@ -431,6 +443,7 @@ const InvoiceForm = (props) => {
                 rules={[{ required: true, message: 'Wpisz ulicę' }]}
                 >
                 <Input
+                    disabled={loadingGui}
                     placeholder="Ulica"
                 /> 
               </Form.Item>                
@@ -600,10 +613,17 @@ const InvoiceForm = (props) => {
               </Col>
             </Row>
             <Row>
-              <Col span={22} offset={1} align="center">
+              <Col span={10} offset={1} align="center">
                 <Form.Item>
-                  <Button type="primary" htmlType="submit" block>
-                    Zapisz i generuj fakturę.
+                  <Button type="primary" icon={<FileAddOutlined />} htmlType="submit" block>
+                    Zapisz i drukuj PDF
+                  </Button>
+                </Form.Item>
+              </Col>
+              <Col span={10} offset={2} align="center">
+                <Form.Item>
+                  <Button type="primary" icon={<SaveOutlined/>} danger block onClick={onFinish.bind(this, null, true)}>
+                    Zapisz
                   </Button>
                 </Form.Item>
               </Col>

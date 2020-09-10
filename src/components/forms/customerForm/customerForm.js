@@ -1,9 +1,10 @@
 import React, {useState, useEffect} from 'react';
 import classes from './customerForm.module.css';
 
-import {save_customer} from '../../../api_calls/customers'
+import {save_customer} from '../../../api_calls/customers';
+import validateNip from '../../../functions/nipValidation';
 
-import { LoadingOutlined, LockOutlined } from '@ant-design/icons';
+import { LoadingOutlined, LockOutlined, UserAddOutlined, UsergroupAddOutlined, SaveOutlined } from '@ant-design/icons';
 
 // import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
@@ -16,7 +17,7 @@ const Col = props =>{
 
 const CustomerForm = (props) => {
     const [form] = Form.useForm();
-    const {setFieldsValue} = form;
+    const {setFieldsValue, resetFields} = form;
 
     const {Text} = Typography;
     const {TextArea} = Input;
@@ -28,6 +29,8 @@ const CustomerForm = (props) => {
       loading: false
     });
 
+    const [nipValidity, setNipValidity] = useState({value: ''})
+    
     useEffect(()=>{
       if(modalData){
         setFieldsValue({
@@ -35,8 +38,17 @@ const CustomerForm = (props) => {
         })
       }
     }, [modalData, setFieldsValue])
+    
+    const checkNipValidity = (value) =>{
+      setNipValidity({
+        ...validateNip(value),
+        value
+      })
+      console.log(validateNip(value))
+      console.log((modalData && modalData.hasInvoice) || (nipValidity.value !== ''))
+    }
 
-    const save = async () => {
+    const save = async (data, keepOpen) => {
       setState({...state, loading: true});
       
       const customerData = form.getFieldsValue(['name', 'nip', 'city', 'street', 'info'])
@@ -59,7 +71,8 @@ const CustomerForm = (props) => {
 
       if(response.status === 'success'){
         props.fetchData('customers')
-        if(props.onClose){
+        resetFields()
+        if(props.onClose && !keepOpen){
           props.onClose()
         }
       }
@@ -70,6 +83,25 @@ const CustomerForm = (props) => {
     const onChange = (element) => {
           form.setFieldsValue({element})
     }
+
+    // let buttons = (
+    //   <Row>
+    //     <Col span={11}>
+    //       <Form.Item>
+    //         <Button type="primary" htmlType="submit" block>
+    //             Zapisz
+    //         </Button>
+    //       </Form.Item>
+    //     </Col>
+    //     <Col span={11} offset={2}>
+    //       <Form.Item>
+    //         <Button type="primary" icon={<SaveOutlined/>} danger block onClick={onFinish.save(this, null, true)}>
+    //           Zapisz i dodaj kolejnego
+    //         </Button>
+    //       </Form.Item>
+    //     </Col>
+    //   </Row>
+    // )
 
     let content = (
       <React.Fragment>
@@ -102,11 +134,14 @@ const CustomerForm = (props) => {
                   style={{ width: '100%' }}
                   wrapperCol={{ sm: 24 }}
                   name='nip'
-                  rules={[{ required: modalData && modalData.hasInvoice ? true : false , message: 'Wpisz poprawny NIP' }]}
+                  validateStatus={nipValidity.validateStatus}
+                  help={nipValidity.errorMsg}
+                  rules={[{required: true , message: 'Wpisz poprawny NIP' }]}
                   >
-                  <InputNumber
+                  <Input
                       prefix={<LockOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
                       placeholder="NIP"
+                      onChange={checkNipValidity}
                       style={{width: "100%"}}
                   />
                 </Form.Item>
@@ -153,18 +188,33 @@ const CustomerForm = (props) => {
                 </Form.Item> 
               </Col>
             </Row>
-            <Row>
+           {!modalData ? 
+              <Row>
+                <Col span={11}>
+                  <Form.Item>
+                    <Button type="primary" icon={<UserAddOutlined />} htmlType="submit" block>
+                        Zapisz
+                    </Button>
+                  </Form.Item>
+                </Col>
+                <Col span={11} offset={2}>
+                  <Form.Item>
+                    <Button type="primary" icon={<UsergroupAddOutlined />} danger block onClick={save.bind(this, null, true)}>
+                      Zapisz i dodaj kolejnego
+                    </Button>
+                  </Form.Item>
+                </Col>
+              </Row>
+              :
+              <Row>
               <Col span={24}>
-                <Form.Item
-                  style={{ width: '100%' }}
-                  wrapperCol={{ sm: 24 }}
-                >
-                  <Button type="primary" htmlType="submit" block>
+                <Form.Item>
+                  <Button type="primary" icon={<SaveOutlined/>} htmlType="submit" block>
                       Zapisz
                   </Button>
                 </Form.Item>
               </Col>
-            </Row>
+            </Row> }
           </Form>
         </section>
       </React.Fragment>

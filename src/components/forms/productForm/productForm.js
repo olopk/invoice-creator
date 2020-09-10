@@ -3,7 +3,7 @@ import classes from './productForm.module.css';
 
 import {save_product} from '../../../api_calls/products'
 
-import { LoadingOutlined } from '@ant-design/icons';
+import { LoadingOutlined, PlusCircleOutlined, SaveOutlined } from '@ant-design/icons';
 
 import '@ant-design/compatible/assets/index.css';
 
@@ -15,7 +15,7 @@ const Col = props =>{
 
 const ProductForm = (props) => {
     const [productForm] = Form.useForm()
-    const { setFieldsValue, getFieldsValue } = productForm;
+    const { setFieldsValue, getFieldsValue, resetFields } = productForm;
     const { Option } = Select;
 
     const [state, setState] = useState({
@@ -25,26 +25,22 @@ const ProductForm = (props) => {
 
     const {Text} = Typography;
 
-    // let formInitialValues = {}
-
-    // if(props.modalData){
-    //   formInitialValues = {...props.modalData}
-    // }
+    const {modalData} = props;
 
     useEffect(()=>{
-      if(props.modalData){
-        setFieldsValue({...props.modalData})
+      if(modalData){
+        setFieldsValue({...modalData})
       }
-    }, [props.modalData, setFieldsValue])
+    }, [modalData, setFieldsValue])
 
-    const save = async () => {
+    const save = async (data, keepOpen) => {
       setState({...state, loading: true});
       
       const productData = getFieldsValue(['name', 'brand', 'model', 'quantity', 'vat','price_net','price_gross'])
     
       let response;
-      if(props.modalData){
-        response = await save_product(productData, props.modalData._id);
+      if(modalData){
+        response = await save_product(productData, modalData._id);
       }else{
         response = await save_product(productData);
       }
@@ -52,7 +48,8 @@ const ProductForm = (props) => {
 
       if(response.status === 'success'){
         props.fetchData('products')
-        if(props.onClose){
+        resetFields()
+        if(props.onClose && !keepOpen){
           props.onClose()
         }
       }
@@ -192,18 +189,33 @@ const ProductForm = (props) => {
                   </Form.Item>               
                 </Col>
               </Row>
+              {!modalData ? 
               <Row>
-                <Col span={24}>
-                    <Form.Item
-                    //  style={{ width: '100%' }}
-                    wrapperCol={{ sm: 24 }}
-                    >
-                      <Button type="primary" htmlType="submit" block>
+                <Col span={11}>
+                  <Form.Item>
+                    <Button type="primary" icon={<SaveOutlined />} htmlType="submit" block>
                         Zapisz
-                      </Button>
-                    </Form.Item>
+                    </Button>
+                  </Form.Item>
                 </Col>
-              </Row>
+                <Col span={11} offset={2}>
+                  <Form.Item>
+                    <Button type="primary" icon={<PlusCircleOutlined />} danger block onClick={save.bind(this, null, true)}>
+                      Zapisz i dodaj następny
+                    </Button>
+                  </Form.Item>
+                </Col>
+              </Row> :
+              <Row>
+              <Col span={24}>
+                <Form.Item>
+                  <Button type="primary" icon={<SaveOutlined/>} htmlType="submit" block>
+                      Zapisz
+                  </Button>
+                </Form.Item>
+              </Col>
+            </Row>
+            }
 
           </Form>
         </section>
