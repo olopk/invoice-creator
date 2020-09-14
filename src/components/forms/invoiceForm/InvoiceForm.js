@@ -153,8 +153,14 @@ const InvoiceForm = (props) => {
     }
     
     const onFinish = async (data, saveOnly) => {
+      
+      if(saveOnly){
+        const validate = await invoiceForm.validateFields().catch(err => err)
+        
+        if(validate.errorFields) return
+      }
       setState({...state, loading: true});
-
+      
       const allValues = getFieldsValue(true)
       const {invoice_nr, total_price, pay_method, pay_date, date, customer_id, customer_nip, customer_city, customer_street, customer_info, customer_name, order } = allValues;
       
@@ -369,15 +375,19 @@ const InvoiceForm = (props) => {
                 name={'customer_nip'}
                 style={{ width: '100%' }}
                 wrapperCol={{ sm: 24 }}
-                validateStatus={nipValidity.validateStatus}
-                help={nipValidity.errorMsg}
-                rules={[{ required: true, message: 'Wpisz poprawny NIP' }]}
+                rules={[
+                  () => ({
+                    validator(rule, value){
+                      const result = validateNip(value)
+                      if(result.validateStatus === 'success'){
+                        return Promise.resolve()
+                      }
+                      return Promise.reject(result.errorMsg)
+                    }
+                  })
+                ]}
               >
-                {/* <InputNumber
-                  prefix={<LockOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
-                  placeholder="NIP"
-                  style={{width: "100%"}}
-                />  */}
+                
                 <Complete
                   data={customers}
                   searchParam='nip'

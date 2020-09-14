@@ -29,7 +29,7 @@ const CustomerForm = (props) => {
       loading: false
     });
 
-    const [nipValidity, setNipValidity] = useState({value: ''})
+    // const [nipValidity, setNipValidity] = useState({value: ''})
     
     useEffect(()=>{
       if(modalData){
@@ -38,17 +38,25 @@ const CustomerForm = (props) => {
         })
       }
     }, [modalData, setFieldsValue])
+
+    // useEffect(() => {
+    //   form.validateFields(['nickname']);
+    // }, [checkNick]);
     
-    const checkNipValidity = (value) =>{
-      setNipValidity({
-        ...validateNip(value),
-        value
-      })
-      console.log(validateNip(value))
-      console.log((modalData && modalData.hasInvoice) || (nipValidity.value !== ''))
-    }
+    // const checkNipValidity = (value) =>{
+    //   setNipValidity({
+    //     ...validateNip(value),
+    //     value
+    //   })
+    //   console.log(validateNip(value))
+    //   console.log((modalData && modalData.hasInvoice) || (nipValidity.value !== ''))
+    // }
 
     const save = async (data, keepOpen) => {
+      if(keepOpen){
+        const validate = await form.validateFields().catch(err => err)
+        if(validate.errorFields) return
+      }
       setState({...state, loading: true});
       
       const customerData = form.getFieldsValue(['name', 'nip', 'city', 'street', 'info'])
@@ -84,25 +92,6 @@ const CustomerForm = (props) => {
           form.setFieldsValue({element})
     }
 
-    // let buttons = (
-    //   <Row>
-    //     <Col span={11}>
-    //       <Form.Item>
-    //         <Button type="primary" htmlType="submit" block>
-    //             Zapisz
-    //         </Button>
-    //       </Form.Item>
-    //     </Col>
-    //     <Col span={11} offset={2}>
-    //       <Form.Item>
-    //         <Button type="primary" icon={<SaveOutlined/>} danger block onClick={onFinish.save(this, null, true)}>
-    //           Zapisz i dodaj kolejnego
-    //         </Button>
-    //       </Form.Item>
-    //     </Col>
-    //   </Row>
-    // )
-
     let content = (
       <React.Fragment>
         <section className={classes.customerSection} style={props.style}>
@@ -134,14 +123,23 @@ const CustomerForm = (props) => {
                   style={{ width: '100%' }}
                   wrapperCol={{ sm: 24 }}
                   name='nip'
-                  validateStatus={nipValidity.validateStatus}
-                  help={nipValidity.errorMsg}
-                  rules={[{required: true , message: 'Wpisz poprawny NIP' }]}
+                  rules={[
+                    () => ({
+                      validator(rule, value){
+                        const result = validateNip(value)
+                        if(result.validateStatus === 'success'){
+                          return Promise.resolve()
+                        }else if((!modalData || !modalData.hasInvoice) && result.errorMsg === 'NIP nie może być pusty'){
+                          return Promise.resolve()
+                        }
+                        return Promise.reject(result.errorMsg)
+                      }
+                    })
+                  ]}
                   >
                   <Input
                       prefix={<LockOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
                       placeholder="NIP"
-                      onChange={checkNipValidity}
                       style={{width: "100%"}}
                   />
                 </Form.Item>

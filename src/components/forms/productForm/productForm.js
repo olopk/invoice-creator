@@ -34,6 +34,10 @@ const ProductForm = (props) => {
     }, [modalData, setFieldsValue])
 
     const save = async (data, keepOpen) => {
+      if(keepOpen){
+        const validate = await productForm.validateFields().catch(err => err)
+        if(validate.errorFields) return
+      }
       setState({...state, loading: true});
       
       const productData = getFieldsValue(['name', 'brand', 'model', 'quantity', 'vat','price_net','price_gross'])

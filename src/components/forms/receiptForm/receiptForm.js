@@ -126,6 +126,10 @@ const ReceiptForm = (props) => {
     }
     
     const onFinish = async (data, saveOnly) => {
+      if(saveOnly){
+        const validate = await receiptForm.validateFields().catch(err => err)
+        if(validate.errorFields) return
+      }
       setState({...state, loading: true});
 
       const allValues = getFieldsValue(true)
