@@ -1,5 +1,4 @@
-const num2word = (number) =>{
-    
+const num2word = (number) =>{    
 
     var liczba = parseInt(number);
     
@@ -21,10 +20,10 @@ const num2word = (number) =>{
         }    
         var g = 0;
         while (liczba > 0) {
-            var s = Math.floor((liczba % 1000)/100);
+            var s = Math.round((liczba % 1000)/100);
             var n = 0;
-            var d = Math.floor((liczba % 100)/10);
-            var j = Math.floor(liczba % 10);
+            var d = Math.round((liczba % 100)/10);
+            var j = Math.round(liczba % 10);
     // eslint-disable-next-line
             if (d == 1 && j>0) {
                 n = j;
@@ -42,15 +41,15 @@ const num2word = (number) =>{
                 wynik = setki[s]+dziesiatki[d]+nascie[n]+jednosci[j]+grupy[g][k]+wynik;
             
             g++;
-            liczba = Math.floor(liczba/1000);
+            liczba = Math.round(liczba/1000);
         }
         // eslint-disable-next-line
     if(liczba != parseInt(number)){
-        const reszta = Math.floor((number - parseInt(number))*100);
-        return(znak + wynik + ' złotych ' +reszta +'/100');
+        const reszta = Math.round((number - parseInt(number))*100);
+        return(`${znak} ${wynik} ${j == 2 || j == 3 || j == 4 ? 'złote' : 'złotych'} ${reszta}/100`);
     }
 
-    return(znak + wynik + ' złotych 00/100');
+    return(`${znak} ${wynik} ${j == 2 || j == 3 || j == 4 ? 'złote' : 'złotych'}`);
     
     }else  {
         console.log("Podano nieprawidlowa wartosc!");
