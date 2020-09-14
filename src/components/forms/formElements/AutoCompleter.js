@@ -22,19 +22,20 @@ const Complete = (props) => {
     }
   };
 
-  const onSearch = (searchText, data, searchParam) => {
+  const onSearch = (searchTxt, data, searchParam) => {
     let opts = [];
+
+    const searchText = searchTxt.toLowerCase()
 
     data.forEach(el => {
       if(dataType === 'products' &&
-        ((el[searchParam] && el[searchParam].includes(searchText))
-        || ( el.brand && el.brand.includes(searchText))
-        || (el.model && el.model.includes(searchText)))){
+        ((el[searchParam] && el[searchParam].toLowerCase().includes(searchText))
+        || ( el.brand && el.brand.toLowerCase().includes(searchText))
+        || (el.model && el.model.toLowerCase().includes(searchText)))){
                
           opts.push({value: `${el[searchParam]}${el.brand ? `, ${el.brand}` : ''}${el.model ? `, ${el.model}` : ''}`, el: el})
       }
-      else if(el[searchParam] && el[searchParam].includes(searchText)){
-        
+      else if(el[searchParam] && el[searchParam].toLowerCase().includes(searchText)){
         opts.push({value: el[searchParam], el: el})
       }
     })
