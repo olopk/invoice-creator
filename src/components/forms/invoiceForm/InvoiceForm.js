@@ -145,10 +145,14 @@ const InvoiceForm = (props) => {
         id: el._id,
         price_net: el.price_net,
         product: `${el.name}${el.brand ? `, ${el.brand}` : ''}${el.model ? `, ${el.model}` : ''}`,
-        quantity: el.quantity,
+        quantity: 1,
+        unit: 'szt.',
         vat: el.vat,
+        total_price_net: el.price_net,
+        total_price_gross: el.price_gross 
       }
       setFieldsValue({order: order})
+      countTotalSum(order)
       productRef.current.focus()
     }
     
@@ -259,14 +263,18 @@ const InvoiceForm = (props) => {
 
         data.order[index].total_price_gross = parseFloat(grossValue.toFixed(2))
 
+        countTotalSum(data.order)
+      }
+    }
+
+    const countTotalSum = (order) =>{
         let sum = 0;
-        data.order.forEach(el => {
+        order.forEach(el => {
           if(el && el.total_price_gross){
             sum += el.total_price_gross
           }
         })
         setFieldsValue({'total_price': parseFloat(sum.toFixed(2))})
-      }
     }
 
     

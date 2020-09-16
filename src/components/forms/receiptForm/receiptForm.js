@@ -118,10 +118,14 @@ const ReceiptForm = (props) => {
         id: el._id,
         price_net: el.price_net,
         product: `${el.name}${el.brand ? `, ${el.brand}` : ''}${el.model ? `, ${el.model}` : ''}`,
-        quantity: el.quantity,
+        quantity: 1,
+        unit: 'szt.',
         vat: el.vat,
+        total_price_net: el.price_net,
+        total_price_gross: el.price_gross 
       }
       setFieldsValue({order: order})
+      countTotalSum(order)
       productRef.current.focus()
     }
     
@@ -212,14 +216,19 @@ const ReceiptForm = (props) => {
 
         data.order[index].total_price_gross = parseFloat(grossValue.toFixed(2))
 
+        countTotalSum(data.order)
+      }
+    }
+
+    const countTotalSum = (order) =>{
+      // const data = getFieldsValue(['order'])
         let sum = 0;
-        data.order.forEach(el => {
+        order.forEach(el => {
           if(el && el.total_price_gross){
             sum += el.total_price_gross
           }
         })
         setFieldsValue({'total_price': parseFloat(sum.toFixed(2))})
-      }
     }
 
     let content = (
@@ -297,7 +306,6 @@ const ReceiptForm = (props) => {
                  <Complete
                   data={customers}
                   searchParam='name'
-                  dataType='products'
                   onSelect={onSelectCustomer}
                   placeholder="Nazwa klienta"
                   onChange={()=>resetFields(['customer_id'])}
@@ -365,6 +373,7 @@ const ReceiptForm = (props) => {
                                 placeholder="Nazwa produktu/usługi"
                                 data={props.products}
                                 searchParam='name'
+                                dataType='products'
                                 onSelect={(data) => onSelectProduct(data, index)}
                                 onChange={(value) => onProductNameChange(value, index)}
                                 // placeholder="NIP"
