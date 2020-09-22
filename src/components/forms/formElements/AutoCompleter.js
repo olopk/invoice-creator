@@ -35,7 +35,9 @@ const Complete = (props) => {
                
           opts.push({value: `${el[searchParam]}${el.brand ? `, ${el.brand}` : ''}${el.model ? `, ${el.model}` : ''}`, el: el})
       }
-      else if(el[searchParam] && el[searchParam].toLowerCase().includes(searchText)){
+      else if(dataType === 'nip' && parseInt(searchText) !== searchText ){
+        return
+      }else if(el[searchParam] && el[searchParam].toLowerCase().includes(searchText)){
         opts.push({value: el[searchParam], el: el})
       }
     })

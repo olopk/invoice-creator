@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import classes from './customerForm.module.css';
+import moment from 'moment';
 
 import {save_customer} from '../../../api_calls/customers';
 import validateNip from '../../../functions/nipValidation';
@@ -9,7 +10,7 @@ import { LoadingOutlined, LockOutlined, UserAddOutlined, UsergroupAddOutlined, S
 // import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
 
-import { AutoComplete, Input, Typography, InputNumber, Form, Button, Row, Col as Column } from 'antd';
+import { AutoComplete, Input, Typography, DatePicker, Form, Button, Row, Col as Column } from 'antd';
 
 const Col = props =>{
   return <Column {...props}>{props.children}</Column>
@@ -33,6 +34,7 @@ const CustomerForm = (props) => {
     
     useEffect(()=>{
       if(modalData){
+        modalData.selldate = moment(modalData.selldate, 'YYYY-MM-DD')
         setFieldsValue({
           ...modalData
         })
@@ -59,13 +61,15 @@ const CustomerForm = (props) => {
       }
       setState({...state, loading: true});
       
-      const customerData = form.getFieldsValue(['name', 'nip', 'city', 'street', 'info'])
+      const customerData = form.getFieldsValue(['name', 'nip', 'city', 'street', 'phonenr', 'selldate', 'info'])
 
-      const {nip, city, street, info} = customerData;
+      const {nip, city, street, phonenr, selldate, info} = customerData;
 
       customerData.nip = nip ? nip.toString(): ''
       customerData.city = city ? city : ''
       customerData.street = street ? street : ''
+      customerData.phonenr = phonenr ? phonenr : ''
+      customerData.selldate = selldate ? selldate.format('YYYY-MM-DD') : ''
       customerData.info = info ? info : ''
       customerData.hasInvoice = modalData && modalData.hasInvoice ? true : false
 
@@ -172,6 +176,35 @@ const CustomerForm = (props) => {
                   />
                 </Form.Item>                
               </Col>
+            </Row>
+            <Row>
+              <Col span={12}>
+                <Text style={{textAlign: 'left', display: 'block'}}>Numer telefonu</Text>
+                <Form.Item
+                  style={{ width: '95%' }}
+                  wrapperCol={{ sm: 24 }}
+                  name='phonenr'
+                  >
+                  <AutoComplete
+                    placeholder="Numer telefonu"
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Text style={{textAlign: 'left', display: 'block'}}>Data sprzedaży</Text>
+                <Form.Item
+                  name={'selldate'}
+                  style={{ width: '100%' }}
+                  wrapperCol={{ sm: 24 }}
+                  >
+                    <DatePicker
+                      format={'YYYY-MM-DD'}
+                      style={{ width: '100%' }}
+                    /> 
+                </Form.Item>             
+              </Col>
+            </Row>
+            <Row>              
               <Col span={24}>
                 <Text style={{textAlign: 'left', display: 'block'}}>Informacje dodatkowe</Text>
                 <Form.Item

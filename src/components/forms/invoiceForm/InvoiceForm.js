@@ -116,6 +116,7 @@ const InvoiceForm = (props) => {
           customer_street: customer.street,
           customer_info: customer.info,
           customer_name: customer.name,
+          customer_phonenr: customer.phonenr,
           order: parsedOrder
         })
       }
@@ -131,7 +132,8 @@ const InvoiceForm = (props) => {
           customer_city: el.city,
           customer_street: el.street,
           customer_info: el.info,
-          customer_name: el.name
+          customer_name: el.name,
+          customer_phonenr: el.phonenr
         }
       )
       custInfoRef.current.focus()
@@ -166,7 +168,7 @@ const InvoiceForm = (props) => {
       setState({...state, loading: true});
       
       const allValues = getFieldsValue(true)
-      const {invoice_nr, total_price, pay_method, pay_date, date, customer_id, customer_nip, customer_city, customer_street, customer_info, customer_name, order } = allValues;
+      const {invoice_nr, total_price, pay_method, pay_date, date, customer_id, customer_nip, customer_city, customer_phonenr, customer_street, customer_info, customer_name, order } = allValues;
       
       const invoiceData = {
         invoice_nr: invoice_nr,
@@ -183,6 +185,8 @@ const InvoiceForm = (props) => {
         street: customer_street,
         info: customer_info,
         name: customer_name,
+        phonenr: customer_phonenr || '',
+        selldate: date.format('YYYY-MM-DD')
       }
 
       const products = order.map(el => {
@@ -410,7 +414,7 @@ const InvoiceForm = (props) => {
             <Col span={4} offset={1} align="center">
                 <Form.Item>
                   <Button type="primary" block size="small" onClick={loadingGui ? null : fetchCustomerData} icon={loadingGui ? <LoadingOutlined/> : <DownloadOutlined />}
-                   disabled={nipValidity.value.length != 10 || nipValidity.validateStatus == 'error' ? true : false}
+                   disabled={nipValidity.value.length !== 10 || nipValidity.validateStatus === 'error' ? true : false}
                    >
                     Pobierz z GUS
                   </Button>
@@ -479,6 +483,17 @@ const InvoiceForm = (props) => {
                 /> 
               </Form.Item>                
             </Col>
+            <Col span={10} offset={2}>
+              <Form.Item
+                style={{ width: '100%' }}
+                wrapperCol={{ sm: 24 }}
+                name='customer_phonenr'
+                >
+                <Input
+                  placeholder="Numer telefonu"
+                />
+              </Form.Item>
+            </Col>
           </Row>
           <Form.List name="order">
             {(fields, {add,remove}) => {
@@ -493,7 +508,8 @@ const InvoiceForm = (props) => {
                     <Col span={1}>
                       <PlusCircleOutlined style={{ fontSize: "25px", margin: "0px 15px"}} onClick={add} />
                     </Col>
-                    <Col span={2} offset={5}>razem netto</Col>
+                    <Col span={2} offset={1}>cena brutto</Col>
+                    <Col span={2} offset={2}>razem netto</Col>
                     <Col span={2}>razem brutto</Col>
                   </Row>
                   {fields.map((field, index) => {

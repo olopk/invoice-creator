@@ -69,11 +69,11 @@ const createPDF = (props) => {
 						{   image: logo, width: 100 },
 						{	text: `Sprzedawca`, style: `header`, margin: [0, 10, 0, 10]  },
 						{	text: `OPTYK Barbara Pałosz` },
-						{	text: `os. Długosza 37` },
+						{	text: `ul. Długosza 37` },
 						{	text: `77-300 Człuchów` },
-						{	text: `NIP: 843-15-20-760` },
+						{	text: `NIP: 843-152-07-60` },
 						{	text: `PKOBP` },
-						{	text: `8888 8888 8888 8888 8888 8888 ` },
+						{	text: `65 1020 4665 0000 3302 0042 9027` },
 					],
 					[
 						{
@@ -193,7 +193,7 @@ const createPDF = (props) => {
 		}
 	}
 	
-	pdfMake.createPdf(dd).download(DocName);
+	pdfMake.createPdf(dd).open();
 }
 
 export default createPDF;

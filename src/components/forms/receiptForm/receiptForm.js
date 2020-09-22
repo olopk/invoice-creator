@@ -50,6 +50,7 @@ const ReceiptForm = (props) => {
       customer_street: '',
       customer_name: '',
       customer_info: '',
+      customer_phonenr: '',
       order: [
         {
           // price_net: 0,
@@ -87,6 +88,7 @@ const ReceiptForm = (props) => {
           customer_street: customer.street,
           customer_info: customer.info,
           customer_name: customer.name,
+          customer_phonenr: customer.phonenr,
           order: parsedOrder
         })
       }
@@ -102,7 +104,8 @@ const ReceiptForm = (props) => {
           customer_city: el.city,
           customer_street: el.street,
           customer_info: el.info,
-          customer_name: el.name
+          customer_name: el.name,
+          customer_phonenr: el.phonenr
         }
       )
       custInfoRef.current.focus()
@@ -137,7 +140,7 @@ const ReceiptForm = (props) => {
       setState({...state, loading: true});
 
       const allValues = getFieldsValue(true)
-      const {receipt_nr, total_price, pay_method, date, customer_id, customer_city, customer_street, customer_info, customer_name, order } = allValues;
+      const {receipt_nr, total_price, pay_method, date, customer_id, customer_city, customer_phonenr, customer_street, customer_info, customer_name, order } = allValues;
    
       const receiptData = {
         receipt_nr: receipt_nr,
@@ -151,6 +154,8 @@ const ReceiptForm = (props) => {
         street: customer_street,
         info: customer_info,
         name: customer_name,
+        phonenr: customer_phonenr,
+        selldate: date._i
       }
 
       const products = order.map(el => {
@@ -329,7 +334,16 @@ const ReceiptForm = (props) => {
                 <Input
                     placeholder="Ulica"
                 /> 
-              </Form.Item>                
+              </Form.Item>
+              <Form.Item
+                style={{ width: '100%' }}
+                wrapperCol={{ sm: 24 }}
+                name='customer_phonenr'
+                >
+                <Input
+                  placeholder="Numer telefonu"
+                />
+              </Form.Item>             
             </Col>
             <Col span={10} offset={2}>
               <Form.Item

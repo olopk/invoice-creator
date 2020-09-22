@@ -4,12 +4,26 @@ import { Table, Input, Button } from 'antd';
 import Highlighter from 'react-highlight-words';
 import classes from './mainTable.module.css';
 
+import MainModal from '../../Modals/mainModal';
+import ConfirmModal from '../../Modals/confirmModal';
+
 class MainTable extends Component {
   state = {
     searchText: '',
     searchedColumn: '',
     // loading: false,
   };
+
+  child = React.createRef();
+  child2 = React.createRef();
+
+  onRefModalOpen = (dataType,rowData) =>{
+    this.child.current.modalHandleOpen(dataType, rowData)
+  }
+
+  onRefConfirmModalOpen = (dataType,rowData) =>{
+    this.child2.current.confirmModalOpen(dataType, rowData)
+  }
 
   getColumnSearchProps = dataIndex => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
@@ -82,11 +96,10 @@ class MainTable extends Component {
       <span>
         <EditOutlined
           className={classes.tableIcon}
-          onClick={this.props.openModal.bind(this, this.props.dataType, rowData)} />
+          onClick={this.onRefModalOpen.bind(this, this.props.dataType, rowData)} />
         <DeleteOutlined
           className={classes.tableIcon}
-          // onClick={()=>this.props.delete(rowData._id)}
-          onClick={this.props.confirmModalOpen.bind(this, this.props.dataType, rowData)}
+          onClick={this.onRefConfirmModalOpen.bind(this, this.props.dataType, rowData)}
         />
       </span>
     );
@@ -119,8 +132,18 @@ class MainTable extends Component {
       <React.Fragment>
         <Table columns={columns} dataSource={this.props.data} />
         {dataType === 'product' || dataType === 'customer' ?
-          <Button type="primary" htmlType="submit" block onClick={this.props.openModal.bind(this, dataType, null)}>Dodaj {dataType === 'customer' ? 'nowego klienta' : 'nowy produkt'}</Button>
+          <Button type="primary" htmlType="submit" block onClick={this.onRefModalOpen.bind(this, this.props.dataType, null)}>Dodaj {dataType === 'customer' ? 'nowego klienta' : 'nowy produkt'}</Button>
           : null}
+        <MainModal
+            ref={this.child}
+            customers={this.props.customers}
+            products={this.props.products}
+            fetchData={this.props.fetchData}
+        />
+        <ConfirmModal
+           ref={this.child2}
+           onOk={this.props.onOk}
+        />
       </React.Fragment>
       );
     }

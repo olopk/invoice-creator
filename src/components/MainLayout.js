@@ -36,17 +36,17 @@ const MainLayout = (props) => {
         loading: false,
         errors: []
     })
-    const [mainModal, setMainModal] = useState({
-        visible: false,
-        dataType: null,
-        data: null,
-        width: null
-    })
-    const [confirmModal, setConfirmModal] = useState({
-        visible: false,
-        dataType: null,
-        data: null
-    })
+    // const [mainModal, setMainModal] = useState({
+    //     visible: false,
+    //     dataType: null,
+    //     data: null,
+    //     width: null
+    // })
+    // const [confirmModal, setConfirmModal] = useState({
+    //     visible: false,
+    //     dataType: null,
+    //     data: null
+    // })
     //AUTH OPERATIONS
     const signInRequest = async (userData) =>{
         const result = await signIn(userData);
@@ -86,50 +86,50 @@ const MainLayout = (props) => {
     }
 
     //MAIN MODAL OPERATIONS
-    const modalHandleOpen = (modalDataType, modalData) => {
-        let modalWidth;
-        switch(modalDataType){
-            case 'invoice':
-                modalWidth = 1080;
-                break;
-            case 'receipt':
-                modalWidth = 1080;
-                break;
-            default:
-                modalWidth = 800;
-        }
-        setMainModal({
-            ...mainModal,
-            visible: true,
-            dataType: modalDataType,
-            data: modalData,
-            width: modalWidth
-        })
-    }
-    const modalHandleCancel = () => {
-        setMainModal({
-            ...mainModal,
-            visible: false,
-            data: null
-        })
-    }
+    // const modalHandleOpen = (modalDataType, modalData) => {
+    //     let modalWidth;
+    //     switch(modalDataType){
+    //         case 'invoice':
+    //             modalWidth = 1080;
+    //             break;
+    //         case 'receipt':
+    //             modalWidth = 1080;
+    //             break;
+    //         default:
+    //             modalWidth = 800;
+    //     }
+    //     setMainModal({
+    //         ...mainModal,
+    //         visible: true,
+    //         dataType: modalDataType,
+    //         data: modalData,
+    //         width: modalWidth
+    //     })
+    // }
+    // const modalHandleCancel = () => {
+    //     setMainModal({
+    //         ...mainModal,
+    //         visible: false,
+    //         data: null
+    //     })
+    // }
     //CONFIRM MODAL OPERATIONS
-    const confirmModalOpen = (dataType, data) => {
-        setConfirmModal({
-            ...state,
-            visible: true,
-            dataType: dataType,
-            data: data
-        })
-    }
-    const confirmModalClose = () => {
-        setConfirmModal({
-            ...state,
-            visible: false,
-            dataType: null,
-            data: null
-        })
-    }
+    // const confirmModalOpen = (dataType, data) => {
+    //     setConfirmModal({
+    //         ...state,
+    //         visible: true,
+    //         dataType: dataType,
+    //         data: data
+    //     })
+    // }
+    // const confirmModalClose = () => {
+    //     setConfirmModal({
+    //         ...state,
+    //         visible: false,
+    //         dataType: null,
+    //         data: null
+    //     })
+    // }
     // ------------------------------------------------------------
     // REMOVING ELEMENT
     // args -> (array, delReqApiFunc, id)
@@ -139,12 +139,12 @@ const MainLayout = (props) => {
             setState({...state, [array]: updated})
         }
         const request = await func(id);
-        setConfirmModal({
-            ...state,
-            visible: false,
-            dataType: null,
-            data: null
-        })
+        // setConfirmModal({
+        //     ...state,
+        //     visible: false,
+        //     dataType: null,
+        //     data: null
+        // })
         ShowNotification(request.status, request.message, callUpdate)
     }
     // ------------------------------------------------------------
@@ -238,12 +238,15 @@ const MainLayout = (props) => {
     const Table = (props) => {
         return(
             <MainTable
-             openModal={modalHandleOpen}
-             onCancel={modalHandleCancel}
-             showNotification={ShowNotification}
-             confirmModalOpen={confirmModalOpen}
-             errors={state.errors}
-             {...props}/>
+                // showNotification={ShowNotification}
+                loading={state.loading}
+                customers={state.customers}
+                products={state.products}
+                fetchData={fetchAll}
+                onOk={removeTableRow}
+                errors={state.errors}
+                {...props}
+            />
         )
     }
 
@@ -284,8 +287,8 @@ const MainLayout = (props) => {
                         columns={[
                             {title: 'Nazwa kontrahenta', dataIndex: 'name', width: '40%'},
                             {title: 'NIP', dataIndex: 'nip', width: '10%'},
-                            {title: 'Miasto',dataIndex: 'city', width: '20%'},
-                            {title: 'Ulica',dataIndex: 'street', width: '20%'}
+                            {title: 'Numer telefonu',dataIndex: 'phonenr', width: '20%'},
+                            {title: 'Data sprzedaży',dataIndex: 'selldate', width: '20%'}
                         ]}
                 />
             )}/>
@@ -343,24 +346,15 @@ const MainLayout = (props) => {
                      <NavBar loggedIn={state.loggedIn} logOut={logOut}/>
                 </Header>
                     <Content>
-                            <MainModal
-                                visible={mainModal.visible}
+                            {/* <MainModal
                                 loading={state.loading}
-                                onCancel={modalHandleCancel}
-                                modalDataType={mainModal.dataType}
-                                modalData={mainModal.data}
-                                modalWidth={mainModal.width}
                                 customers={state.customers}
                                 products={state.products}
                                 fetchData={fetchAll}
-                            />
-                            <ConfirmModal
-                                visible={confirmModal.visible}
-                                dataType={confirmModal.dataType}
-                                data={confirmModal.data}
                                 onOk={removeTableRow}
-                                onClose={confirmModalClose}
-                            />
+                            /> */}
+                            {/* <ConfirmModal
+                            /> */}
                            {switchRoutes}
                     </Content>
             </Layout>

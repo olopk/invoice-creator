@@ -20,10 +20,10 @@ const num2word = (number) =>{
         }    
         var g = 0;
         while (liczba > 0) {
-            var s = Math.round((liczba % 1000)/100);
+            var s = Math.floor((liczba % 1000)/100);
             var n = 0;
-            var d = Math.round((liczba % 100)/10);
-            var j = Math.round(liczba % 10);
+            var d = Math.floor((liczba % 100)/10);
+            var j = Math.floor(liczba % 10);
     // eslint-disable-next-line
             if (d == 1 && j>0) {
                 n = j;

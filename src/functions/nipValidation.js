@@ -5,6 +5,12 @@ const validateNip = (nip) => {
         errorMsg: 'NIP nie może być pusty'
       }
     }
+    if(nip === 'nie dotyczy'){
+      return{
+        validateStatus: 'success',
+        errorMsg: null
+      }
+    }
     if(nip != parseInt(nip) || nip.length > 10 || nip.length < 10){
       return{
         validateStatus: 'error',
