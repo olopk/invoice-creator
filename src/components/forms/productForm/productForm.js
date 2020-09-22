@@ -66,16 +66,16 @@ const ProductForm = (props) => {
 
     const countElementSum = () => {
       //TODO i have no idea why this is working as expected...
-      const data = getFieldsValue(['price_net', 'vat'])
+      const data = getFieldsValue(['price_gross', 'vat'])
 
-      const { price_net, vat } = data;
+      const { price_gross, vat } = data;
 
-      if(price_net && vat > -1 && !isNaN(price_net) && !isNaN(vat)){
+      if(price_gross && vat > -1 && !isNaN(price_gross) && !isNaN(vat)){
         
-        const grossValue = price_net + ((vat * price_net)/100);
-        setFieldsValue({'price_gross': parseFloat(grossValue.toFixed(2))})
+        const netValue = (price_gross*100)/(100+vat);
+        setFieldsValue({'price_net': parseFloat(netValue.toFixed(2))})
       }else{
-        setFieldsValue({'price_gross': 0})
+        setFieldsValue({'price_net': 0})
       }
     }
     
@@ -163,31 +163,31 @@ const ProductForm = (props) => {
                   </Form.Item>               
                 </Col>
                 <Col span={6} offset={2}>
-                  <Text style={{textAlign: 'left', display: 'block'}}>Cena netto</Text>
-                  <Form.Item
-                    style={{ width: '100%' }}
-                    wrapperCol={{ sm: 24 }}
-                    name='price_net'
-                    rules={[{ required: true, message: 'Cena jest wymagana' }]}
-                    >
-                      <InputNumber
-                        onChange={countElementSum}
-                        placeholder="Cena netto"
-                        style={{width: "100%"}}
-                      />
-                  </Form.Item>
-                </Col>
-                <Col span={6} offset={1}>
                   <Text style={{textAlign: 'left', display: 'block'}}>Cena brutto</Text>
                   <Form.Item
                     style={{ width: '100%' }}
                     wrapperCol={{ sm: 24 }}
                     name='price_gross'
+                    rules={[{ required: true, message: 'Cena jest wymagana' }]}
+                    >
+                      <InputNumber
+                        onChange={countElementSum}
+                        placeholder="Cena brutto"
+                        style={{width: "100%"}}
+                      />
+                  </Form.Item>
+                </Col>
+                <Col span={6} offset={1}>
+                  <Text style={{textAlign: 'left', display: 'block'}}>Cena netto</Text>
+                  <Form.Item
+                    style={{ width: '100%' }}
+                    wrapperCol={{ sm: 24 }}
+                    name='price_net'
                     >
                       <InputNumber
                         // onChange={countElementSum}
                         disabled
-                        placeholder="Cena brutto"
+                        placeholder="Cena netto"
                         style={{width: "100%"}}
                       />
                   </Form.Item>               

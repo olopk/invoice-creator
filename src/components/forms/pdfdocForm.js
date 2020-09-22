@@ -23,7 +23,7 @@ const createPDF = (props) => {
 		return [
 			{text: `${index +1}`, style: 'tableRow'},{text: `${el.product}`},
 			{text: `szt. `, style: 'tableRow'},{text: `${el.quantity}`, style: 'tableRow'},
-			{text: `${el.price_net}`, style: 'tableRow'},{text: `${el.vat === 0 ? 'zwol.' : el.vat}`, style: 'tableRow'},
+			{text: `${el.price_gross}`, style: 'tableRow'},{text: `${el.vat === 0 ? 'zwol.' : el.vat}`, style: 'tableRow'},
 			{text: `${el.total_price_net}`, style: 'tableRow'},{text: `${el.total_price_gross} `, style: 'tableRow'}
 		]
 	})
@@ -32,6 +32,7 @@ const createPDF = (props) => {
 	let detailTab = [
 		[{text: 'Stawka VAT', style: 'tableHeaderSM'},{text: 'Wartość netto', style: 'tableHeaderSM'},{text: 'Kwota VAT', style: 'tableHeaderSM'},{text: 'Wartość brutto', style: 'tableHeaderSM'}],
 		[{text: `zwol.`, style: 'tableRowSM'},{text: 0.00, style: 'tableRowSM'},{text: 0.00, style: 'tableRowSM'},{text: 0, style: 'tableRowSM'}],
+		[{text: `8%`, style: 'tableRowSM'},{text: 0.00, style: 'tableRowSM'},{text: 0.00, style: 'tableRowSM'},{text: 0, style: 'tableRowSM'}],
 		[{text: `23%`, style: 'tableRowSM'},{text: 0.00, style: 'tableRowSM'},{text: 0.00, style: 'tableRowSM'},{text: 0, style: 'tableRowSM'}],
 		[{text: 'Razem', style: 'tableRowSM'},{text: 0.00, style: 'tableRowSM'},{text: 0.00, style: 'tableRowSM'},{text: `${total_price}`, style: 'tableRowSM'}],
 	]
@@ -41,18 +42,17 @@ const createPDF = (props) => {
 			detailTab[1][1].text += el.total_price_net;
 			// detailTab[1][2].text += el.total_price_gross - el.total_price_net;
 			detailTab[1][3].text += el.total_price_gross;
-			
-		}else if(el.vat === 23){
-			// console.log('elem', detailTab[2][2].text, typeof(detailTab[2][2].text))
-			// console.log('net', el.total_price_net, typeof(el.total_price_net))
-			// console.log('gross', el.total_price_gross, typeof(el.total_price_gross))
-
+		}else if(el.vat === 8){
 			detailTab[2][1].text = Math.round((parseFloat(detailTab[2][1].text) + el.total_price_net)*100)/100;
 			detailTab[2][2].text = Math.round((parseFloat(detailTab[2][2].text) + (el.total_price_gross - el.total_price_net))*100)/100
-			detailTab[2][3].text = Math.round((parseFloat(detailTab[2][3].text) + el.total_price_gross)*100)/100
+			detailTab[2][3].text = Math.round((parseFloat(detailTab[2][3].text) + el.total_price_gross)*100)/100	
+		}else if(el.vat === 23){
+			detailTab[3][1].text = Math.round((parseFloat(detailTab[3][1].text) + el.total_price_net)*100)/100;
+			detailTab[3][2].text = Math.round((parseFloat(detailTab[3][2].text) + (el.total_price_gross - el.total_price_net))*100)/100
+			detailTab[3][3].text = Math.round((parseFloat(detailTab[3][3].text) + el.total_price_gross)*100)/100
 		}
-		detailTab[3][1].text += el.total_price_net;
-		detailTab[3][2].text = Math.round((detailTab[2][2].text + (el.total_price_gross - el.total_price_net))*100)/100
+		detailTab[4][1].text += el.total_price_net;
+		detailTab[4][2].text = Math.round((detailTab[2][2].text + detailTab[3][3].text + (el.total_price_gross - el.total_price_net))*100)/100
 	})
 
 
@@ -102,7 +102,7 @@ const createPDF = (props) => {
 				table: {
 					widths: [15, "*", 20, 20, 40,30,60, 60],   
 					body: [
-						[{text: `Lp.`, style: 'tableHeader'},{text: `Nazwa`, style: 'tableHeader'},{text: `Jedn.`, style: 'tableHeader'},{text: `Ilość`, style: 'tableHeader'},{text: `Cena netto`, style: 'tableHeader'},{text: `Stawka VAT`, style: 'tableHeader'},{text: `Wartość netto`, style: 'tableHeader'},{text: `Wartość brutto`, style: 'tableHeader'}],
+						[{text: `Lp.`, style: 'tableHeader'},{text: `Nazwa`, style: 'tableHeader'},{text: `Jedn.`, style: 'tableHeader'},{text: `Ilość`, style: 'tableHeader'},{text: `Cena brutto`, style: 'tableHeader'},{text: `Stawka VAT`, style: 'tableHeader'},{text: `Wartość netto`, style: 'tableHeader'},{text: `Wartość brutto`, style: 'tableHeader'}],
 						...items
 					]
 				}

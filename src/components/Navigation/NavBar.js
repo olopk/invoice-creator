@@ -34,12 +34,12 @@ const NavBar = (props) => {
                     Zaloguj się
                 </Link>
             </Menu.Item>
-            <Menu.Item key="signin">
+            {/* <Menu.Item key="signin">
                 <Link to="/signin">
                     <LoginOutlined />
                     Zarejestruj się
                 </Link>
-            </Menu.Item>
+            </Menu.Item> */}
         </Menu>
     )
     

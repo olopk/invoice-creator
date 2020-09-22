@@ -77,7 +77,7 @@ const InvoiceForm = (props) => {
           // quantity: 5,
           // total_price: '',
           unit: 'szt. ',
-          // vat: 0
+          vat: 0
         }
       ],
       date: moment(today(), 'YYYY-MM-DD'),
@@ -145,7 +145,7 @@ const InvoiceForm = (props) => {
       order[index] = {
         ...order[index],
         id: el._id,
-        price_net: el.price_net,
+        price_gross: el.price_gross,
         product: `${el.name}${el.brand ? `, ${el.brand}` : ''}${el.model ? `, ${el.model}` : ''}`,
         quantity: 1,
         unit: 'szt.',
@@ -190,14 +190,14 @@ const InvoiceForm = (props) => {
       }
 
       const products = order.map(el => {
-        const grossValue = el.price_net + ((el.vat * el.price_net)/100);
+        const netValue = (el.price_gross*100)/(100+el.vat);
         return{
               _id: el.id,
               name: el.product,
               unit: 'szt.',
               quantity: el.quantity,
-              price_net: el.price_net,
-              price_gross: parseFloat(grossValue.toFixed(2)),
+              price_net: parseFloat(netValue.toFixed(2)),
+              price_gross: el.price_gross,
               vat: el.vat,
               total_price_net: el.total_price_net,
               total_price_gross: el.total_price_gross,
@@ -254,18 +254,18 @@ const InvoiceForm = (props) => {
       //TODO i have no idea why this is working as expected...
       const data = getFieldsValue(['order'])
 
-      const price = data.order[index].price_net;
+      const price = data.order[index].price_gross;
       const quantity = data.order[index].quantity;
       const vat = data.order[index].vat;
 
       if(!isNaN(price) && !isNaN(quantity) && !isNaN(vat)){
         
-        const netValue =  price * quantity
-        data.order[index].total_price_net = parseFloat(netValue.toFixed(2))
-
-        const grossValue = (price * quantity) + (vat * (price * quantity))/100;
-
+        const grossValue =  price * quantity
         data.order[index].total_price_gross = parseFloat(grossValue.toFixed(2))
+
+        const netValue = ((price * quantity)*100)/(100 + vat);
+
+        data.order[index].total_price_net = parseFloat(netValue.toFixed(2))
 
         countTotalSum(data.order)
       }
@@ -539,7 +539,7 @@ const InvoiceForm = (props) => {
                           fieldKey={[field.fieldKey, "unit"]}
                           
                         >
-                            <Select defaultValue="brak" >
+                            <Select>
                               <Option value="szt. ">szt .</Option>
                               <Option value="brak">brak</Option>
                             </Select>
@@ -563,8 +563,8 @@ const InvoiceForm = (props) => {
                       </Col>
                       <Col span={2}>
                         <Form.Item
-                          name={[field.name, "price_net"]}
-                          fieldKey={[field.fieldKey, "price_net"]}
+                          name={[field.name, "price_gross"]}
+                          fieldKey={[field.fieldKey, "price_gross"]}
                           style={{ marginBottom: "0px" }}
                           rules={[{ required: true, message: 'Wpisz cenę' }]}
                         >
@@ -581,8 +581,9 @@ const InvoiceForm = (props) => {
                           name={[field.name, "vat"]}
                           fieldKey={[field.fieldKey, "vat"]}
                         >
-                            <Select defaultValue={23} onChange={() => countElementSum(index)}>
+                            <Select onChange={() => countElementSum(index)}>
                               <Option value={0}>zwol.</Option>
+                              <Option value={8}>8%</Option>
                               <Option value={23}>23%</Option>
                             </Select>
                         </Form.Item>
