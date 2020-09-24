@@ -157,7 +157,8 @@ const ProductForm = (props) => {
                         style={{width: "100%"}}
                       /> */}
                       <Select onChange={countElementSum}>
-                        <Option value={0}>zwol.</Option>
+                        <Option value={0}>zw.</Option>
+                        <Option value={8}>8%</Option>
                         <Option value={23}>23%</Option>
                       </Select>
                   </Form.Item>               

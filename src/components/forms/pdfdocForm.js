@@ -23,7 +23,7 @@ const createPDF = (props) => {
 		return [
 			{text: `${index +1}`, style: 'tableRow'},{text: `${el.product}`},
 			{text: `szt. `, style: 'tableRow'},{text: `${el.quantity}`, style: 'tableRow'},
-			{text: `${el.price_gross}`, style: 'tableRow'},{text: `${el.vat === 0 ? 'zwol.' : el.vat}`, style: 'tableRow'},
+			{text: `${el.price_gross}`, style: 'tableRow'},{text: `${el.vat === 0 ? 'zw.' : el.vat}`, style: 'tableRow'},
 			{text: `${el.total_price_net}`, style: 'tableRow'},{text: `${el.total_price_gross} `, style: 'tableRow'}
 		]
 	})
@@ -31,7 +31,7 @@ const createPDF = (props) => {
 	
 	let detailTab = [
 		[{text: 'Stawka VAT', style: 'tableHeaderSM'},{text: 'Wartość netto', style: 'tableHeaderSM'},{text: 'Kwota VAT', style: 'tableHeaderSM'},{text: 'Wartość brutto', style: 'tableHeaderSM'}],
-		[{text: `zwol.`, style: 'tableRowSM'},{text: 0.00, style: 'tableRowSM'},{text: 0.00, style: 'tableRowSM'},{text: 0, style: 'tableRowSM'}],
+		[{text: `zw.`, style: 'tableRowSM'},{text: 0.00, style: 'tableRowSM'},{text: 0.00, style: 'tableRowSM'},{text: 0, style: 'tableRowSM'}],
 		[{text: `8%`, style: 'tableRowSM'},{text: 0.00, style: 'tableRowSM'},{text: 0.00, style: 'tableRowSM'},{text: 0, style: 'tableRowSM'}],
 		[{text: `23%`, style: 'tableRowSM'},{text: 0.00, style: 'tableRowSM'},{text: 0.00, style: 'tableRowSM'},{text: 0, style: 'tableRowSM'}],
 		[{text: 'Razem', style: 'tableRowSM'},{text: 0.00, style: 'tableRowSM'},{text: 0.00, style: 'tableRowSM'},{text: `${total_price}`, style: 'tableRowSM'}],
@@ -138,7 +138,7 @@ const createPDF = (props) => {
 				],
 				margin: [0, 10, 0, 20]
 			},
-				{text: 'Uwagi: '},
+				{text: 'UWAGI: SPRZEDAWCA ZWOLNIONY PODMIOTOWO Z PODATKU OD TOWARÓW I USŁUG [ DOSTAWA TOWARÓW LUB ŚWIADCZENIE USŁUG ZWOLNIONE NA PODSTAWIE ART.113 UST.1 (ALBO UST. 9) USTAWY Z DNIA 11 MARCA 2004 R. O PODATKU OD TOWARÓW I USŁUG DZ.U. Z 2011 R. NR 177 ,POZ 1054,Z PÓŹN.ZM.)', fontSize: 7},
 			{
 				margin: [0, 40, 0, 20],
 				fontSize: 7 ,

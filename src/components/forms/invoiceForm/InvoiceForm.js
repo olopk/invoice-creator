@@ -582,7 +582,7 @@ const InvoiceForm = (props) => {
                           fieldKey={[field.fieldKey, "vat"]}
                         >
                             <Select onChange={() => countElementSum(index)}>
-                              <Option value={0}>zwol.</Option>
+                              <Option value={0}>zw.</Option>
                               <Option value={8}>8%</Option>
                               <Option value={23}>23%</Option>
                             </Select>
