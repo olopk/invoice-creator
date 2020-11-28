@@ -146,7 +146,7 @@ const createPDF = (props) => {
       {
         columns: [
           [
-            { image: logo, width: 100 },
+            { image: logo, width: 80 },
             { text: `Sprzedawca`, style: `header`, margin: [0, 10, 0, 10] },
             { text: `OPTYK Barbara Pałosz` },
             { text: `ul. Długosza 37, 77-300 Człuchów` },
@@ -271,7 +271,7 @@ const createPDF = (props) => {
       {
         columns: [
           [
-            { image: logo, width: 100 },
+            { image: logo, width: 80 },
             { text: `Sprzedawca`, style: `header`, margin: [0, 10, 0, 10] },
             { text: `OPTYK Barbara Pałosz` },
             { text: `ul. Długosza 37, 77-300 Człuchów` },
