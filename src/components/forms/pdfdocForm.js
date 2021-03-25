@@ -151,7 +151,7 @@ const createPDF = (props) => {
             { text: `OPTYK Barbara Pałosz` },
             { text: `ul. Długosza 37, 77-300 Człuchów` },
             { text: `NIP: 843-152-07-60` },
-            { text: `65 1020 4665 0000 3302 0042 9027` },
+            { text: `PKO BP: 65 1020 4665 0000 3302 0042 9027` },
           ],
           [
             {
@@ -276,7 +276,7 @@ const createPDF = (props) => {
             { text: `OPTYK Barbara Pałosz` },
             { text: `ul. Długosza 37, 77-300 Człuchów` },
             { text: `NIP: 843-152-07-60` },
-            { text: `65 1020 4665 0000 3302 0042 9027` },
+            { text: `PKO BP: 65 1020 4665 0000 3302 0042 9027` },
           ],
           [
             {
